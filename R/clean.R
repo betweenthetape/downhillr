@@ -1,11 +1,12 @@
-#' Clean a results table extracted from a pdf
+#' Clean a results table extracted from a PDF
 #'
 #' Use this function to clean qualifying, semi-final, and final result tables
-#' after they have been extracted from a pdf and comined into a single table in
+#' after they have been extracted from a PDF and comined into a single table in
 #' their raw format.
 #'
-#' @param data A data frame containing all combined tables from a pdf in their
+#' @param data A data frame containing all combined tables from a PDF in their
 #'   raw, unprocessed form.
+#' @return A tibble with cleaned results.
 #' @noRd
 clean_results_table <- function(data) {
   data <- data |>
@@ -58,6 +59,15 @@ clean_results_table <- function(data) {
     )
 }
 
+#' Clean timed training results extracted from a PDF
+#'
+#' Use this function to clean timed training results tables after they have been
+#' extracted from a PDF and comined into a single table in their raw format.
+#'
+#' @param data A data frame containing all combined tables from a PDF in their
+#'   raw, unprocessed form.
+#' @return A tibble with cleaned results.
+#' @noRd
 clean_timed_training_table <- function(data) {
   data <- data |>
     fill(Nr)

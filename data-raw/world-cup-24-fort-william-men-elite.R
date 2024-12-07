@@ -1,9 +1,3 @@
-# ---- TODO ----
-# - Document in data.R
-
-# ---- Source ----
-# https://prod.chronorace.be/angular/results.html#/uci/event/20240503_mtb/DHI/CG1
-
 # ---- Libraries ----
 library(tidyverse)
 library(tabulapdf)

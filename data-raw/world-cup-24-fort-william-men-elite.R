@@ -1,10 +1,5 @@
 # ---- TODO ----
 # - Document in data.R
-# - Add weather, temperature, and distance metrics to each table
-# - Add event name (e.g., fort william), event type (e.g., world cup),
-#   event year (e.g., 2024), round type (e.g., finals), category (e.g., men elite)
-#   to each table.
-# - Should the meta data above live in separate tables joined by a primary key?
 
 # ---- Source ----
 # https://prod.chronorace.be/angular/results.html#/uci/event/20240503_mtb/DHI/CG1
@@ -92,7 +87,7 @@ qualifying <- qualifying_raw |>
     event_name = "Fort William",
     event_type = "World Cup",
     event_year = "2024",
-    round_type = "Semi-Final",
+    round_type = "Qualifying",
     round_category = "Men Elite",
     metadata_weather = "Cloudy",
     metadata_temp_deg_c = 21,
@@ -119,7 +114,7 @@ timed_training_raw <- extract_tables(
   output = "tibble"
 )
 
-time_training <- timed_training_raw |>
+timed_training <- timed_training_raw |>
   bind_tables() |>
   clean_timed_training_table() |>
   mutate(
@@ -129,3 +124,19 @@ time_training <- timed_training_raw |>
     round_type = "Timed Training",
     round_category = "Men Elite"
   )
+
+# ---- Save data ----
+world_cup_24_fort_william_men_elite_results <-
+  bind_rows(finals, semi_finals, qualifying)
+
+usethis::use_data(
+  world_cup_24_fort_william_men_elite_results,
+  overwrite = TRUE
+)
+
+world_cup_24_fort_william_men_elite_timed_training <- timed_training
+
+usethis::use_data(
+  world_cup_24_fort_william_men_elite_timed_training,
+  overwrite = TRUE
+)

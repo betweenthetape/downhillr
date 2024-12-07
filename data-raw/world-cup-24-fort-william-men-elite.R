@@ -1,3 +1,6 @@
+# ---- TODO ----
+# - Document in data.R
+
 # ---- Source ----
 # https://prod.chronorace.be/angular/results.html#/uci/event/20240503_mtb/DHI/CG1
 
@@ -8,9 +11,9 @@ library(janitor)
 pkgload::load_all()
 
 # ---- Finals ----
-# Set area grid with: locate_areas(file = "inst/extdata/fort-william-men-elite-final.pdf")
+# Set area grid with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-final.pdf")
 finals_raw <- extract_tables(
-  file = "inst/extdata/fort-william-men-elite-final.pdf",
+  file = "inst/extdata/world-cup-24-fort-william-men-elite-final.pdf",
   area = list(c(135.16215, 20.5751, 634.58829, 575.49312)),
   guess = FALSE,
   method = "stream",
@@ -52,7 +55,7 @@ finals_even_rows_cleaned <- finals_even_rows |>
     time_from_leader = Time
   )
 
-fort_william_men_elite_final <- finals_odd_rows_cleaned |>
+world_cup_24_fort_william_men_elite_final <- finals_odd_rows_cleaned |>
   left_join(finals_even_rows_cleaned) |>
   mutate(across(everything(), ~ if_else(.x == "-", NA, .x))) |>
   mutate(across(starts_with("sp"), ~ str_remove(.x, "\\s*\\(\\d+\\)$"))) |>
@@ -69,6 +72,4 @@ fort_william_men_elite_final <- finals_odd_rows_cleaned |>
     split_3, split_4, time, time_from_leader
   )
 
-usethis::use_data(fort_william_men_elite_final, overwrite = TRUE)
-
-# TODO: document in data.R. Perhaps, combine with all other data first?
+usethis::use_data(world_cup_24_fort_william_men_elite_final, overwrite = TRUE)

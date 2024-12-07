@@ -13,7 +13,7 @@ clean_result_tables <- function(data) {
 
   odd_rows <- data |>
     dplyr::filter(dplyr::row_number() %% 2 == 1) |>
-    dplyr::separate_wider_regex(
+    tidyr::separate_wider_regex(
       cols = `Nr Name / UCI MTB Team`,
       patterns = c(Nr = "^\\d+", `Name / UCI MTB Team` = "\\D+")
     ) |>

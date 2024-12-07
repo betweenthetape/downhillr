@@ -1,4 +1,4 @@
-#' Clean result tables extracted from a pdf
+#' Clean a results table extracted from a pdf
 #'
 #' Use this function to clean qualifying, semi-final, and final result tables
 #' after they have been extracted from a pdf and comined into a single table in
@@ -7,7 +7,7 @@
 #' @param data A data frame containing all combined tables from a pdf in their
 #'   raw, unprocessed form.
 #' @noRd
-clean_result_tables <- function(data) {
+clean_results_table <- function(data) {
   data <- data |>
     tidyr::fill(`UCI ID`)
 

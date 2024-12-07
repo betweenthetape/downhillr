@@ -27,7 +27,18 @@ finals_raw <- extract_tables(
 
 finals <- finals_raw |>
   bind_tables() |>
-  clean_results_table()
+  clean_results_table() |>
+  mutate(
+    event_name = "Fort William",
+    event_type = "World Cup",
+    event_year = "2024",
+    round_type = "Final",
+    round_category = "Men Elite",
+    metadata_weather = "Light rain",
+    metadata_temp_deg_c = 19,
+    metadata_distance_km = 3,
+    metadata_average_speed_kmh = 44.214
+  )
 
 # ---- Semi-Final ----
 # Set area grids with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-semi-final.pdf", pages = 1:2)
@@ -45,7 +56,18 @@ semi_finals_raw <- extract_tables(
 
 semi_finals <- semi_finals_raw |>
   bind_tables() |>
-  clean_results_table()
+  clean_results_table() |>
+  mutate(
+    event_name = "Fort William",
+    event_type = "World Cup",
+    event_year = "2024",
+    round_type = "Semi-Final",
+    round_category = "Men Elite",
+    metadata_weather = "Mostly sunny",
+    metadata_temp_deg_c = 21,
+    metadata_distance_km = 3,
+    metadata_average_speed_kmh = 42.368
+  )
 
 # ---- Qualification ----
 # Set area grids with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-qualifying.pdf", pages = 1:4)
@@ -65,7 +87,18 @@ qualifying_raw <- extract_tables(
 
 qualifying <- qualifying_raw |>
   bind_tables() |>
-  clean_results_table()
+  clean_results_table() |>
+  mutate(
+    event_name = "Fort William",
+    event_type = "World Cup",
+    event_year = "2024",
+    round_type = "Semi-Final",
+    round_category = "Men Elite",
+    metadata_weather = "Cloudy",
+    metadata_temp_deg_c = 21,
+    metadata_distance_km = 3,
+    metadata_average_speed_kmh = 43.490
+  )
 
 # ---- Time training ----
 # Set area grids with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-timed-training.pdf", pages = 1:7)
@@ -88,4 +121,11 @@ timed_training_raw <- extract_tables(
 
 time_training <- timed_training_raw |>
   bind_tables() |>
-  clean_timed_training_table()
+  clean_timed_training_table() |>
+  mutate(
+    event_name = "Fort William",
+    event_type = "World Cup",
+    event_year = "2024",
+    round_type = "Timed Training",
+    round_category = "Men Elite"
+  )

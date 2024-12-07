@@ -79,3 +79,74 @@ world_cup_24_fort_william_men_elite_final <- finals_odd_rows_cleaned |>
 usethis::use_data(world_cup_24_fort_william_men_elite_final, overwrite = TRUE)
 
 # ---- Semi-Final ----
+# Set area grids with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-semi-final.pdf", pages = c(1,2))
+semi_finals_raw <- extract_tables(
+  file = "inst/extdata/world-cup-24-fort-william-men-elite-semi-final.pdf",
+  pages = c(1, 2),
+  area = list(
+    c(134.36941, 20.57519, 743.19365, 575.49312),
+    c(134.36941, 20.57519, 539.45950, 576.28586)
+  ),
+  guess = FALSE,
+  method = "stream",
+  output = "tibble"
+)
+
+semi_finals_table_1 <- semi_finals_raw[[1]] |>
+  mutate(Points = as.character(Points))
+
+semi_finals_all_rows <- semi_finals_table_1 |>
+  bind_rows(semi_finals_raw[[2]]) |>
+  fill(`UCI ID`)
+
+semi_finals_odd_rows <- semi_finals_all_rows |>
+  filter(row_number() %% 2 == 1)
+
+semi_finals_even_rows <- semi_finals_all_rows |>
+  filter(row_number() %% 2 == 0)
+
+semi_finals_odd_rows_cleaned <- semi_finals_odd_rows |>
+  separate_wider_regex(
+    cols = `Nr Name / UCI MTB Team`,
+    patterns = c(Nr = "^\\d+", `Name / UCI MTB Team` = "\\D+")
+  ) |>
+  clean_names() |>
+  rename(
+    protected = x2,
+    name = name_uci_mtb_team,
+    split_1 = i1_i2,
+    split_3 = i3_i4
+  ) |>
+  mutate(protected = if_else(!is.na(protected), TRUE, FALSE)) |>
+  mutate(name = str_remove(name, "\\*$")) |>
+  mutate(name = str_squish(name))
+
+semi_finals_even_rows_cleaned <- semi_finals_even_rows |>
+  select(
+    uci_team = `Nr Name / UCI MTB Team`,
+    uci_id = `UCI ID`,
+    split_2 = `I1 / I2`,
+    split_4 = `I3 / I4`,
+    time_from_leader = Time
+  )
+
+world_cup_24_fort_william_men_elite_semi_final <-
+  semi_finals_odd_rows_cleaned |>
+  left_join(semi_finals_even_rows_cleaned) |>
+  mutate(dnf = if_else(time == "DNF", TRUE, FALSE)) |>
+  mutate(dsq = if_else(time == "DSQ", TRUE, FALSE)) |>
+  mutate(dns = if_else(time == "DNS", TRUE, FALSE)) |>
+  mutate(across(everything(), ~ if_else(.x == "-", NA, .x))) |>
+  mutate(across(starts_with("sp"), ~ str_remove(.x, "\\s*\\(\\d+\\)$"))) |>
+  mutate(time_from_leader = str_remove(time_from_leader, "^\\+")) |>
+  mutate(
+    across(
+      c(starts_with("split_"), starts_with("time")),
+      ~ convert_to_seconds(.x)
+    )
+  ) |>
+  mutate(speed = as.numeric(speed)) |>
+  select(
+    rank, protected, nr, name, uci_team, uci_id, nat, yob, speed, split_1,
+    split_2, split_3, split_4, time, time_from_leader, dnf, dsq, dns, points
+  )

@@ -9,28 +9,28 @@
 #' @noRd
 clean_results_table <- function(data) {
   data <- data |>
-    tidyr::fill(`UCI ID`)
+    fill(`UCI ID`)
 
   odd_rows <- data |>
-    dplyr::filter(dplyr::row_number() %% 2 == 1) |>
-    tidyr::separate_wider_regex(
+    filter(row_number() %% 2 == 1) |>
+    separate_wider_regex(
       cols = `Nr Name / UCI MTB Team`,
       patterns = c(Nr = "^\\d+", `Name / UCI MTB Team` = "\\D+")
     ) |>
     janitor::clean_names() |>
-    dplyr::rename(
+    rename(
       protected = x2,
       name = name_uci_mtb_team,
       split_1 = i1_i2,
       split_3 = i3_i4
     ) |>
-    dplyr::mutate(protected = dplyr::if_else(!is.na(protected), TRUE, FALSE)) |>
-    dplyr::mutate(name = stringr::str_remove(name, "\\*$")) |>
-    dplyr::mutate(name = stringr::str_squish(name))
+    mutate(protected = if_else(!is.na(protected), TRUE, FALSE)) |>
+    mutate(name = str_remove(name, "\\*$")) |>
+    mutate(name = str_squish(name))
 
   even_rows <- data |>
-    dplyr::filter(dplyr::row_number() %% 2 == 0) |>
-    dplyr::select(
+    filter(row_number() %% 2 == 0) |>
+    select(
       uci_team = `Nr Name / UCI MTB Team`,
       uci_id = `UCI ID`,
       split_2 = `I1 / I2`,
@@ -39,26 +39,20 @@ clean_results_table <- function(data) {
     )
 
   all_rows <- odd_rows |>
-    dplyr::left_join(even_rows) |>
-    dplyr::mutate(
-      dnf = dplyr::if_else(time == "DNF", TRUE, FALSE),
-      dsq = dplyr::if_else(time == "DSQ", TRUE, FALSE),
-      dns = dplyr::if_else(time == "DNS", TRUE, FALSE),
-      dplyr::across(
-        tidyselect::everything(), ~ dplyr::if_else(.x == "-", NA, .x)
-      ),
-      dplyr::across(
-        tidyselect::starts_with("sp"),
-        ~ stringr::str_remove(.x, "\\s*\\(\\d+\\)$")
-      ),
-      time_from_leader = stringr::str_remove(time_from_leader, "^\\+"),
-      dplyr::across(
-        c(tidyselect::starts_with("split_"), tidyselect::starts_with("time")),
-        ~ convert_to_seconds(.x)
+    left_join(even_rows) |>
+    mutate(
+      dnf = if_else(time == "DNF", TRUE, FALSE),
+      dsq = if_else(time == "DSQ", TRUE, FALSE),
+      dns = if_else(time == "DNS", TRUE, FALSE),
+      across(everything(), ~ if_else(.x == "-", NA, .x)),
+      across(starts_with("sp"), ~ str_remove(.x, "\\s*\\(\\d+\\)$")),
+      time_from_leader = str_remove(time_from_leader, "^\\+"),
+      across(
+        c(starts_with("split_"), starts_with("time")), ~ convert_to_seconds(.x)
       ),
       speed = as.numeric(speed)
     ) |>
-    dplyr::select(
+    select(
       rank, protected, nr, name, uci_team, uci_id, nat, yob, speed, split_1,
       split_2, split_3, split_4, time, time_from_leader, dnf, dsq, dns, points
     )

@@ -1,5 +1,10 @@
 # ---- TODO ----
 # - Document in data.R
+# - Add weather, temperature, and distance metrics to each table
+# - Add event name (e.g., fort william), event type (e.g., world cup),
+#   event year (e.g., 2024), round type (e.g., finals), category (e.g., men elite)
+#   to each table.
+# - Should the meta data above live in separate tables joined by a primary key?
 
 # ---- Source ----
 # https://prod.chronorace.be/angular/results.html#/uci/event/20240503_mtb/DHI/CG1
@@ -20,69 +25,13 @@ finals_raw <- extract_tables(
   output = "tibble"
 )
 
-finals_all_rows <-
-  finals_raw |>
-  pluck(1) |>
-  fill(`UCI ID`)
-
-finals_odd_rows <- finals_all_rows |>
-  filter(row_number() %% 2 == 1)
-
-finals_even_rows <- finals_all_rows |>
-  filter(row_number() %% 2 == 0)
-
-finals_odd_rows_cleaned <- finals_odd_rows |>
-  separate_wider_regex(
-    cols = `Nr Name / UCI MTB Team`,
-    patterns = c(Nr = "^\\d+", `Name / UCI MTB Team` = "\\D+")
-  ) |>
-  clean_names() |>
-  rename(
-    protected = x2,
-    name = name_uci_mtb_team,
-    split_1 = i1_i2,
-    split_3 = i3_i4
-  ) |>
-  mutate(protected = if_else(!is.na(protected), TRUE, FALSE)) |>
-  mutate(name = str_remove(name, "\\*$")) |>
-  mutate(name = str_squish(name))
-
-finals_even_rows_cleaned <- finals_even_rows |>
-  select(
-    uci_team = `Nr Name / UCI MTB Team`,
-    uci_id = `UCI ID`,
-    split_2 = `I1 / I2`,
-    split_4 = `I3 / I4`,
-    time_from_leader = Time
-  )
-
-world_cup_24_fort_william_men_elite_final <- finals_odd_rows_cleaned |>
-  left_join(finals_even_rows_cleaned) |>
-  mutate(dnf = if_else(time == "DNF", TRUE, FALSE)) |>
-  mutate(dsq = if_else(time == "DSQ", TRUE, FALSE)) |>
-  mutate(dns = if_else(time == "DNS", TRUE, FALSE)) |>
-  mutate(across(everything(), ~ if_else(.x == "-", NA, .x))) |>
-  mutate(across(starts_with("sp"), ~ str_remove(.x, "\\s*\\(\\d+\\)$"))) |>
-  mutate(time_from_leader = str_remove(time_from_leader, "^\\+")) |>
-  mutate(
-    across(
-      c(starts_with("split_"), starts_with("time")),
-      ~ convert_to_seconds(.x)
-    )
-  ) |>
-  mutate(speed = as.numeric(speed)) |>
-  select(
-    rank, protected, nr, name, uci_team, uci_id, nat, yob, speed, split_1,
-    split_2, split_3, split_4, time, time_from_leader, dnf, dsq, dns, points
-  )
-
-usethis::use_data(world_cup_24_fort_william_men_elite_final, overwrite = TRUE)
+finals <- clean_results_table(finals_raw[[1]])
 
 # ---- Semi-Final ----
-# Set area grids with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-semi-final.pdf", pages = c(1,2))
+# Set area grids with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-semi-final.pdf", pages = 1:2)
 semi_finals_raw <- extract_tables(
   file = "inst/extdata/world-cup-24-fort-william-men-elite-semi-final.pdf",
-  pages = c(1, 2),
+  pages = 1:2,
   area = list(
     c(134.36941, 20.57519, 743.19365, 575.49312),
     c(134.36941, 20.57519, 539.45950, 576.28586)
@@ -92,61 +41,28 @@ semi_finals_raw <- extract_tables(
   output = "tibble"
 )
 
-semi_finals_table_1 <- semi_finals_raw[[1]] |>
-  mutate(Points = as.character(Points))
+semi_finals_tables_combined <- semi_finals_raw |>
+  pluck(1) |>
+  mutate(Points = as.character(Points)) |>
+  bind_rows(semi_finals_raw[[2]])
 
-semi_finals_all_rows <- semi_finals_table_1 |>
-  bind_rows(semi_finals_raw[[2]]) |>
-  fill(`UCI ID`)
+semi_finals <- clean_results_table(semi_finals_tables_combined)
 
-semi_finals_odd_rows <- semi_finals_all_rows |>
-  filter(row_number() %% 2 == 1)
+# ---- Qualification ----
+# Set area grids with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-qualifying.pdf", pages = 1:4)
+qualifying_raw <- extract_tables(
+  file = "inst/extdata/world-cup-24-fort-william-men-elite-qualifying.pdf",
+  pages = 1:4,
+  area = list(
+    c(133.57667, 20.57519, 743.19365, 575.49312),
+    c(133.57667, 20.57519, 743.19365, 575.49312),
+    c(133.57667, 19.78245, 743.19365, 575.49312),
+    c(133.57667, 20.57519, 603.67143, 576.28586)
+  ),
+  guess = FALSE,
+  method = "stream",
+  output = "tibble"
+)
 
-semi_finals_even_rows <- semi_finals_all_rows |>
-  filter(row_number() %% 2 == 0)
-
-semi_finals_odd_rows_cleaned <- semi_finals_odd_rows |>
-  separate_wider_regex(
-    cols = `Nr Name / UCI MTB Team`,
-    patterns = c(Nr = "^\\d+", `Name / UCI MTB Team` = "\\D+")
-  ) |>
-  clean_names() |>
-  rename(
-    protected = x2,
-    name = name_uci_mtb_team,
-    split_1 = i1_i2,
-    split_3 = i3_i4
-  ) |>
-  mutate(protected = if_else(!is.na(protected), TRUE, FALSE)) |>
-  mutate(name = str_remove(name, "\\*$")) |>
-  mutate(name = str_squish(name))
-
-semi_finals_even_rows_cleaned <- semi_finals_even_rows |>
-  select(
-    uci_team = `Nr Name / UCI MTB Team`,
-    uci_id = `UCI ID`,
-    split_2 = `I1 / I2`,
-    split_4 = `I3 / I4`,
-    time_from_leader = Time
-  )
-
-world_cup_24_fort_william_men_elite_semi_final <-
-  semi_finals_odd_rows_cleaned |>
-  left_join(semi_finals_even_rows_cleaned) |>
-  mutate(dnf = if_else(time == "DNF", TRUE, FALSE)) |>
-  mutate(dsq = if_else(time == "DSQ", TRUE, FALSE)) |>
-  mutate(dns = if_else(time == "DNS", TRUE, FALSE)) |>
-  mutate(across(everything(), ~ if_else(.x == "-", NA, .x))) |>
-  mutate(across(starts_with("sp"), ~ str_remove(.x, "\\s*\\(\\d+\\)$"))) |>
-  mutate(time_from_leader = str_remove(time_from_leader, "^\\+")) |>
-  mutate(
-    across(
-      c(starts_with("split_"), starts_with("time")),
-      ~ convert_to_seconds(.x)
-    )
-  ) |>
-  mutate(speed = as.numeric(speed)) |>
-  select(
-    rank, protected, nr, name, uci_team, uci_id, nat, yob, speed, split_1,
-    split_2, split_3, split_4, time, time_from_leader, dnf, dsq, dns, points
-  )
+qualifying <- list_rbind(qualifying_raw) |>
+  clean_results_table()

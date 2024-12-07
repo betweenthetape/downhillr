@@ -66,3 +66,26 @@ qualifying_raw <- extract_tables(
 qualifying <- qualifying_raw |>
   bind_tables() |>
   clean_results_table()
+
+# ---- Time training ----
+# Set area grids with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-timed-training.pdf", pages = 1:7)
+timed_training_raw <- extract_tables(
+  file = "inst/extdata/world-cup-24-fort-william-men-elite-timed-training.pdf",
+  pages = 1:7,
+  area = list(
+    c(140.71133, 19.78245, 736.85173, 576.28586),
+    c(140.71133, 19.78245, 737.64447, 576.28586),
+    c(140.71133, 20.57519, 737.64447, 575.49312),
+    c(140.71133, 19.78245, 737.64447, 576.28586),
+    c(140.71133, 19.78245, 738.43721, 576.28586),
+    c(139.91859, 19.78245, 737.64447, 576.28586),
+    c(140.71133, 19.78245, 364.26398, 576.28586)
+  ),
+  guess = FALSE,
+  method = "stream",
+  output = "tibble"
+)
+
+time_training <- timed_training_raw |>
+  bind_tables() |>
+  clean_timed_training_table()

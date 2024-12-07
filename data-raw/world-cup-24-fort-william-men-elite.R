@@ -10,7 +10,7 @@ library(tabulapdf)
 library(janitor)
 pkgload::load_all()
 
-# ---- Finals ----
+# ---- Final ----
 # Set area grid with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-final.pdf")
 finals_raw <- extract_tables(
   file = "inst/extdata/world-cup-24-fort-william-men-elite-final.pdf",
@@ -23,7 +23,6 @@ finals_raw <- extract_tables(
 finals_all_rows <-
   finals_raw |>
   pluck(1) |>
-  select(-`...2`) |>
   fill(`UCI ID`)
 
 finals_odd_rows <- finals_all_rows |>
@@ -39,10 +38,12 @@ finals_odd_rows_cleaned <- finals_odd_rows |>
   ) |>
   clean_names() |>
   rename(
+    protected = x2,
     name = name_uci_mtb_team,
     split_1 = i1_i2,
     split_3 = i3_i4
   ) |>
+  mutate(protected = if_else(!is.na(protected), TRUE, FALSE)) |>
   mutate(name = str_remove(name, "\\*$")) |>
   mutate(name = str_squish(name))
 
@@ -57,6 +58,9 @@ finals_even_rows_cleaned <- finals_even_rows |>
 
 world_cup_24_fort_william_men_elite_final <- finals_odd_rows_cleaned |>
   left_join(finals_even_rows_cleaned) |>
+  mutate(dnf = if_else(time == "DNF", TRUE, FALSE)) |>
+  mutate(dsq = if_else(time == "DSQ", TRUE, FALSE)) |>
+  mutate(dns = if_else(time == "DNS", TRUE, FALSE)) |>
   mutate(across(everything(), ~ if_else(.x == "-", NA, .x))) |>
   mutate(across(starts_with("sp"), ~ str_remove(.x, "\\s*\\(\\d+\\)$"))) |>
   mutate(time_from_leader = str_remove(time_from_leader, "^\\+")) |>
@@ -68,8 +72,10 @@ world_cup_24_fort_william_men_elite_final <- finals_odd_rows_cleaned |>
   ) |>
   mutate(speed = as.numeric(speed)) |>
   select(
-    rank, points, nr, name, nat, yob, uci_team, uci_id, speed, split_1, split_2,
-    split_3, split_4, time, time_from_leader
+    rank, protected, nr, name, uci_team, uci_id, nat, yob, speed, split_1,
+    split_2, split_3, split_4, time, time_from_leader, dnf, dsq, dns, points
   )
 
 usethis::use_data(world_cup_24_fort_william_men_elite_final, overwrite = TRUE)
+
+# ---- Semi-Final ----

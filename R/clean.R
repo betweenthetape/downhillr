@@ -8,6 +8,7 @@
 #'   raw, unprocessed form.
 #' @return A tibble with cleaned results.
 #' @noRd
+#' @autoglobal
 clean_results_table <- function(data) {
   data <- data |>
     fill(`UCI ID`)
@@ -68,6 +69,7 @@ clean_results_table <- function(data) {
 #'   raw, unprocessed form.
 #' @return A tibble with cleaned results.
 #' @noRd
+#' @autoglobal
 clean_timed_training_table <- function(data) {
   data <- data |>
     fill(Nr)

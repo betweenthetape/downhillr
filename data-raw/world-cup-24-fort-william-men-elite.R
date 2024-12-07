@@ -25,7 +25,9 @@ finals_raw <- extract_tables(
   output = "tibble"
 )
 
-finals <- clean_results_table(finals_raw[[1]])
+finals <- finals_raw |>
+  bind_tables() |>
+  clean_results_table()
 
 # ---- Semi-Final ----
 # Set area grids with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-semi-final.pdf", pages = 1:2)
@@ -41,12 +43,9 @@ semi_finals_raw <- extract_tables(
   output = "tibble"
 )
 
-semi_finals_tables_combined <- semi_finals_raw |>
-  pluck(1) |>
-  mutate(Points = as.character(Points)) |>
-  bind_rows(semi_finals_raw[[2]])
-
-semi_finals <- clean_results_table(semi_finals_tables_combined)
+semi_finals <- semi_finals_raw |>
+  bind_tables() |>
+  clean_results_table()
 
 # ---- Qualification ----
 # Set area grids with: locate_areas(file = "inst/extdata/world-cup-24-fort-william-men-elite-qualifying.pdf", pages = 1:4)
@@ -64,5 +63,6 @@ qualifying_raw <- extract_tables(
   output = "tibble"
 )
 
-qualifying <- list_rbind(qualifying_raw) |>
+qualifying <- qualifying_raw |>
+  bind_tables() |>
   clean_results_table()

@@ -50,7 +50,7 @@ clean_results_table <- function(data) {
       across(
         c(starts_with("split_"), starts_with("time")), ~ convert_to_seconds(.x)
       ),
-      speed = as.numeric(speed)
+      across(c(rank, nr, uci_id, speed, points), ~ as.numeric(.x))
     ) |>
     select(
       rank, protected, nr, name, uci_team, uci_id, nat, yob, speed, split_1,

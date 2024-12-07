@@ -38,7 +38,7 @@ clean_results_table <- function(data) {
       time_from_leader = Time
     )
 
-  all_rows <- odd_rows |>
+  odd_rows |>
     left_join(even_rows) |>
     mutate(
       dnf = if_else(time == "DNF", TRUE, FALSE),

@@ -1,3 +1,13 @@
+#' Bind a list of tables extracted from a PDF.
+#'
+#' @param tables A list of data frames extracted from a PDF.
+#' @noRd
+bind_tables <- function(tables) {
+  tables |>
+    map(~ mutate(.x, across(everything(), as.character))) |>
+    list_rbind()
+}
+
 #' @noRd
 #' @examples
 #' convert_to_seconds(c("3:14.668", "14.590"))
@@ -15,14 +25,4 @@ convert_to_seconds <- function(x) {
       }
     }
   )
-}
-
-#' Bind a list of tables extracted from a PDF.
-#'
-#' @param tables A list of data frames extracted from a PDF.
-#' @noRd
-bind_tables <- function(tables) {
-  tables |>
-    map(~ mutate(.x, across(everything(), as.character))) |>
-    list_rbind()
 }

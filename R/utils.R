@@ -26,3 +26,10 @@ convert_to_seconds <- function(x) {
     }
   )
 }
+
+#' @noRd
+pdf_areas <- function(pdf) {
+  tabulapdf::locate_areas(pdf) |>
+    purrr::map(\(x) round(unname(x), 4)) |>
+    dput()
+}

@@ -1,11 +1,11 @@
-#' Men's Elite Results - Fort William World Cup 2024
+#' Elite Results - Fort William World Cup 2024
 #'
-#' This dataset contains the results of the Men's Elite category from the Fort
-#' William round of the 2024 Mountain Bike World Cup. It includes detailed
-#' information about each rider's performance, team affiliation, nationality,
-#' splits, and other metadata.
+#' This dataset contains the results of the Men's and Women's Elite category
+#' from the Fort William round of the 2024 Mountain Bike World Cup. It includes
+#' detailed information about each rider's performance, team affiliation,
+#' nationality, splits, and other metadata.
 #'
-#' @format A data frame with 237 rows and 28 variables:
+#' @format A data frame with 301 rows and 28 variables:
 #' \describe{
 #'   \item{rank}{The finishing rank of the rider.}
 #'   \item{protected}{Whether the rider was in the protected category (TRUE or FALSE).}
@@ -38,16 +38,16 @@
 #' }
 #'
 #' @source <https://prod.chronorace.be/angular/results.html#/uci/event/20240503_mtb/DHI/CG1>
-"world_cup_24_fort_william_men_elite_results"
+"world_cup_24_fort_william_elites_results"
 
-#' Men's Elite Timed Training Results - Fort William World Cup 2024
+#' Elite Timed Training - Fort William World Cup 2024
 #'
-#' This dataset contains the results of the Men's Elite Timed Training session
-#' from the Fort William round of the 2024 Mountain Bike World Cup. It includes
-#' detailed information about each rider's performance across multiple runs, as
-#' well as event metadata.
+#' This dataset contains the results of the Men's and Women's Elite Timed
+#' Training session from the Fort William round of the 2024 Mountain Bike World
+#' Cup. It includes detailed information about each rider's performance across
+#' multiple runs, as well as event metadata.
 #'
-#' @format A data frame with 140 rows and 30 variables:
+#' @format A data frame with 169 rows and 30 variables:
 #' \describe{
 #'   \item{rank}{The finishing rank of the rider based on their best time.}
 #'   \item{nr}{Rider's race number.}
@@ -82,4 +82,4 @@
 #' }
 #'
 #' @source <https://prod.chronorace.be/angular/results.html#/uci/event/20240503_mtb/DHI/CG1>
-"world_cup_24_fort_william_men_elite_timed_training"
+"world_cup_24_fort_william_elites_timed_training"

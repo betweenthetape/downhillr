@@ -33,10 +33,13 @@ download_pdf <- function(data) {
         req_perform() |>
         resp_body_raw() |>
         writeBin(y)
-      Sys.sleep(2)
+      Sys.sleep(5)
     }
   )
 }
+
+safely_download_urls <- safely(download_urls)
+safely_download_pdf <- safely(download_pdf)
 
 base_urls <- c(
   "https://prod.chronorace.be/api/results/uci/dh/cms/20240503_mtb",
@@ -51,9 +54,8 @@ base_urls <- c(
 walk(
   .x = base_urls,
   .f = \(x) {
-    x |>
-      download_urls() |>
-      download_pdf()
+    urls <- safely_download_urls(x)
+    safely_download_pdf(urls$result)
     Sys.sleep(10)
   }
 )

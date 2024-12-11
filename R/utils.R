@@ -27,6 +27,14 @@ convert_to_seconds <- function(x) {
   )
 }
 
+#' Extract table areas from a PDF
+#'
+#' Run this function to interactively extract table areas from a PDF and print
+#' the result in a format which can be copied and pasted directly into
+#' `tabluapdf::extract_tables()`
+#'
+#' @param pdf path to PDF file with tables to extract.
+#'
 #' @noRd
 pdf_areas <- function(pdf) {
   tabulapdf::locate_areas(pdf) |>

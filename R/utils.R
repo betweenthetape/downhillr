@@ -31,13 +31,16 @@ convert_to_seconds <- function(x) {
 #'
 #' Run this function to interactively extract table areas from a PDF and print
 #' the result in a format which can be copied and pasted directly into
-#' `tabluapdf::extract_tables()`
+#' `tabluapdf::extract_tables()`.
 #'
 #' @param pdf path to PDF file with tables to extract.
+#' @param clipboard Should the outputs be copied to the clipboard?
 #'
 #' @noRd
-pdf_areas <- function(pdf) {
-  tabulapdf::locate_areas(pdf) |>
+pdf_areas <- function(pdf, clipboard = TRUE) {
+  output <- tabulapdf::locate_areas(pdf) |>
     purrr::map(\(x) round(unname(x), 4)) |>
     dput()
+
+  if (clipboard) suppressWarnings(clipr::write_clip(output))
 }

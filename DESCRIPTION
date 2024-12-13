@@ -11,10 +11,12 @@ Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd",
     "roxyglobals::global_roclet"))
 RoxygenNote: 7.3.2
 Imports: 
+    clipr,
     dplyr,
     janitor,
     purrr,
     stringr,
+    tabulapdf,
     tibble,
     tidyr,
     tidyselect

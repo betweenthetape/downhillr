@@ -41,6 +41,7 @@ download_pdf <- function(data) {
 safely_download_urls <- safely(download_urls)
 safely_download_pdf <- safely(download_pdf)
 
+# Note: there is no timed-training or semi-final data for Loudenvielle
 base_urls <- c(
   "https://prod.chronorace.be/api/results/uci/dh/cms/20240503_mtb",
   "https://prod.chronorace.be/api/results/uci/dh/cms/20240518_dhi",

@@ -39,8 +39,9 @@ convert_to_seconds <- function(x) {
 #' @noRd
 pdf_areas <- function(pdf, clipboard = TRUE) {
   output <- tabulapdf::locate_areas(pdf) |>
-    purrr::map(\(x) round(unname(x), 4)) |>
-    dput()
+    purrr::map(\(x) round(unname(x), 4))
 
-  if (clipboard) suppressWarnings(clipr::write_clip(output))
+  print(dput(output))
+
+  if (clipboard) clipr::write_clip(deparse(output))
 }

@@ -9,7 +9,7 @@
 #' @return A tibble with cleaned results.
 #' @noRd
 #' @autoglobal
-clean_results_table <- function(data) {
+clean_results <- function(data) {
   data <- data |>
     fill(`UCI ID`)
 
@@ -70,7 +70,7 @@ clean_results_table <- function(data) {
 #' @return A tibble with cleaned results.
 #' @noRd
 #' @autoglobal
-clean_timed_training_table <- function(data) {
+clean_timed_training <- function(data) {
   data <- data |>
     fill(Nr)
 

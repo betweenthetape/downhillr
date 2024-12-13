@@ -18,7 +18,7 @@ download_urls <- function(url) {
         "inst/extdata/",
         str_extract(urls, "(?<=webresources/)[0-9]+"),
         "-",
-        str_extract(urls, "(?<=_mtb/).*")
+        str_extract(urls, "(?<=_(mtb|dhi)/).*")
       )
     )
 }

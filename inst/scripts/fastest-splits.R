@@ -1,38 +1,9 @@
 # ------------------------------------------------------------------------------
-# Questions to answer:
-# - Is there a difference between fastest possible time and actual results
-#   achieved? If so, how would it have changed the points for each race? How
-#   would the overall series have changed if they had not made mistakes? Is
-#   there a difference between the top and bottom of the table? Are there any
-#   stand out races where the results would clearly have been massively
-#   different? How would these unique races have affected the overall? Are there
-#   any riders showing huge potential that are not making it on the box because
-#   they can't put it together on race day? If the answer is no, this is also an
-#   interesting story. The fastest racers really are the fastest split to split,
-#   not just the most consistent. This implies training for both out and out
-#   speed is just as important as consistency. If the story is reversed, we can
-#   highlight certain riders who are on the edge of briiliance (Dakota?) but
-#   need to work on consistency.
-# - Who is the most consistent rider across a race weekend?
-# - Who ramps up speed the most across the race weekend and shows the biggest
-#   improvements?
-# - For any given racer, who gets faster and faster in a single race run,
-#   impying they pace well. Who gets slower and slower across a race run,
-#   implying they pace badly and fatigue. Could the good pacers give a little
-#   more at the start? To calculate this, you could find the fastest time
-#   achieved for any split, and then grade all riders across that fastest time
-#   to see where they are loosing time compared to the fastest rider. You could
-#   either do this with a discrete scale using ranks, or preferaby a continuous
-#   scale using time from fastest for each split.
-# - For the questions above, can we use a continous red/green colour scale in
-#   combination with gganimate to simulate races? Can we use GT to create tables
-#   with rider faces, colours, team logos etc. Make it fun an interactive.
-# ------------------------------------------------------------------------------
-
 # TODO:
 # - add timed training splits
 # - get rid of Inf values
-# - make sure ranks are sequntial
+# - make sure ranks are sequential
+# ------------------------------------------------------------------------------
 
 pkgload::load_all()
 library(tidyverse)

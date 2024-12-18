@@ -1,3 +1,18 @@
+#' Elite Men World Cup 2024 Points Scale
+#'
+#' This dataset contains the Elite Men's points scale documenting the available
+#' points available for each position in each type of round.
+#'
+#' @format A data frame with 110 rows and 3 vairables:
+#' \describe{
+#'   \item{round_type}{Round type (e.g., "Final").}
+#'   \item{position}{The finishing position of the rider.}
+#'   \item{points}{UCI points available}
+#' }
+#'
+#' @source <https://assets.ctfassets.net/761l7gh5x5an/19VfFLnKvm2qgeovbR0N4d/5555f8bd603a91ec7f914c88aaf98f48/UCI_MTB_Rule_Changes_-_Part_IV_-_ENG_-_V05.2023.pdf>
+"world_cup_24_elite_men_points_scale"
+
 #' Elite Men World Cup 2024 Results
 #'
 #' This dataset contains the Elite Men's results from the each round of the 2024

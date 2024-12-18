@@ -78,3 +78,30 @@ time_left_on_tack |>
 # would have won all the qualies/semis too. Then let's do a simple correlation
 # plot and see how this virtual series compares with the actual results. Each
 # point can be a riders face.
+
+top_30_each_race <- fastest_possible_times |>
+  group_by(event_name) |>
+  arrange(fastest_possible_time, .by_group = TRUE) |>
+  slice_head(n = 30) |>
+  mutate(position = row_number()) |>
+  ungroup()
+
+finals_points <- world_cup_24_elite_men_points_scale |>
+  filter(round_type == "Final") |>
+  select(-round_type)
+
+simulated_points <- top_30_each_race |>
+  left_join(finals_points)
+
+# Insight: tell a story around Dak. We all know he had the speed. This just
+# proves it further. But, interesting that Bruni really is just king. He has the
+# fastest pure speed across all races. Period.
+simulated_overall <- simulated_points |>
+  summarise(points = sum(points), .by = name) |>
+  arrange(desc(points))
+
+# To do:
+# Correlation plot with actual results from season
+# Make animated table that shows rows move position from actual results to
+# possible results.
+# See notes on other questions to ask/answer from simulated season.

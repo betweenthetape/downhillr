@@ -100,8 +100,41 @@ simulated_points <- top_30_each_race |>
 # proves it further. But, interesting that Bruni really is just king. He has the
 # fastest pure speed across all races. Period.
 simulated_overall <- simulated_points |>
-  summarise(points = sum(points), .by = name) |>
-  arrange(desc(points))
+  summarise(simulated_points = sum(points), .by = name) |>
+  arrange(desc(simulated_points)) |>
+  mutate(simulated_rank = row_number())
+
+actual_overall <- world_cup_24_elite_men_results |>
+  summarise(actual_points = sum(points, na.rm = TRUE), .by = name) |>
+  arrange(desc(actual_points)) |>
+  mutate(actual_rank = row_number())
+
+# Update with rider faces/names Colour/style with Vital green branding and fonts
+# Annotate with Excalidraw to show riders that left time on track. Don't
+# highlight over-performers, as they might tactically ridden within limits to
+# achieve the performance they did.
+simulated_overall |>
+  left_join(actual_overall) |>
+  ggplot(aes(x = actual_rank, y = simulated_rank)) +
+  geom_point(size = 2, alpha = .7) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", linewidth = .5) +
+  labs(
+    title = "Most riders did not rank in accordance with their raw speed",
+    subtitle = "Points that deviate from the dotted line indicate a difference between potential and actual speed",
+    x = "Actual rank",
+    y = "Simulated rank"
+  ) +
+  theme_minimal()
+
+# Make a "bump chart" to show changes in positon:
+# Use rider faces for chart
+# https://github.com/davidsjoberg/ggbump
+# https://tanyaviz.com/blog/bump-chart/ - I love the idea of greying out all the
+# lines and colouring the interesting riders. Create stories around these riders
+# using the same colours.
+
+
+
 
 # To do:
 # - Correlation plot with actual results from season

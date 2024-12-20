@@ -71,9 +71,9 @@ time_left_on_tack |>
 
 # Now let's rebuild the results table just using the fastest possible times for
 # each rider over a weekend, and reattribute the points system (reverse
-# engineer) it. The calculate total points for the season. We can then compare
+# engineer) it. Then calculate total points for the season. We can then compare
 # that to the actual season rankings/total points. While the final
-# ranking/points take into consideration poitns from qualies and semi's, this
+# ranking/points take into consideration points from qualies and semi's, this
 # doesn't matter too much because we only want to know what could have happened
 # in the best possible scenario for each rider (assuming they achieved perfect
 # performance across each round_type). So let's just tally points for each rider
@@ -82,7 +82,6 @@ time_left_on_tack |>
 # would have won all the qualies/semis too. Then let's do a simple correlation
 # plot and see how this virtual series compares with the actual results. Each
 # point can be a riders face.
-
 top_30_each_race <- fastest_possible_times |>
   group_by(event_name) |>
   arrange(fastest_possible_time, .by_group = TRUE) |>
@@ -105,7 +104,9 @@ simulated_overall <- simulated_points |>
   arrange(desc(points))
 
 # To do:
-# Correlation plot with actual results from season
-# Make animated table that shows rows move position from actual results to
-# possible results.
-# See notes on other questions to ask/answer from simulated season.
+# - Correlation plot with actual results from season
+# - Make animated table that shows rows move position from actual results to
+#   possible results.
+# - Find riders in bottom of the table that show promise, and could be good bets
+#   for the Fantasy league.
+# - See notes on other questions to ask/answer from simulated season.

@@ -62,7 +62,11 @@ time_left_on_tack |>
   count(name, time_left_on_tack) |>
   mutate(percent = n / sum(n), .by = name) |>
   filter(time_left_on_tack == TRUE) |>
-  select(name, percentage_races_time_left_on_track = percent, num_races = n) |>
+  select(
+    name,
+    percentage_races_time_left_on_track = percent,
+    num_races_time_left_on_track = n
+  ) |>
   print(n = Inf)
 
 # Now let's rebuild the results table just using the fastest possible times for

@@ -74,19 +74,10 @@ time_left_on_tack |>
   ) |>
   print(n = Inf)
 
-# Now let's rebuild the results table just using the fastest possible times for
-# each rider over a weekend, and reattribute the points system (reverse
-# engineer) it. Then calculate total points for the season. We can then compare
-# that to the actual season rankings/total points. While the final
-# ranking/points take into consideration points from qualies and semi's, this
-# doesn't matter too much because we only want to know what could have happened
-# in the best possible scenario for each rider (assuming they achieved perfect
-# performance across each round_type). So let's just tally points for each rider
-# assuming it was a final, and each riders fastest time was used to determine
-# the final position. Let's also assume that the person who wins the final would
-# would have won all the qualies/semis too. Then let's do a simple correlation
-# plot and see how this virtual series compares with the actual results. Each
-# point can be a riders face.
+# ------------------------------------------------------------------------------
+# Simulate results with fastest race runs:
+# - Removes qualies/semi's and assumes riders perform perfectly
+# ------------------------------------------------------------------------------
 top_30_each_race <- fastest_possible_times |>
   group_by(event_name) |>
   arrange(fastest_possible_time, .by_group = TRUE) |>
@@ -94,6 +85,7 @@ top_30_each_race <- fastest_possible_times |>
   mutate(position = row_number()) |>
   ungroup()
 
+# Points are only given to top 30 for each race run
 finals_points <- world_cup_24_elite_men_points_scale |>
   filter(round_type == "Final") |>
   select(-round_type)
@@ -101,9 +93,6 @@ finals_points <- world_cup_24_elite_men_points_scale |>
 simulated_points <- top_30_each_race |>
   left_join(finals_points)
 
-# Insight: tell a story around Dak. We all know he had the speed. This just
-# proves it further. But, interesting that Bruni really is just king. He has the
-# fastest pure speed across all races. Period.
 simulated_overall <- simulated_points |>
   summarise(simulated_points = sum(points), .by = name) |>
   arrange(desc(simulated_points)) |>
@@ -114,23 +103,9 @@ actual_overall <- world_cup_24_elite_men_results |>
   arrange(desc(actual_points)) |>
   mutate(actual_rank = row_number())
 
-# Update with rider faces/names Colour/style with Vital green branding and fonts
-# Annotate with Excalidraw to show riders that left time on track. Don't
-# highlight over-performers, as they might tactically ridden within limits to
-# achieve the performance they did.
-simulated_overall |>
-  left_join(actual_overall) |>
-  ggplot(aes(x = actual_rank, y = simulated_rank)) +
-  geom_point(size = 2, alpha = .7) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", linewidth = .5) +
-  labs(
-    title = "Most riders did not rank in accordance with their raw speed",
-    subtitle = "Points that deviate from the dotted line indicate a difference between potential and actual speed",
-    x = "Actual rank",
-    y = "Simulated rank"
-  ) +
-  theme_minimal()
-
+# ------------------------------------------------------------------------------
+# Who left least and most time on track over the season?
+# ------------------------------------------------------------------------------
 delta_scores <- simulated_overall |>
   left_join(actual_overall) |>
   mutate(delta = actual_rank - simulated_rank) |>
@@ -143,6 +118,40 @@ least_time_left <- delta_scores |>
 # Number of ranks under where they could have placed
 most_time_left <- delta_scores |>
   arrange(desc(delta))
+
+# ------------------------------------------------------------------------------
+# Correlation plot
+# ------------------------------------------------------------------------------
+image_data <- tibble(path = dir_ls("inst/rider-images")) |>
+  mutate(name = str_remove(path, "^inst/rider-images/")) |>
+  mutate(name = str_remove(name, ".png$")) |>
+  mutate(name = str_replace(name, "(?<=[a-z])(?=[A-Z])", " "))
+
+# TODO:
+# - Tell a story about how faces above the line could not have done any better,
+#   riders under the line all left time on the track and could have faired
+#   better
+simulated_overall |>
+  left_join(actual_overall) |>
+  mutate(name = str_to_title(name)) |>
+  mutate(
+    name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
+  ) |>
+  left_join(image_data) |>
+  mutate(
+    path = if_else(is.na(path), "inst/rider-images/MissingRider.png", path)
+  ) |>
+  ggplot(aes(x = actual_rank, y = simulated_rank)) +
+  geom_point(size = 2, alpha = .7) +
+  geom_image(aes(image = path), size = .1) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", linewidth = .5) +
+  labs(
+    title = "Most riders did not rank in accordance with their raw speed",
+    subtitle = "Points that deviate from the dotted line indicate a difference between potential and actual speed",
+    x = "Actual rank",
+    y = "Simulated rank"
+  ) +
+  theme_minimal()
 
 # ------------------------------------------------------------------------------
 # Bump Chart

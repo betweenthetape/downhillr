@@ -7,6 +7,11 @@
 
 pkgload::load_all()
 library(tidyverse)
+library(fs)
+library(ggbump)
+library(ggimage)
+library(ggtext)
+library(glue)
 
 # Should we pick the fastest result of the weekend, or their actual finals
 # results, or both? The first option allows us to play out the scenario of
@@ -126,15 +131,119 @@ simulated_overall |>
   ) +
   theme_minimal()
 
-# Make a "bump chart" to show changes in positon:
-# Use rider faces for chart
-# https://github.com/davidsjoberg/ggbump
-# https://tanyaviz.com/blog/bump-chart/ - I love the idea of greying out all the
-# lines and colouring the interesting riders. Create stories around these riders
-# using the same colours.
+delta_scores <- simulated_overall |>
+  left_join(actual_overall) |>
+  mutate(delta = actual_rank - simulated_rank) |>
+  select(name, delta)
 
+# Number of ranks over where they could have placed
+least_time_left <- delta_scores |>
+  arrange(delta)
 
+# Number of ranks under where they could have placed
+most_time_left <- delta_scores |>
+  arrange(desc(delta))
 
+# ------------------------------------------------------------------------------
+# Bump Chart
+# Inspiration: https://tanyaviz.com/blog/bump-chart/
+# ------------------------------------------------------------------------------
+image_data <- tibble(path = dir_ls("inst/rider-images")) |>
+  mutate(name = str_remove(path, "^inst/rider-images/")) |>
+  mutate(name = str_remove(name, ".png$")) |>
+  mutate(name = str_replace(name, "(?<=[a-z])(?=[A-Z])", " "))
+
+bump_data <- simulated_overall |>
+  left_join(actual_overall) |>
+  mutate(name = str_to_title(name)) |>
+  mutate(
+    name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
+  ) |>
+  slice_head(n = 10) |>
+  select(-ends_with("_points")) |>
+  pivot_longer(
+    ends_with("_rank"),
+    names_to = "season", values_to = "rank"
+  ) |>
+  mutate(season = str_remove_all(season, "_rank$")) |>
+  mutate(
+    season = if_else(
+      season == "actual", "Actual \nrank", "Simulated \nrank"
+    )
+  ) |>
+  mutate(color = case_when(
+    name == "Troy Brosnan" ~ "#57106e",
+    name == "Dakotah Norton" ~ "#f98e09",
+    TRUE ~ "#E7E7E7"
+  )) |>
+  left_join(image_data)
+
+ggplot() +
+  geom_bump(
+    aes(season, rank, group = name, color = I(color)),
+    data = bump_data,
+    linewidth = 1.5
+  ) +
+  geom_image(
+    data = bump_data,
+    aes(season, rank, image = path)
+  ) +
+  scale_y_reverse() +
+  theme_minimal() +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_textbox_simple(
+      halign = 0.5, margin = margin(b = 10, t = 15), size = 22
+    ),
+    plot.subtitle = element_textbox_simple(
+      halign = 0,
+      hjust = 0.5,
+      margin = margin(b = 10),
+      width = grid::unit(6, "in"),
+      size = 11, color = "#424242"
+    ),
+    axis.text.x = element_text(size = 10, vjust = 5),
+    axis.ticks = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background = element_blank(),
+    panel.grid = element_blank(),
+    axis.title = element_blank()
+  ) +
+  geom_richtext(
+    data = filter(bump_data, season == "Actual \nrank"),
+    hjust = 1,
+    nudge_x = -0.1,
+    mapping = aes(
+      x = season,
+      y = rank,
+      label.size = NA,
+      family = "sans",
+      label = glue("<span style='font-size:14px;'>{name}<span style='color:white;'>...</span><span style='font-size:16px;'>**{rank}**</span></span>")
+    )
+  ) +
+  geom_richtext(
+    data = filter(bump_data, season == "Simulated \nrank"),
+    nudge_x = 0.1,
+    hjust = 0,
+    family = "sans",
+    mapping = aes(
+      x = season,
+      y = rank,
+      label.size = NA,
+      label = glue("<span style='font-size:14px;'><span style='font-size:16px;'>**{rank}**</span><span style='color:white;'>...</span>{name}</span>")
+    )
+  ) +
+  labs(
+    title = "<span>**TIME LEFT ON TRACK**</span>",
+    subtitle = "<span>This chart highlights which top 10 riders of the 2024 DH
+    World Cup left time on the track. Simulated ranks are calculated by adding
+    together each riders fastest split times from across qualies, semi's and
+    finals for each race to create their fastest possible run, and
+    rescoring the season using these. <span style='color:#57106e;background:red;'>**Troy Brosnan**</span>,
+    demonstrates impressive consistency, leaving little time left on track.
+    <span style='color:#f98e09;'>**Dakotah Norton**</span> continuously left
+    time on the track, falling 6 places behind his potential.</span>"
+  )
 
 # To do:
 # - Correlation plot with actual results from season

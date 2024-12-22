@@ -158,15 +158,62 @@ simulated_overall |>
   ) |>
   ggplot(aes(x = actual_rank, y = simulated_rank)) +
   geom_point(size = 2, alpha = .7) +
-  geom_image(aes(image = path), size = .1) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed", linewidth = .5) +
+  geom_image(aes(image = path), size = .08) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    linetype = "dashed",
+    linewidth = 1,
+    alpha = .8,
+  ) +
   labs(
     title = "Most riders did not rank in accordance with their raw speed",
     subtitle = "Points that deviate from the dotted line indicate a difference between potential and actual speed",
     x = "Actual rank",
     y = "Simulated rank"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_textbox_simple(
+      halign = 0.5, margin = margin(b = 10, t = 15), size = 22
+    ),
+    plot.subtitle = element_textbox_simple(
+      halign = 0,
+      hjust = 0.5,
+      margin = margin(b = 10),
+      width = grid::unit(6, "in"),
+      size = 11,
+      color = "#424242"
+    ),
+  ) +
+  labs(
+    title = "<span>**RIDING UP TO POTENTIAL**</span>",
+    subtitle = "<span>This chart highlights which riders of the 2024 DH
+      World Cup left time on the track. For each track, each riders fastest splits
+      from qualies, semi's, and finals were added together to calculate their fastest
+      possible run. Theses runs were then re-scored and added together to create a
+      new simulated overall leaderboard. Riders
+      <span style='color:#57106e;background:red;'>**above the dotted line**</span>
+      have a higer actual than simulated rank, indicating they scored well for
+      their track speed. Riders <span style='color:#f98e09;'>**below the dotted line**</span>
+      have higher simulated ranks than actual ranks, meaning they left time on
+      the hill.</span>"
+  ) +
+  geom_richtext(
+    aes(x = 10, y = 50),
+    label = "<span style='color:#57106e;background:red;'>**Above potential**</span>",
+    label.size = NA,
+    family = "sans"
+  ) +
+  geom_richtext(
+    aes(x = 60, y = 10),
+    label = "<span style='color:#f98e09;background:red;'>**Below potential**</span>",
+    label.size = NA,
+    family = "sans"
+  )
+
+
 
 # ------------------------------------------------------------------------------
 # Bump Chart

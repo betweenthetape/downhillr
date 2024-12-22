@@ -174,6 +174,13 @@ simulated_overall |>
 # - Recreate for other pats of the results table (e.g., top 20, bottom, etc.)
 # - Recreate for single races, not just overall (and potentially facet multiple
 #   races together in a single plot to tell a story).
+# - One way we could recreate for every race is to have each race as a tick on
+#   the x-axis, then we could start with fort william at position one, and then
+#   each race is a new tick, untill we end up in overall ranks. We would have to
+#   miss off actual overall ranks, or include them at the beggining or end, but
+#   I think this mixture woudl be confusing. I think it's better to have two
+#   separate plots, one for the whole simulated season, showing how it played
+#   out, and one for the comparison between actual and simulated.
 # - Think about how results link to Fantasy league. Should you pick riders
 #   showing promising speed? Or is consistent and predictable better?
 image_data <- tibble(path = dir_ls("inst/rider-images")) |>

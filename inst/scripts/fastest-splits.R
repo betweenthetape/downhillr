@@ -1,10 +1,16 @@
 # ------------------------------------------------------------------------------
-# TODO:
-# - add timed training splits
-# - get rid of Inf values
-# - make sure ranks are sequential
+# README: Create a narrative based on a new season with simulated results where
+# no rider left any time on any track, and show how the season would have
+# unfolded. Highlight tracks which were important in determining this simulated
+# season. Highlight which sections of track showed the greatest impact. Use
+# callout boxes that show insights relating to the Fantasy league throughout the
+# article. Discuss who underperformed and who shows great race craft maintaing
+# their consistent top speed.
 # ------------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# Load
+# ------------------------------------------------------------------------------
 pkgload::load_all()
 library(tidyverse)
 library(fs)
@@ -12,6 +18,13 @@ library(ggbump)
 library(ggimage)
 library(ggtext)
 library(glue)
+
+# ------------------------------------------------------------------------------
+# TODO:
+# - add timed training splits
+# - get rid of Inf values
+# - make sure ranks are sequential
+# ------------------------------------------------------------------------------
 
 # Should we pick the fastest result of the weekend, or their actual finals
 # results, or both? The first option allows us to play out the scenario of
@@ -130,7 +143,7 @@ image_data <- tibble(path = dir_ls("inst/rider-images")) |>
 # TODO:
 # - Tell a story about how faces above the line could not have done any better,
 #   riders under the line all left time on the track and could have faired
-#   better
+#   better. Think about links to fantasy league
 simulated_overall |>
   left_join(actual_overall) |>
   mutate(name = str_to_title(name)) |>
@@ -157,6 +170,12 @@ simulated_overall |>
 # Bump Chart
 # Inspiration: https://tanyaviz.com/blog/bump-chart/
 # ------------------------------------------------------------------------------
+# TODO:
+# - Recreate for other pats of the results table (e.g., top 20, bottom, etc.)
+# - Recreate for single races, not just overall (and potentially facet multiple
+#   races together in a single plot to tell a story).
+# - Think about how results link to Fantasy league. Should you pick riders
+#   showing promising speed? Or is consistent and predictable better?
 image_data <- tibble(path = dir_ls("inst/rider-images")) |>
   mutate(name = str_remove(path, "^inst/rider-images/")) |>
   mutate(name = str_remove(name, ".png$")) |>
@@ -254,10 +273,9 @@ ggplot() +
     time on the track, falling 6 places behind his potential.</span>"
   )
 
-# To do:
-# - Correlation plot with actual results from season
-# - Make animated table that shows rows move position from actual results to
-#   possible results.
-# - Find riders in bottom of the table that show promise, and could be good bets
-#   for the Fantasy league.
-# - See notes on other questions to ask/answer from simulated season.
+# ------------------------------------------------------------------------------
+# gganimate races
+# - Create .gif files simulating races for simulated points. These races can go
+#   alongside bump charts to tell a story of the important races, and how they
+#   decided how the virtual season would have unfolded.
+# ------------------------------------------------------------------------------

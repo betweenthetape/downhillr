@@ -230,7 +230,7 @@ ggplot() +
       width = grid::unit(6, "in"),
       size = 11, color = "#424242"
     ),
-    axis.text.x = element_text(size = 10, vjust = 5),
+    axis.text.x = element_text(size = 10, vjust = 2),
     axis.ticks = element_blank(),
     axis.text.y = element_blank(),
     panel.background = element_blank(),

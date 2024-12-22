@@ -187,7 +187,7 @@ bump_data <- simulated_overall |>
   mutate(
     name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
   ) |>
-  slice_head(n = 10) |>
+  slice(1:10) |>
   select(-ends_with("_points")) |>
   pivot_longer(
     ends_with("_rank"),

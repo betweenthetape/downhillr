@@ -5,7 +5,9 @@
 # season. Highlight which sections of track showed the greatest impact. Use
 # callout boxes that show insights relating to the Fantasy league throughout the
 # article. Discuss who underperformed and who shows great race craft maintaing
-# their consistent top speed.
+# their consistent top speed. Make sure you include the "So whats" throughout
+# the article (E.g., so what: consistency is king, it's better to not have the
+# fastest pure speed, but instead be deadly consistent).
 # ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
@@ -188,6 +190,7 @@ image_data <- tibble(path = dir_ls("inst/rider-images")) |>
   mutate(name = str_remove(name, ".png$")) |>
   mutate(name = str_replace(name, "(?<=[a-z])(?=[A-Z])", " "))
 
+# Overall vs. Simulated
 bump_data_overall <- simulated_overall |>
   left_join(actual_overall) |>
   mutate(name = str_to_title(name)) |>
@@ -207,7 +210,7 @@ bump_data_overall <- simulated_overall |>
     )
   ) |>
   mutate(color = case_when(
-    name == "Troy Brosnan" ~ "#57106e",
+    name == "Loic Bruni" ~ "#57106e",
     name == "Dakotah Norton" ~ "#f98e09",
     TRUE ~ "#E7E7E7"
   )) |>
@@ -275,10 +278,99 @@ ggplot() +
     from qualies, semi's, and finals were added together to calculate their fastest
     possible run. Theses runs were then re-scored and added together to create a
     new overall leaderboard. When comparing actual to simulated performance,
-    some riders, like <span style='color:#57106e;background:red;'>**Troy Brosnan**</span>,
-    demonstrate impressive consistency, leaving little time left on track. Other
-    riders like <span style='color:#f98e09;'>**Dakotah Norton**</span> fall up
-    to 6 places behind their potential.</span>"
+    <span style='color:#57106e;background:red;'>**Loic Bruni**</span>
+    demonstrates not only raw speed, but unmatched consistency. Other riders like
+    <span style='color:#f98e09;'>**Dakotah Norton**</span> fall up to 6 places
+    behind their potential, leaving time on the track. Could these riders be a
+    good bet for next season?</span>"
+  )
+
+# Just simulated season
+bump_data_season <- top_30_each_race |>
+  select(name, season = event_name, rank = position) |>
+  filter(name %in% simulated_overall$name[1:10]) |>
+  mutate(name = str_to_title(name)) |>
+  mutate(
+    name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
+  ) |>
+  mutate(
+    season = factor(
+      season,
+      levels = c(
+        "Fort William",
+        "Bielsko-Biala",
+        "Leogang",
+        "Val di Sole",
+        "Les Gets",
+        "Loudenvielle",
+        "Mont-Sainte-Anne"
+      )
+    )
+  ) |>
+  mutate(color = case_when(
+    name == "Troy Brosnan" ~ "#57106e",
+    name == "Dakotah Norton" ~ "#f98e09",
+    TRUE ~ "#E7E7E7"
+  )) |>
+  left_join(image_data) |>
+  mutate(
+    path = if_else(is.na(path), "inst/rider-images/MissingRider.png", path)
+  )
+
+ggplot() +
+  geom_bump(
+    aes(season, rank, group = name, color = I(color)),
+    data = bump_data_season,
+    linewidth = 1.5
+  ) +
+  geom_image(
+    data = bump_data_season,
+    aes(season, rank, image = path)
+  ) +
+  scale_y_reverse() +
+  theme_minimal() +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_textbox_simple(
+      halign = 0.5, margin = margin(b = 10, t = 15), size = 22
+    ),
+    plot.subtitle = element_textbox_simple(
+      halign = 0,
+      hjust = 0.5,
+      margin = margin(b = 10),
+      width = grid::unit(6, "in"),
+      size = 11, color = "#424242"
+    ),
+    axis.text.x = element_text(size = 10, vjust = 2),
+    axis.ticks = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background = element_blank(),
+    panel.grid = element_blank(),
+    axis.title = element_blank()
+  ) +
+  geom_richtext(
+    data = filter(bump_data_season, season == "Fort William"),
+    hjust = 1,
+    nudge_x = -0.1,
+    mapping = aes(
+      x = season,
+      y = rank,
+      label.size = NA,
+      family = "sans",
+      label = glue("<span style='font-size:14px;'>{name}<span style='color:white;'>...</span><span style='font-size:16px;'>**{rank}**</span></span>")
+    )
+  ) +
+  geom_richtext(
+    data = filter(bump_data_season, season == "Mont-Sainte-Anne"),
+    nudge_x = 0.1,
+    hjust = 0,
+    family = "sans",
+    mapping = aes(
+      x = season,
+      y = rank,
+      label.size = NA,
+      label = glue("<span style='font-size:14px;'><span style='font-size:16px;'>**{rank}**</span><span style='color:white;'>...</span>{name}</span>")
+    )
   )
 
 # ------------------------------------------------------------------------------

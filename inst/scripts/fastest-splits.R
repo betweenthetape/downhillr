@@ -196,7 +196,7 @@ bump_data <- simulated_overall |>
   mutate(season = str_remove_all(season, "_rank$")) |>
   mutate(
     season = if_else(
-      season == "actual", "Actual \nrank", "Simulated \nrank"
+      season == "actual", "Actual \noverall rank", "Simulated \noverall rank"
     )
   ) |>
   mutate(color = case_when(
@@ -238,7 +238,7 @@ ggplot() +
     axis.title = element_blank()
   ) +
   geom_richtext(
-    data = filter(bump_data, season == "Actual \nrank"),
+    data = filter(bump_data, season == "Actual \noverall rank"),
     hjust = 1,
     nudge_x = -0.1,
     mapping = aes(
@@ -250,7 +250,7 @@ ggplot() +
     )
   ) +
   geom_richtext(
-    data = filter(bump_data, season == "Simulated \nrank"),
+    data = filter(bump_data, season == "Simulated \noverall rank"),
     nudge_x = 0.1,
     hjust = 0,
     family = "sans",
@@ -264,13 +264,14 @@ ggplot() +
   labs(
     title = "<span>**TIME LEFT ON TRACK**</span>",
     subtitle = "<span>This chart highlights which top 10 riders of the 2024 DH
-    World Cup left time on the track. Simulated ranks are calculated by adding
-    together each riders fastest split times from across qualies, semi's and
-    finals for each race to create their fastest possible run, and
-    rescoring the season using these. <span style='color:#57106e;background:red;'>**Troy Brosnan**</span>,
-    demonstrates impressive consistency, leaving little time left on track.
-    <span style='color:#f98e09;'>**Dakotah Norton**</span> continuously left
-    time on the track, falling 6 places behind his potential.</span>"
+    World Cup left time on the track. For each track, each riders fastest splits
+    from qualies, semi's, and finals were added together to calculate their fastest
+    possible run. Theses runs were then re-scored and added together to create a
+    new overall leaderboard. When comparing actual to simulated performance,
+    some riders, like <span style='color:#57106e;background:red;'>**Troy Brosnan**</span>,
+    demonstrate impressive consistency, leaving little time left on track. Other
+    riders like <span style='color:#f98e09;'>**Dakotah Norton**</span> fall up
+    to 6 places behind their potential.</span>"
   )
 
 # ------------------------------------------------------------------------------

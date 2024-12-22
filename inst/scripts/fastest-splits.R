@@ -188,7 +188,7 @@ image_data <- tibble(path = dir_ls("inst/rider-images")) |>
   mutate(name = str_remove(name, ".png$")) |>
   mutate(name = str_replace(name, "(?<=[a-z])(?=[A-Z])", " "))
 
-bump_data <- simulated_overall |>
+bump_data_overall <- simulated_overall |>
   left_join(actual_overall) |>
   mutate(name = str_to_title(name)) |>
   mutate(
@@ -216,11 +216,11 @@ bump_data <- simulated_overall |>
 ggplot() +
   geom_bump(
     aes(season, rank, group = name, color = I(color)),
-    data = bump_data,
+    data = bump_data_overall,
     linewidth = 1.5
   ) +
   geom_image(
-    data = bump_data,
+    data = bump_data_overall,
     aes(season, rank, image = path)
   ) +
   scale_y_reverse() +
@@ -245,7 +245,7 @@ ggplot() +
     axis.title = element_blank()
   ) +
   geom_richtext(
-    data = filter(bump_data, season == "Actual \noverall rank"),
+    data = filter(bump_data_overall, season == "Actual \noverall rank"),
     hjust = 1,
     nudge_x = -0.1,
     mapping = aes(
@@ -257,7 +257,7 @@ ggplot() +
     )
   ) +
   geom_richtext(
-    data = filter(bump_data, season == "Simulated \noverall rank"),
+    data = filter(bump_data_overall, season == "Simulated \noverall rank"),
     nudge_x = 0.1,
     hjust = 0,
     family = "sans",

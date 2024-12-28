@@ -169,7 +169,7 @@ simulated_overall |>
   ) |>
   ggplot(aes(x = actual_rank, y = simulated_rank)) +
   geom_point(size = 2, alpha = .7) +
-  geom_image(aes(image = path), size = .08) +
+  geom_image(aes(image = path), size = .09) +
   geom_abline(
     slope = 1,
     intercept = 0,
@@ -195,32 +195,42 @@ simulated_overall |>
   labs(
     title = "<span>**RIDING UP TO POTENTIAL**</span>",
     subtitle = "<span>This chart highlights which riders of the 2024 DH
-      World Cup left time on the track. For each track, each riders fastest splits
-      from qualies, semi's, and finals were added together to calculate their fastest
-      possible run. Theses runs were then re-scored and added together to create a
-      new simulated overall leaderboard. Riders
-      <span style='color:#57106e;background:red;'>**above the dotted line**</span>
-      have a higer actual than simulated rank, indicating they scored well for
-      their track speed. Riders <span style='color:#f98e09;'>**below the dotted line**</span>
-      have higher simulated ranks than actual ranks, meaning they left time on
-      the hill.</span>",
+      World Cup were riding up to their potential. For each track, each riders fastest splits
+      from qualies, semi's, and finals were added together to calculate a hypothetical fastest
+      run. Theses runs were then re-scored to create a new simulated overall leaderboard. Riders
+      <span style='color:#57106e;background:red;'>**in the purple area**</span>
+      are riding up to their potential (their actual ranks are better than simulated ranks).
+      Riders <span style='color:#f98e09;'>**in the orange area**</span> are
+      riding below their potential (their simulated ranks are better than their actual ranks).</span>",
     x = "Actual rank",
     y = "Simulated rank"
   ) +
   geom_richtext(
-    aes(x = 10, y = 50),
+    data = data.frame(x = 10, y = 50),
+    aes(x = x, y = y),
     label = "<span style='color:#57106e;background:red;'>**Above potential**</span>",
     label.size = NA,
     family = "sans"
   ) +
   geom_richtext(
-    aes(x = 60, y = 10),
+    data = data.frame(x = 60, y = 10),
+    aes(x = x, y = y),
     label = "<span style='color:#f98e09;background:red;'>**Below potential**</span>",
     label.size = NA,
     family = "sans"
+  ) +
+  geom_ribbon(
+    stat = "function",
+    fun = \(x) x,
+    mapping = aes(ymin = after_stat(y), ymax = Inf),
+    fill = "#57106e", alpha = 0.1
+  ) +
+  geom_ribbon(
+    stat = "function",
+    fun = \(x) x,
+    mapping = aes(ymin = after_stat(y), ymax = -Inf),
+    fill = "#f98e09", alpha = 0.1
   )
-
-
 
 # ------------------------------------------------------------------------------
 # Bump Chart

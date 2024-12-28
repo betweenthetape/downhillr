@@ -36,8 +36,13 @@ fastest_acutal_times <- world_cup_24_elite_men_results |>
     .by = c(name, event_name)
   )
 
+# Using finals only doesn't allow us to simulate all riders, as not all riders
+# make it to finals. For this reason, we won't use it as it limits our analysis.
+# Using fasest acutal times is also advantageous for getting a true assessment
+# of how much time is left on the hill for each rider.
 finals_results <- world_cup_24_elite_men_results |>
-  filter(round_type == "Final")
+  filter(round_type == "Final") |>
+  select(name, event_name, time)
 
 fastest_possible_times <- world_cup_24_elite_men_results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
@@ -75,7 +80,11 @@ time_left_on_tack <- fastest_acutal_times |>
 # story to tell. It could also be interesting for the riders to see. Find a nice
 # way to present this in coloured gt table. You should also quantify the "time
 # left on track" for each rider at each race by subtracting their fastest
-# possible from their fastest possible.
+# possible from their fastest actual. We could arrange this table by highest
+# time left on track, per track to get a sense of ranking. This would mean
+# multiple rows per rider. Perhaps we should link to externally hosted tables
+# which contains all this additional data and only show key insights in the
+# article. This externally hosted site is proving to be more and more important.
 time_left_on_tack |>
   count(name, time_left_on_tack) |>
   mutate(percent = n / sum(n), .by = name) |>

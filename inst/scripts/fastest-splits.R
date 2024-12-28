@@ -8,6 +8,8 @@
 # their consistent top speed. Make sure you include the "So whats" throughout
 # the article (E.g., so what: consistency is king, it's better to not have the
 # fastest pure speed, but instead be deadly consistent).
+# As a general rule, each static visualisation needs a dynamic counterpart
+# hosted externally for interactive exploration.
 # ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
@@ -377,6 +379,11 @@ bump_data_season <- top_30_each_race |>
     path = if_else(is.na(path), "inst/rider-images/MissingRider.png", path)
   )
 
+# TODO:
+# - Select just a few riders to tell the story of, and only show their paths
+# - Add rank numbers down the entire length of the y-axis to show positions.
+# - Tweak y-axis so that it is logarithmic, or so that there is not too much
+#   white space for the each dup in Loudenvielle for Dak.
 ggplot() +
   geom_bump(
     aes(season, rank, group = name, color = I(color)),

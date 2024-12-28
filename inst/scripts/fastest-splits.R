@@ -129,6 +129,8 @@ actual_overall <- world_cup_24_elite_men_results |>
 
 # ------------------------------------------------------------------------------
 # Who left least and most time on track over the season?
+# TODO:
+# - Make GT table showing top/bottom 5 least/most changes
 # ------------------------------------------------------------------------------
 delta_scores <- simulated_overall |>
   left_join(actual_overall) |>
@@ -175,12 +177,6 @@ simulated_overall |>
     linewidth = 1,
     alpha = .8,
   ) +
-  labs(
-    title = "Most riders did not rank in accordance with their raw speed",
-    subtitle = "Points that deviate from the dotted line indicate a difference between potential and actual speed",
-    x = "Actual rank",
-    y = "Simulated rank"
-  ) +
   theme_minimal() +
   theme(
     text = element_text(family = "sans"),
@@ -207,7 +203,9 @@ simulated_overall |>
       have a higer actual than simulated rank, indicating they scored well for
       their track speed. Riders <span style='color:#f98e09;'>**below the dotted line**</span>
       have higher simulated ranks than actual ranks, meaning they left time on
-      the hill.</span>"
+      the hill.</span>",
+    x = "Actual rank",
+    y = "Simulated rank"
   ) +
   geom_richtext(
     aes(x = 10, y = 50),
@@ -241,10 +239,6 @@ simulated_overall |>
 #   out, and one for the comparison between actual and simulated.
 # - Think about how results link to Fantasy league. Should you pick riders
 #   showing promising speed? Or is consistent and predictable better?
-image_data <- tibble(path = dir_ls("inst/rider-images")) |>
-  mutate(name = str_remove(path, "^inst/rider-images/")) |>
-  mutate(name = str_remove(name, ".png$")) |>
-  mutate(name = str_replace(name, "(?<=[a-z])(?=[A-Z])", " "))
 
 # Overall vs. Simulated
 bump_data_overall <- simulated_overall |>

@@ -48,7 +48,7 @@ finals_results <- world_cup_24_elite_men_results |>
   filter(round_type == "Final") |>
   select(name, event_name, time)
 
-fastest_possible_times <- world_cup_24_elite_men_results |>
+fastest_possible_sections <- world_cup_24_elite_men_results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
   mutate(
     section_1 = split_1,
@@ -60,7 +60,9 @@ fastest_possible_times <- world_cup_24_elite_men_results |>
   summarise(
     across(starts_with("section_"), ~ min(.x, na.rm = TRUE)),
     .by = c(name, event_name)
-  ) |>
+  )
+
+fastest_possible_times <- fastest_possible_sections |>
   rowwise(name, event_name) |>
   summarise(
     fastest_possible_time = sum(
@@ -444,5 +446,8 @@ ggplot() +
 # gganimate races
 # - Create .gif files simulating races for simulated points. These races can go
 #   alongside bump charts to tell a story of the important races, and how they
-#   decided how the virtual season would have unfolded.
+#   decided how the virtual season would have unfolded. Which sectors would have
+#   been important. Are there any stand out sectors where somebody clearly
+#   outperformed the field?
 # ------------------------------------------------------------------------------
+fastest_possible_times

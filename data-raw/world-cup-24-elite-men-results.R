@@ -93,7 +93,7 @@ spec <- tribble(
     round_category = "Men Elite",
     metadata_weather = "Mostly Sunny",
     metadata_temp_deg_c = 21,
-    metadata_distance_km = 2.0190,
+    metadata_distance_km = 2.010,
     metadata_average_speed_kmh = 39.913
   ),
   "inst/extdata/20240518-biel_dhi_me_results_semi.pdf",

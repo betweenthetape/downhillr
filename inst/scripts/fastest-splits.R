@@ -21,6 +21,7 @@ library(fs)
 library(ggbump)
 library(ggimage)
 library(ggtext)
+library(gganimate)
 library(glue)
 
 # ------------------------------------------------------------------------------
@@ -443,6 +444,14 @@ ggplot() +
   )
 
 # ------------------------------------------------------------------------------
+# Heatmap races
+# - Create static heatmaps, similar to the ones shown on the live feed, which
+#   are coloured green/red as riders move faster/slower than the fastest split
+#   time. Use continous scale to blend colours between splits.
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
 # gganimate races
 # - Create .gif files simulating races for simulated points. These races can go
 #   alongside bump charts to tell a story of the important races, and how they
@@ -450,4 +459,86 @@ ggplot() +
 #   been important. Are there any stand out sectors where somebody clearly
 #   outperformed the field?
 # ------------------------------------------------------------------------------
-fastest_possible_times
+# - Calculate approximate section distance to use for spacing on the x-axis -
+event_total_distance <- world_cup_24_elite_men_results |>
+  distinct(event_name, metadata_distance_km) |>
+  slice(-3)
+
+event_section_distances <- fastest_possible_sections |>
+  rowwise(name, event_name) |>
+  mutate(
+    fastest_possible_time = sum(
+      c_across(starts_with("section_")),
+      na.rm = TRUE
+    )
+  ) |>
+  ungroup() |>
+  arrange(event_name, fastest_possible_time) |>
+  group_by(event_name) |>
+  slice_head(n = 1) |>
+  summarise(
+    section_1_km = section_1 / fastest_possible_time,
+    section_2_km = section_2 / fastest_possible_time,
+    section_3_km = section_3 / fastest_possible_time,
+    section_4_km = section_4 / fastest_possible_time,
+    section_5_km = section_5 / fastest_possible_time,
+  ) |>
+  left_join(event_total_distance) |>
+  reframe(
+    across(starts_with("section_"), ~ .x * metadata_distance_km),
+    .by = event_name
+  )
+
+# - Wrap the below method up into functions that will work for each race -
+# - note, that in the data captured in the PDF's there is no time 0. This needs
+#   to be added for each rider for each race
+race_data <- tibble::tibble(
+  name = rep(c("Racer A", "Racer B", "Racer C"), each = 5),
+  split = rep(c("Split 1", "Split 2", "Split 3", "Split 4", "Split 5"), times = 3),
+  time = c(0, 30, 60, 90, 120, 0, 35, 70, 110, 160, 0, 25, 55, 85, 115) # Cumulative times
+)
+
+split_levels <- c("Split 1", "Split 2", "Split 3", "Split 4", "Split 5")
+
+interpolated_data <- race_data |>
+  mutate(split_num = as.numeric(factor(split, split_levels))) |>
+  group_by(name) |>
+  arrange(name, time) |>
+  do(data.frame(
+    racer = .$name[1],
+    time = seq(min(.$time), max(.$time), by = 1), # Interpolated time sequence
+    split_num = approx(.$time, .$split_num, xout = seq(min(.$time), max(.$time), by = 1))$y # Linear interpolation
+  )) |>
+  ungroup() |>
+  mutate(split = factor(split_levels[round(split_num)], levels = split_levels))
+
+p <- ggplot(interpolated_data, aes(x = split_num, y = racer, group = racer)) +
+  geom_point(aes(color = racer), size = 4) +
+  scale_x_continuous(
+    breaks = 1:length(split_levels),
+    labels = split_levels
+  ) +
+  labs(
+    title = "Mountain Bike Race Simulation",
+    x = "Race Splits",
+    y = "Racer",
+    color = "Racer"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.x = element_blank()
+  ) +
+  transition_time(time) +
+  ease_aes("linear") +
+  enter_fade() +
+  exit_fade()
+
+# Render the animation
+animate(p, width = 800, height = 600, nframes = 150, fps = 20)
+
+
+# - Once the above method has been wrapped up, you need to then think about
+#   reinterpolating the data using the appoximated distances, rather than the
+#   factor variable "split" that is currently used. This should then make the
+#   race more realistic looking.

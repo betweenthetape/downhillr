@@ -461,8 +461,7 @@ ggplot() +
 # ------------------------------------------------------------------------------
 # - Calculate approximate section distance to use for spacing on the x-axis -
 event_total_distance <- world_cup_24_elite_men_results |>
-  distinct(event_name, metadata_distance_km) |>
-  slice(-3)
+  distinct(event_name, metadata_distance_km)
 
 event_section_distances <- fastest_possible_sections |>
   rowwise(name, event_name) |>

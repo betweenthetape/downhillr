@@ -459,68 +459,64 @@ ggplot() +
 #   been important. Are there any stand out sectors where somebody clearly
 #   outperformed the field?
 # ------------------------------------------------------------------------------
+fastest_possible_splits <- fastest_possible_sections |>
+  rowwise(name, event_name) |>
+  summarise(
+    start = 0,
+    split_1 = section_1,
+    split_2 = sum(c_across(section_1:section_2)),
+    split_3 = sum(c_across(section_1:section_3)),
+    split_4 = sum(c_across(section_1:section_4)),
+    finish = sum(c_across(section_1:section_5)),
+    .groups = "drop"
+  )
+
 # - Calculate approximate section distance to use for spacing on the x-axis -
 event_total_distance <- world_cup_24_elite_men_results |>
   distinct(event_name, metadata_distance_km)
 
-event_section_distances <- fastest_possible_sections |>
-  rowwise(name, event_name) |>
+event_section_distances <- fastest_possible_splits |>
+  arrange(event_name, finish) |>
+  slice_head(n = 1, by = "event_name") |>
   mutate(
-    fastest_possible_time = sum(
-      c_across(starts_with("section_")),
-      na.rm = TRUE
-    )
-  ) |>
-  ungroup() |>
-  arrange(event_name, fastest_possible_time) |>
-  group_by(event_name) |>
-  slice_head(n = 1) |>
-  summarise(
-    section_1_km = section_1 / fastest_possible_time,
-    section_2_km = section_2 / fastest_possible_time,
-    section_3_km = section_3 / fastest_possible_time,
-    section_4_km = section_4 / fastest_possible_time,
-    section_5_km = section_5 / fastest_possible_time,
+    split_1 = split_1 / finish,
+    split_2 = split_2 / finish,
+    split_3 = split_3 / finish,
+    split_4 = split_4 / finish,
+    finish = 1,
   ) |>
   left_join(event_total_distance) |>
   reframe(
-    across(starts_with("section_"), ~ .x * metadata_distance_km),
+    across(start:finish, ~ .x * metadata_distance_km),
     .by = event_name
   )
 
-# - Wrap the below method up into functions that will work for each race -
-# - note, that in the data captured in the PDF's there is no time 0. This needs
-#   to be added for each rider for each race
-race_data <- tibble::tibble(
-  name = rep(c("Racer A", "Racer B", "Racer C"), each = 5),
-  split = rep(c("Split 1", "Split 2", "Split 3", "Split 4", "Split 5"), times = 3),
-  time = c(0, 30, 60, 90, 125, 0, 35, 70, 100, 115, 0, 25, 55, 85, 120) # Cumulative times
-)
+# Test on first 5 riders at FW:
+fw_section_km <- event_section_distances |>
+  filter(event_name == "Fort William") |>
+  pivot_longer(!event_name, names_to = "sector", values_to = "distance_km") |>
+  select(-event_name)
 
-interpolated_data <- race_data |>
-  mutate(
-    split_num = as.numeric(
-      factor(split, c("Split 1", "Split 2", "Split 3", "Split 4", "Split 5"))
-    )
-  ) |>
+fw_test <- fastest_possible_splits |>
+  slice_head(n = 5) |>
+  select(-event_name) |>
+  pivot_longer(!name, names_to = "sector", values_to = "time") |>
+  left_join(fw_section_km)
+
+fw_interpolated <- fw_test |>
   arrange(name, time) |>
   reframe(
-    split_num = approx(time, split_num, xout = seq(min(time), max(time), by = 1))$y,
+    distance_km = approx(time, distance_km, xout = seq(min(time), max(time), by = 1))$y,
     time = seq(min(time), max(time), by = 1),
     .by = name
   )
 
-p <- ggplot(interpolated_data, aes(x = split_num, y = name, group = name)) +
+p <- ggplot(fw_interpolated, aes(x = distance_km, y = name, group = name)) +
   geom_point(aes(color = name), size = 4) +
-  scale_x_continuous(
-    breaks = 1:length(split_levels),
-    labels = split_levels
-  ) +
   labs(
-    title = "Mountain Bike Race Simulation",
-    x = "Race Splits",
-    y = "Racer",
-    color = "Racer"
+    title = "Fort William",
+    x = "Distance",
+    y = "Racer"
   ) +
   theme_minimal() +
   theme(
@@ -532,14 +528,18 @@ p <- ggplot(interpolated_data, aes(x = split_num, y = name, group = name)) +
   enter_fade() +
   exit_fade()
 
-# Render the animation
 animate(p, width = 800, height = 600, nframes = 150, fps = 20)
 
-
-# - Once the above method has been wrapped up, you need to then think about
-#   reinterpolating the data using the appoximated distances, rather than the
-#   factor variable "split" that is currently used. This should then make the
-#   race more realistic looking. For this, I think we can just use the same
-#   principle, and linearly interpolate on distance, rather than a factor
-#   variable. We can then remove the x-axis labels and grid-lines, and annotate
-#   dotted lines and text with the split names.
+# TODO:
+# - Add split lines on plot
+# - Remove x axis labels, marks, and major grid lines
+# - Add rider faces instead of points. Remove legend and colouring.
+# - Increase point/image size
+# - Add line/shadow/trail
+# - To make the difference in splits more dramatic, add scaling factor which
+#   slows down/speeds up different splits to make it more obvious who is
+#   leading/lagging for any given split
+# - Add text annotations as riders pass splits to show who is up/behind in
+#   red/green
+# - Shade or highlight important splits for certain riders and certain races
+#   (e.g., using geom_rect()) to draw the viewers eye.

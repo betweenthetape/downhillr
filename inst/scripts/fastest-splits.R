@@ -494,25 +494,24 @@ event_section_distances <- fastest_possible_sections |>
 race_data <- tibble::tibble(
   name = rep(c("Racer A", "Racer B", "Racer C"), each = 5),
   split = rep(c("Split 1", "Split 2", "Split 3", "Split 4", "Split 5"), times = 3),
-  time = c(0, 30, 60, 90, 120, 0, 35, 70, 110, 160, 0, 25, 55, 85, 115) # Cumulative times
+  time = c(0, 30, 60, 90, 125, 0, 35, 70, 100, 115, 0, 25, 55, 85, 120) # Cumulative times
 )
 
-split_levels <- c("Split 1", "Split 2", "Split 3", "Split 4", "Split 5")
-
 interpolated_data <- race_data |>
-  mutate(split_num = as.numeric(factor(split, split_levels))) |>
-  group_by(name) |>
+  mutate(
+    split_num = as.numeric(
+      factor(split, c("Split 1", "Split 2", "Split 3", "Split 4", "Split 5"))
+    )
+  ) |>
   arrange(name, time) |>
-  do(data.frame(
-    racer = .$name[1],
-    time = seq(min(.$time), max(.$time), by = 1), # Interpolated time sequence
-    split_num = approx(.$time, .$split_num, xout = seq(min(.$time), max(.$time), by = 1))$y # Linear interpolation
-  )) |>
-  ungroup() |>
-  mutate(split = factor(split_levels[round(split_num)], levels = split_levels))
+  reframe(
+    split_num = approx(time, split_num, xout = seq(min(time), max(time), by = 1))$y,
+    time = seq(min(time), max(time), by = 1),
+    .by = name
+  )
 
-p <- ggplot(interpolated_data, aes(x = split_num, y = racer, group = racer)) +
-  geom_point(aes(color = racer), size = 4) +
+p <- ggplot(interpolated_data, aes(x = split_num, y = name, group = name)) +
+  geom_point(aes(color = name), size = 4) +
   scale_x_continuous(
     breaks = 1:length(split_levels),
     labels = split_levels
@@ -540,4 +539,7 @@ animate(p, width = 800, height = 600, nframes = 150, fps = 20)
 # - Once the above method has been wrapped up, you need to then think about
 #   reinterpolating the data using the appoximated distances, rather than the
 #   factor variable "split" that is currently used. This should then make the
-#   race more realistic looking.
+#   race more realistic looking. For this, I think we can just use the same
+#   principle, and linearly interpolate on distance, rather than a factor
+#   variable. We can then remove the x-axis labels and grid-lines, and annotate
+#   dotted lines and text with the split names.

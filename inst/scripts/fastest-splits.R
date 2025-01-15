@@ -387,6 +387,8 @@ bump_data_season <- top_30_each_race |>
 # - Add rank numbers down the entire length of the y-axis to show positions.
 # - Tweak y-axis so that it is logarithmic, or so that there is not too much
 #   white space for the each dup in Loudenvielle for Dak.
+# - It looks like Dak would have won les gets - is there a story here? Check
+#   simulated results against actual for each race, and do a facet plot?
 ggplot() +
   geom_bump(
     aes(season, rank, group = name, color = I(color)),
@@ -509,19 +511,42 @@ fw_interpolated <- fw_test |>
     distance_km = approx(time, distance_km, xout = seq(min(time), max(time), by = 1))$y,
     time = seq(min(time), max(time), by = 1),
     .by = name
+  ) |>
+  mutate(name = str_to_title(name)) |>
+  mutate(
+    name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
+  ) |>
+  left_join(image_data) |>
+  mutate(
+    sector = case_when(
+      distance_km == 0 ~ "Start",
+      distance_km <= fw_section_km$distance_km[2] & distance_km > fw_section_km$distance_km[1] ~ "Split 1",
+      distance_km <= fw_section_km$distance_km[3] & distance_km > fw_section_km$distance_km[2] ~ "Split 2",
+      distance_km <= fw_section_km$distance_km[4] & distance_km > fw_section_km$distance_km[3] ~ "Split 3",
+      distance_km <= fw_section_km$distance_km[5] & distance_km > fw_section_km$distance_km[4] ~ "Split 4",
+      distance_km <= fw_section_km$distance_km[6] & distance_km > fw_section_km$distance_km[5] ~ "Finish",
+    ),
+    .before = distance_km
   )
 
-p <- ggplot(fw_interpolated, aes(x = distance_km, y = name, group = name)) +
-  geom_point(aes(color = name), size = 4) +
+p <-
+  ggplot(fw_interpolated, aes(x = distance_km, y = name, group = name)) +
+  # geom_point(aes(color = name), size = 4) +
+  geom_image(aes(image = path), size = .1) +
+  scale_x_continuous(
+    breaks = fw_section_km$distance_km, # Set the x-axis breaks
+    labels = fw_section_km$sector # Set the labels for those breaks
+  ) +
   labs(
     title = "Fort William",
-    x = "Distance",
+    x = NULL,
     y = "Racer"
   ) +
   theme_minimal() +
   theme(
     panel.grid.major.y = element_blank(),
-    panel.grid.minor.x = element_blank()
+    panel.grid.minor.x = element_blank(),
+    legend.position = "none"
   ) +
   transition_time(time) +
   ease_aes("linear") +
@@ -531,15 +556,24 @@ p <- ggplot(fw_interpolated, aes(x = distance_km, y = name, group = name)) +
 animate(p, width = 800, height = 600, nframes = 150, fps = 20)
 
 # TODO:
-# - Add split lines on plot
-# - Remove x axis labels, marks, and major grid lines
-# - Add rider faces instead of points. Remove legend and colouring.
-# - Increase point/image size
-# - Add line/shadow/trail
-# - To make the difference in splits more dramatic, add scaling factor which
-#   slows down/speeds up different splits to make it more obvious who is
-#   leading/lagging for any given split
 # - Add text annotations as riders pass splits to show who is up/behind in
 #   red/green
 # - Shade or highlight important splits for certain riders and certain races
 #   (e.g., using geom_rect()) to draw the viewers eye.
+
+# - To make the difference in splits more dramatic, add scaling factor which
+#   slows down/speeds up different splits to make it more obvious who is
+#   leading/lagging for any given split
+sector_times <- fastest_possible_splits |>
+  slice_head(n = 5) |>
+  select(-event_name) |>
+  pivot_longer(!name, names_to = "sector", values_to = "time") |>
+  left_join(fw_section_km)
+
+sector_ranks <- sector_times |>
+  mutate(split = time - lag(time, default = 0), .by = name) |>
+  mutate(sector_rank = rank(split), .by = sector) |>
+  mutate(sector_rank = if_else(time == 0, 1, sector_rank))
+# Now, apply penalty factor depending upon sector_rank. But need to find a
+# method to ensure that overall ranks/finishing placements don't change after
+# applying penalty.

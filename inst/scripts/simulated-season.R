@@ -135,7 +135,8 @@ delta_all_wide <- bind_rows(delta_overall_subset, delta_season_subset) |>
 # - Insights:
 # - Dak and Finn had bad several bad performances.
 # - This table can be confusing, because it shows deltas, NOT ranks. It also has
-#   lots of missing data.
+#   lots of missing data. Perhaps we need to just cherry pick several races and
+#   make several simple tables/bump charts to tell a story?
 delta_all_wide |>
   gt::gt()
 

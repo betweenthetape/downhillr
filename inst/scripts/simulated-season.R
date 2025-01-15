@@ -77,7 +77,7 @@ simulated_season <- simulated_top_30_each_race |>
   rename(simulated_rank = position, simulated_points = points)
 
 simulated_overall <- simulated_season |>
-  summarise(simulated_points = sum(points), .by = name) |>
+  summarise(simulated_points = sum(simulated_points), .by = name) |>
   arrange(desc(simulated_points)) |>
   mutate(simulated_rank = row_number())
 
@@ -111,12 +111,33 @@ delta_season <-
   left_join(actual_season) |>
   mutate(delta = simulated_rank - actual_rank)
 
-# A GT table showing for each rider:
-# - Their overall simulated rank, actual rank, and delta score
-# - Under their overall performance, a breakdown per race, showing their deltas
-#   for each race
-# - Colour the delta column showing magnitude of change so the eye is drawn to
-#   key events.
+delta_overall_subset <- delta_overall |>
+  mutate(event_name = "Overall") |>
+  select(name, event_name, simulated_rank, actual_rank, delta)
+
+delta_season_subset <- delta_season |>
+  select(name, event_name, simulated_rank, actual_rank, delta)
+
+delta_all_wide <- bind_rows(delta_overall_subset, delta_season_subset) |>
+  select(-ends_with("_rank")) |>
+  pivot_wider(names_from = event_name, values_from = delta) |>
+  relocate(Overall, .after = "Val di Sole")
+
+# TODO:
+# - Add rider images
+# - Add colour palette
+# - Replace NA with "-" or Blank values or note
+# - Add title and subtitle/description describing what it does/how to read
+# - Remove "name" column header, it isn't needed
+# - Add formatting/styling
+# - Should this whole table just be a big bump chart?
+
+# - Insights:
+# - Dak and Finn had bad several bad performances.
+# - This table can be confusing, because it shows deltas, NOT ranks. It also has
+#   lots of missing data.
+delta_all_wide |>
+  gt::gt()
 
 # ------------------------------------------------------------------------------
 # Heat maps

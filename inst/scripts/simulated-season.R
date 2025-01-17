@@ -9,6 +9,7 @@ library(ggimage)
 library(ggtext)
 library(gganimate)
 library(glue)
+library(gt)
 
 # ------------------------------------------------------------------------------
 # Prepare data sets
@@ -119,26 +120,137 @@ delta_season_subset <- delta_season |>
   select(name, event_name, simulated_rank, actual_rank, delta)
 
 delta_all_wide <- bind_rows(delta_overall_subset, delta_season_subset) |>
-  select(-ends_with("_rank")) |>
-  pivot_wider(names_from = event_name, values_from = delta) |>
-  relocate(Overall, .after = "Val di Sole")
+  pivot_wider(
+    names_from = event_name, values_from = c(simulated_rank, actual_rank, delta)
+  ) |>
+  left_join(image_data)
 
 # TODO:
-# - Add rider images
 # - Add colour palette
-# - Replace NA with "-" or Blank values or note
 # - Add title and subtitle/description describing what it does/how to read
 # - Remove "name" column header, it isn't needed
 # - Add formatting/styling
-# - Should this whole table just be a big bump chart?
+# - Rather than display just numbers and a difference column, can we compute
+#   many tiny bump charts, per rider and per race, an embed these in with
+#   `ggplot_image` or `gtExtras::gt_plt_sparkline()`. These could be annotated
+#   to show results, and we could bold/colour the plots we want to draw the eye
+#   too differently.
 
 # - Insights:
 # - Dak and Finn had bad several bad performances.
+# - Fort William would have made virtually no difference to any rider. This is
+#   quite interesting, and is perhaps the race that best reflects pure speed.
 # - This table can be confusing, because it shows deltas, NOT ranks. It also has
 #   lots of missing data. Perhaps we need to just cherry pick several races and
 #   make several simple tables/bump charts to tell a story?
 delta_all_wide |>
-  gt::gt()
+  dplyr::select(
+    path, name,
+    "simulated_rank_Overall", "actual_rank_Overall", "delta_Overall",
+    "simulated_rank_Fort William", "actual_rank_Fort William", "delta_Fort William",
+    "simulated_rank_Bielsko-Biala", "actual_rank_Bielsko-Biala", "delta_Bielsko-Biala",
+    "simulated_rank_Leogang", "actual_rank_Leogang", "delta_Leogang",
+    "simulated_rank_Val di Sole", "actual_rank_Val di Sole", "delta_Val di Sole",
+    "simulated_rank_Les Gets", "actual_rank_Les Gets", "delta_Les Gets",
+    "simulated_rank_Loudenvielle", "actual_rank_Loudenvielle", "delta_Loudenvielle",
+    "simulated_rank_Mont-Sainte-Anne", "actual_rank_Mont-Sainte-Anne", "delta_Mont-Sainte-Anne"
+  ) |>
+  filter(simulated_rank_Overall <= 10) |>
+  gt() |>
+  cols_label("path" = "", "name" = "") |>
+  tab_spanner(
+    "Overall",
+    c("actual_rank_Overall", "simulated_rank_Overall", "delta_Overall")
+  ) |>
+  cols_label(
+    "actual_rank_Overall" = "Actual",
+    "simulated_rank_Overall" = "Simulated",
+    "delta_Overall" = "Difference"
+  ) |>
+  tab_spanner(
+    "Fort William",
+    c("actual_rank_Fort William", "simulated_rank_Fort William", "delta_Fort William")
+  ) |>
+  cols_label(
+    "actual_rank_Fort William" = "Actual",
+    "simulated_rank_Fort William" = "Simulated",
+    "delta_Fort William" = "Difference"
+  ) |>
+  tab_spanner(
+    "Bielsko-Biala",
+    c("actual_rank_Bielsko-Biala", "simulated_rank_Bielsko-Biala", "delta_Bielsko-Biala")
+  ) |>
+  cols_label(
+    "actual_rank_Bielsko-Biala" = "Actual",
+    "simulated_rank_Bielsko-Biala" = "Simulated",
+    "delta_Bielsko-Biala" = "Difference"
+  ) |>
+  tab_spanner(
+    "Leogang",
+    c("actual_rank_Leogang", "simulated_rank_Leogang", "delta_Leogang")
+  ) |>
+  cols_label(
+    "actual_rank_Leogang" = "Actual",
+    "simulated_rank_Leogang" = "Simulated",
+    "delta_Leogang" = "Difference"
+  ) |>
+  tab_spanner(
+    "Val di Sole",
+    c("actual_rank_Val di Sole", "simulated_rank_Val di Sole", "delta_Val di Sole")
+  ) |>
+  cols_label(
+    "actual_rank_Val di Sole" = "Actual",
+    "simulated_rank_Val di Sole" = "Simulated",
+    "delta_Val di Sole" = "Difference"
+  ) |>
+  tab_spanner(
+    "Les Gets",
+    c("actual_rank_Les Gets", "simulated_rank_Les Gets", "delta_Les Gets")
+  ) |>
+  cols_label(
+    "actual_rank_Les Gets" = "Actual",
+    "simulated_rank_Les Gets" = "Simulated",
+    "delta_Les Gets" = "Difference"
+  ) |>
+  tab_spanner(
+    "Loudenvielle",
+    c("actual_rank_Loudenvielle", "simulated_rank_Loudenvielle", "delta_Loudenvielle")
+  ) |>
+  cols_label(
+    "actual_rank_Loudenvielle" = "Actual",
+    "simulated_rank_Loudenvielle" = "Simulated",
+    "delta_Loudenvielle" = "Difference"
+  ) |>
+  tab_spanner(
+    "Mont-Sainte-Anne",
+    c("actual_rank_Mont-Sainte-Anne", "simulated_rank_Mont-Sainte-Anne", "delta_Mont-Sainte-Anne")
+  ) |>
+  cols_label(
+    "actual_rank_Mont-Sainte-Anne" = "Actual",
+    "simulated_rank_Mont-Sainte-Anne" = "Simulated",
+    "delta_Mont-Sainte-Anne" = "Difference"
+  ) |>
+  fmt_missing(
+    columns = everything(),
+    missing_text = "-"
+  ) |>
+  text_transform(
+    locations = cells_body(columns = path),
+    fn = function(path) {
+      local_image(
+        filename = path,
+        height = 75
+      )
+    }
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_spanners()
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = "name")
+  )
 
 # ------------------------------------------------------------------------------
 # Heat maps

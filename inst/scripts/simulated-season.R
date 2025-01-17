@@ -253,6 +253,30 @@ delta_all_wide |>
   ) |>
   opt_row_striping()
 
+
+# Spark lines don't work:
+tribble(
+  ~name, ~overall, ~bielko_biala, ~leogang,
+  "Loic", list(1, 1), list(2, 2), list(1, 1),
+  "Amaury", list(3, 2), list(5, 6), list(13, 6),
+  "Dakotah", list(9, 3), list(31, 17), list(14, 14)
+) |>
+  gt() |>
+  gt_plt_sparkline(overall, type = "default") |>
+  gt_plt_sparkline(bielko_biala, type = "points") |>
+  gt_plt_sparkline(leogang)
+
+# Instead we could try:
+# - For the overall plot distrubtions of results per rider for both simulated
+#   and actual, with a final score
+# - For each rider per race, plot a bar chart showing position (e.g., out of 20)
+#   This might have the down side of smaller bars looking like worse results
+# - Alternatively, just keep numbers and use colour shading for differences.
+#   Perhaps the difference col can be dropped and we just colour the simulated
+#   result col by the difference (but then 2x info in one cell might be
+#   confusing). Remember these tables should be fool proof.
+# - Rename "Difference" to a more obvious name? Position change?
+
 # ------------------------------------------------------------------------------
 # Heat maps
 # ------------------------------------------------------------------------------

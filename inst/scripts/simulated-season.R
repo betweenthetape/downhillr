@@ -250,7 +250,8 @@ delta_all_wide |>
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_body(columns = "name")
-  )
+  ) |>
+  opt_row_striping()
 
 # ------------------------------------------------------------------------------
 # Heat maps

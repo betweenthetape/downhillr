@@ -251,6 +251,18 @@ delta_all_wide |>
     style = cell_text(weight = "bold"),
     locations = cells_body(columns = "name")
   ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = starts_with("delta_"))
+  ) |>
+  data_color(
+    columns = starts_with("delta_"),
+    alpha = 1,
+    palette = c("red", "green"),
+    apply_to = "text" # Or "fill"
+    # Let's add a second fill to highlights we want to draw the eye to?
+    # Let's also make delta columns bold
+  ) |>
   opt_row_striping()
 
 
@@ -267,10 +279,9 @@ tribble(
   gtExtras::gt_plt_sparkline(leogang)
 
 # Instead we could try:
-# - For the overall plot distrubtions of results per rider for both simulated
-#   and actual, with a final score
-# - For each rider per race, plot a bar chart showing position (e.g., out of 20)
-#   This might have the down side of smaller bars looking like worse results
+# - Copy the distrubtion plots that are used to show male/female age distrubtions
+#   back-to-back, but instead have actual vs. simulated back-to-back? I think
+#   this will be too much information in a small space.
 # - Alternatively, just keep numbers and use colour shading for differences.
 #   Perhaps the difference col can be dropped and we just colour the simulated
 #   result col by the difference (but then 2x info in one cell might be

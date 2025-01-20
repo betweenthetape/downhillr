@@ -262,9 +262,9 @@ tribble(
   "Dakotah", list(9, 3), list(31, 17), list(14, 14)
 ) |>
   gt() |>
-  gt_plt_sparkline(overall, type = "default") |>
-  gt_plt_sparkline(bielko_biala, type = "points") |>
-  gt_plt_sparkline(leogang)
+  gtExtras::gt_plt_sparkline(overall, type = "default") |>
+  gtExtras::gt_plt_sparkline(bielko_biala, type = "points") |>
+  gtExtras::gt_plt_sparkline(leogang)
 
 # Instead we could try:
 # - For the overall plot distrubtions of results per rider for both simulated

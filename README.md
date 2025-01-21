@@ -16,5 +16,5 @@ You can install the development version from
 [GitHub](https://github.com/) with:
 
 ```r
-pak::pak("MikeJohnPage/downhillr")
+pak::pak("betweenthetape/downhillr")
 ```

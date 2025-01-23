@@ -186,8 +186,14 @@ ggplot() +
 
 # ------------------------------------------------------------------------------
 # Delta scores per season and overall
-# Then we can break down the season by race, highlighting which races were
-# pivotal to the story,
+# - Then we can break down the season by race, highlighting which races were
+#   pivotal to the story
+# - Insights for title and story text:
+#   - Dak should have won Les Gets, we all knew this, but the data confirms it.
+#   - Troy and Ronan show incredible consistency. They find their pace, and
+#     show little variation. Impressive. Good bets for fantasy league for
+#     consistent points.
+#   -
 # ------------------------------------------------------------------------------
 # E.g., a delta of -6 means they ranked 6 places below their potential. A delta
 # of +2 means they ranked 2 places higher than their raw speed alone would
@@ -216,23 +222,18 @@ delta_all_wide <- bind_rows(delta_overall_subset, delta_season_subset) |>
   left_join(image_data)
 
 # TODO:
-# - Add colour palette
 # - Add title and subtitle/description describing what it does/how to read
-# - Remove "name" column header, it isn't needed
-# - Add formatting/styling
+# - Add formatting/styling:
+#   - We need dotted verticle lines between each race so it is easy when
+#     scanning
+#   - We need better color scales, and to use a fill on the cells we want to
+#     draw the eye to.
 # - Rather than display just numbers and a difference column, can we compute
 #   many tiny bump charts, per rider and per race, an embed these in with
-#   `ggplot_image` or `gtExtras::gt_plt_sparkline()`. These could be annotated
-#   to show results, and we could bold/colour the plots we want to draw the eye
-#   too differently.
-
-# - Insights:
-# - Dak and Finn had bad several bad performances.
-# - Fort William would have made virtually no difference to any rider. This is
-#   quite interesting, and is perhaps the race that best reflects pure speed.
-# - This table can be confusing, because it shows deltas, NOT ranks. It also has
-#   lots of missing data. Perhaps we need to just cherry pick several races and
-#   make several simple tables/bump charts to tell a story?
+#   `ggplot_image` or `gtExtras::gt_plt_sparkline()`. Each bump chart would have
+#    to show all lines in grey for each rider for the race, with the rider
+#    with a blank line. We could then leave the difference column, and add ranks
+#    at either side of the bump chart?
 delta_all_wide |>
   dplyr::select(
     path, name,
@@ -355,19 +356,6 @@ delta_all_wide |>
   ) |>
   opt_row_striping()
 
-
-# Spark lines don't work:
-tribble(
-  ~name, ~overall, ~bielko_biala, ~leogang,
-  "Loic", list(1, 1), list(2, 2), list(1, 1),
-  "Amaury", list(3, 2), list(5, 6), list(13, 6),
-  "Dakotah", list(9, 3), list(31, 17), list(14, 14)
-) |>
-  gt() |>
-  gtExtras::gt_plt_sparkline(overall, type = "default") |>
-  gtExtras::gt_plt_sparkline(bielko_biala, type = "points") |>
-  gtExtras::gt_plt_sparkline(leogang)
-
 # Instead we could try:
 # - Copy the distrubtion plots that are used to show male/female age distrubtions
 #   back-to-back, but instead have actual vs. simulated back-to-back? I think
@@ -393,3 +381,11 @@ tribble(
 # ------------------------------------------------------------------------------
 # Supplement heat maps with gganimate races to create drama of the simulated
 # season.
+
+# ------------------------------------------------------------------------------
+# Closing notes
+# - We need to rerun this analysis with the elite women.
+# - There is too much data to also do juniors. We could recreate all data/plots
+#   and host them as interactive graphics (using crosstalk) for people to
+#   explore on betweenthetape.com. This would be a good use of the website.
+# ------------------------------------------------------------------------------

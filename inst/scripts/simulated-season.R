@@ -93,11 +93,101 @@ actual_overall <- world_cup_24_elite_men_results |>
 
 # ------------------------------------------------------------------------------
 # Bump plot
+# Start the narrative by showing how the top of table would have changed in a
+# simulated season
 # ------------------------------------------------------------------------------
-# Show bump plot here to start the narrative about the overall season
+bump_data_overall <- simulated_overall |>
+  left_join(actual_overall) |>
+  slice(1:10) |>
+  select(-ends_with("_points")) |>
+  pivot_longer(
+    ends_with("_rank"),
+    names_to = "season", values_to = "rank"
+  ) |>
+  mutate(season = str_remove_all(season, "_rank$")) |>
+  mutate(
+    season = if_else(
+      season == "actual", "Actual \noverall rank", "Simulated \noverall rank"
+    )
+  ) |>
+  mutate(color = case_when(
+    name == "Loic Bruni" ~ "#57106e",
+    name == "Dakotah Norton" ~ "#f98e09",
+    TRUE ~ "#E7E7E7"
+  )) |>
+  left_join(image_data)
+
+ggplot() +
+  geom_bump(
+    aes(season, rank, group = name, color = I(color)),
+    data = bump_data_overall,
+    linewidth = 1.5
+  ) +
+  geom_image(
+    data = bump_data_overall,
+    aes(season, rank, image = path)
+  ) +
+  scale_y_reverse() +
+  theme_minimal() +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_textbox_simple(
+      halign = 0.5, margin = margin(b = 10, t = 15), size = 22
+    ),
+    plot.subtitle = element_textbox_simple(
+      halign = 0,
+      hjust = 0.5,
+      margin = margin(b = 10),
+      width = grid::unit(6, "in"),
+      size = 11, color = "#424242"
+    ),
+    axis.text.x = element_text(size = 10, vjust = 2),
+    axis.ticks = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background = element_blank(),
+    panel.grid = element_blank(),
+    axis.title = element_blank()
+  ) +
+  geom_richtext(
+    data = filter(bump_data_overall, season == "Actual \noverall rank"),
+    hjust = 1,
+    nudge_x = -0.1,
+    mapping = aes(
+      x = season,
+      y = rank,
+      label.size = NA,
+      family = "sans",
+      label = glue("<span style='font-size:14px;'>{name}<span style='color:white;'>...</span><span style='font-size:16px;'>**{rank}**</span></span>")
+    )
+  ) +
+  geom_richtext(
+    data = filter(bump_data_overall, season == "Simulated \noverall rank"),
+    nudge_x = 0.1,
+    hjust = 0,
+    family = "sans",
+    mapping = aes(
+      x = season,
+      y = rank,
+      label.size = NA,
+      label = glue("<span style='font-size:14px;'><span style='font-size:16px;'>**{rank}**</span><span style='color:white;'>...</span>{name}</span>")
+    )
+  ) +
+  labs(
+    title = "<span>**WHAT COULD HAVE BEEN**</span>",
+    subtitle = "<span> Each riders fastest splits from across each race weekend
+    were combined to simulate their fastest hypothetical run. These runs were
+    then rescored to created a new overall simulated leaderboard. Even in this
+    simulated world, <span style='color:#57106e;background:red;'>**Loic
+    Bruni**</span> reigns king with unmatched speed. Other riders like <span
+    style='color:#f98e09;'>**Dakotah Norton**</span> fall up to 6 places
+    behind their potential, leaving time on the track. Could these riders be a
+    good bet next season?</span>"
+  )
 
 # ------------------------------------------------------------------------------
 # Delta scores per season and overall
+# Then we can break down the season by race, highlighting which races were
+# pivotal to the story,
 # ------------------------------------------------------------------------------
 # E.g., a delta of -6 means they ranked 6 places below their potential. A delta
 # of +2 means they ranked 2 places higher than their raw speed alone would
@@ -290,6 +380,8 @@ tribble(
 
 # ------------------------------------------------------------------------------
 # Heat maps
+# Then, we can break down the pivotal races even further by showing which
+# sections of track proved troublesome.
 # ------------------------------------------------------------------------------
 # Next, draw heat maps using red/green across split times to show how races
 # would have unfolded in the simulated season. Draw attention to where this is
@@ -297,6 +389,7 @@ tribble(
 
 # ------------------------------------------------------------------------------
 # gganimate races
+# We can simulate the pivotal races/splits using gganimate races.
 # ------------------------------------------------------------------------------
 # Supplement heat maps with gganimate races to create drama of the simulated
 # season.

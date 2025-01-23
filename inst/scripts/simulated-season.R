@@ -96,6 +96,20 @@ actual_overall <- world_cup_24_elite_men_results |>
 # Start the narrative by showing how the top of table would have changed in a
 # simulated season
 # ------------------------------------------------------------------------------
+# Keep seasonal data incase useful down the line
+bump_data_season <- simulated_season |>
+  left_join(actual_season) |>
+  select(name, event_name, ends_with("_rank")) |>
+  filter(name %in% simulated_overall$name[1:10]) |>
+  pivot_longer(ends_with("_rank"), names_to = "season", values_to = "rank") |>
+  mutate(
+    season = if_else(
+      season == "actual_rank",
+      "Actual \nrank",
+      "Simulated \nrank"
+    )
+  )
+
 bump_data_overall <- simulated_overall |>
   left_join(actual_overall) |>
   slice(1:10) |>
@@ -104,10 +118,11 @@ bump_data_overall <- simulated_overall |>
     ends_with("_rank"),
     names_to = "season", values_to = "rank"
   ) |>
-  mutate(season = str_remove_all(season, "_rank$")) |>
   mutate(
     season = if_else(
-      season == "actual", "Actual \noverall rank", "Simulated \noverall rank"
+      season == "actual_rank",
+      "Actual \noverall rank",
+      "Simulated \noverall rank"
     )
   ) |>
   mutate(color = case_when(

@@ -239,16 +239,17 @@ delta_all_wide <- bind_rows(delta_overall_subset, delta_season_subset) |>
 # TODO:
 # - Add title and subtitle/description describing what it does/how to read
 # - Add formatting/styling:
-#   - We need dotted verticle lines between each race so it is easy when
-#     scanning
-#   - We need better color scales, and to use a fill on the cells we want to
-#     draw the eye to.
-# - Rather than display just numbers and a difference column, can we compute
-#   many tiny bump charts, per rider and per race, an embed these in with
-#   `ggplot_image` or `gtExtras::gt_plt_sparkline()`. Each bump chart would have
-#    to show all lines in grey for each rider for the race, with the rider
-#    with a blank line. We could then leave the difference column, and add ranks
-#    at either side of the bump chart?
+#   - I think we should just use a binary colour scale of Red/Green if it is
+#     worse/better, and then use cell shading to highlight partiular results.
+#     This way we can use a title with red and green text to explain the two
+#     simple colours, and use background shading in the title to explain that we
+#     are drawing attention to certain results. This way we need no legend for
+#     the colour scale
+# - In addition to the table, how about copying the distrubtion plots that are
+#   used to show male/female age distrubtions back-to-back, but instead have
+#   actual vs. simulated back-to-back? This could then be faceted by race. Would
+#   this be a nice way to visualise a riders virtual vs actual season in a
+#   single plot?
 delta_all_wide |>
   dplyr::select(
     path, name,
@@ -361,25 +362,27 @@ delta_all_wide |>
     style = cell_text(weight = "bold"),
     locations = cells_body(columns = starts_with("delta_"))
   ) |>
+  tab_style(
+    style = cell_borders(sides = "left", style = "dashed", color = "#d3d3d3"),
+    locations = cells_body(columns = starts_with("actual_"))
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = !name)
+  ) |>
   data_color(
     columns = starts_with("delta_"),
     alpha = 1,
-    palette = c("red", "green"),
-    apply_to = "text" # Or "fill"
-    # Let's add a second fill to highlights we want to draw the eye to?
-    # Let's also make delta columns bold
+    apply_to = "text",
+    fn = \(x) {
+      case_when(
+        x >= 0 ~ "forestgreen",
+        x < 0 ~ "red",
+        is.na(x) ~ "black"
+      )
+    }
   ) |>
   opt_row_striping()
-
-# Instead we could try:
-# - Copy the distrubtion plots that are used to show male/female age distrubtions
-#   back-to-back, but instead have actual vs. simulated back-to-back? I think
-#   this will be too much information in a small space.
-# - Alternatively, just keep numbers and use colour shading for differences.
-#   Perhaps the difference col can be dropped and we just colour the simulated
-#   result col by the difference (but then 2x info in one cell might be
-#   confusing). Remember these tables should be fool proof.
-# - Rename "Difference" to a more obvious name? Position change?
 
 # ------------------------------------------------------------------------------
 # Heat maps

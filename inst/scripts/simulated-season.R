@@ -27,6 +27,13 @@ image_data <- tibble(path = dir_ls("inst/rider-images")) |>
 
 # ------------------------------------------------------------------------------
 # Calculate actual vs Possible times
+#
+# TODO: to validate the use of fastest possible times as an indicator of
+#       potential performance, the percentage of fastest possible times that
+#       come from finals should be calculated. Providing this number isn't high
+#       (e.g., 80/90%) it should indicate that riders don't just achieve their
+#       fastest splits in finals, and it is useful to look at these possible
+#       scenarios.
 # ------------------------------------------------------------------------------
 fastest_acutal_times <- world_cup_24_elite_men_results |>
   summarise(

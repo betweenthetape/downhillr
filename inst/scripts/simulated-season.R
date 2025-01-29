@@ -18,7 +18,8 @@ world_cup_24_elite_men_results <- world_cup_24_elite_men_results |>
   mutate(name = str_to_title(name)) |>
   mutate(
     name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
-  )
+  ) |>
+  mutate(across(everything(), ~ if_else(is.infinite(.x), NA, .x)))
 
 image_data <- tibble(path = dir_ls("inst/rider-images")) |>
   mutate(name = str_remove(path, "^inst/rider-images/")) |>
@@ -26,21 +27,26 @@ image_data <- tibble(path = dir_ls("inst/rider-images")) |>
   mutate(name = str_replace(name, "(?<=[a-z])(?=[A-Z])", " "))
 
 # ------------------------------------------------------------------------------
-# Calculate actual vs Possible times
-#
-# TODO: to validate the use of fastest possible times as an indicator of
-#       potential performance, the percentage of fastest possible times that
-#       come from finals should be calculated. Providing this number isn't high
-#       (e.g., 80/90%) it should indicate that riders don't just achieve their
-#       fastest splits in finals, and it is useful to look at these possible
-#       scenarios.
+# Fastest actual times
 # ------------------------------------------------------------------------------
-fastest_acutal_times <- world_cup_24_elite_men_results |>
+fastest_times_weekend <- world_cup_24_elite_men_results |>
   summarise(
-    fastest_actual_time = min(time, na.rm = TRUE),
+    fastest_time_weekend = min(time, na.rm = TRUE),
     .by = c(name, event_name)
-  )
+  ) |>
+  filter(!is.infinite(fastest_time_weekend))
 
+fastest_times_final <- world_cup_24_elite_men_results |>
+  filter(round_type == "Final") |>
+  summarise(
+    fastest_time_finals = min(time, na.rm = TRUE),
+    .by = c(name, event_name)
+  ) |>
+  filter(!is.infinite(fastest_time_finals))
+
+# ------------------------------------------------------------------------------
+# Fastest Possible times
+# ------------------------------------------------------------------------------
 fastest_possible_sections <- world_cup_24_elite_men_results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
   mutate(
@@ -53,12 +59,13 @@ fastest_possible_sections <- world_cup_24_elite_men_results |>
   summarise(
     across(starts_with("section_"), ~ min(.x, na.rm = TRUE)),
     .by = c(name, event_name)
-  )
+  ) |>
+  filter(if_all(starts_with("section_"), ~ !is.infinite(.x)))
 
-fastest_possible_times <- fastest_possible_sections |>
+fastest_times_possible <- fastest_possible_sections |>
   rowwise(name, event_name) |>
   summarise(
-    fastest_possible_time = sum(
+    fastest_time_possible = sum(
       c_across(starts_with("section_")),
       na.rm = TRUE
     ),
@@ -66,11 +73,110 @@ fastest_possible_times <- fastest_possible_sections |>
   )
 
 # ------------------------------------------------------------------------------
+# Validate fastest possible time as a metric
+# For write-up: Make tables GT tables.
+# ------------------------------------------------------------------------------
+fastest_times_all <- fastest_times_weekend |>
+  left_join(fastest_times_final) |>
+  left_join(fastest_times_possible) |>
+  mutate(
+    possible_faster_than_weekend = if_else(
+      fastest_time_possible < fastest_time_weekend, TRUE, FALSE
+    )
+  ) |>
+  mutate(
+    possible_faster_than_finals = if_else(
+      fastest_time_possible < fastest_time_finals, TRUE, FALSE
+    )
+  )
+
+fastest_times_all |>
+  filter(!is.na(possible_faster_than_weekend)) |>
+  summarise(
+    possible_faster_than_weekend = sum(
+      possible_faster_than_weekend,
+      na.rm = TRUE
+    ),
+    total_riders = n(),
+    .by = event_name
+  ) |>
+  mutate(percentage_riders = possible_faster_than_weekend / total_riders * 100)
+
+fastest_times_all |>
+  filter(!is.na(possible_faster_than_finals)) |>
+  summarise(
+    possible_faster_than_finals = sum(
+      possible_faster_than_finals,
+      na.rm = TRUE
+    ),
+    total_riders = n(),
+    .by = event_name
+  ) |>
+  mutate(percentage_riders = possible_faster_than_finals / total_riders * 100)
+
+# Insights:
+# - Remove riders with incomplete data (e.g., didn't complete a full run)
+# - Fastest time of weekend is preferred over finals, because it takes into
+#   consideration track conditions and weather. For example, for
+#   Mont-Sainte-Anne we can see that weather deterioated over the weekend, so it
+#   is no surprised that finals were slower:
+world_cup_24_elite_men_results |>
+  distinct(
+    event_name,
+    round_type,
+    round_category,
+    metadata_weather,
+    metadata_temp_deg_c
+  ) |>
+  tail(3)
+
+# - For fastest time of the weekend, across all tracks, an average of 29.6% of
+#   riders could have acheived a faster time than their fastest run of the
+#   weekend. This inisght also hints in the other direction, that ~70% of riders
+#   are able to piece together their fastest run in a single run. Who are they?
+fastest_times_all |>
+  filter(!is.na(possible_faster_than_weekend)) |>
+  summarise(
+    possible_faster_than_weekend = sum(
+      possible_faster_than_weekend,
+      na.rm = TRUE
+    ),
+    total_races_completed = n(),
+    .by = name
+  ) |>
+  mutate(percentage_races_time_left = possible_faster_than_weekend / total_races_completed * 100) |>
+  arrange(desc(percentage_races_time_left)) |>
+  View()
+
+# Insight:
+# - It is very surprising to see Bruni in position 11. The overall champ still
+#   had time to play with.
+
+fastest_times_all |>
+  filter(!is.na(possible_faster_than_finals)) |>
+  summarise(
+    possible_faster_than_finals = sum(
+      possible_faster_than_finals,
+      na.rm = TRUE
+    ),
+    total_races_completed = n(),
+    .by = name
+  ) |>
+  mutate(percentage_races_time_left = possible_faster_than_finals / total_races_completed * 100) |>
+  arrange(desc(percentage_races_time_left))
+
+# Insight:
+# - Again, it is better to not use finals results for a comparison because it
+#   doesn't take into account weather and track conditions. It is unsurprising
+#   that the percentages are higher here. For the write-up, perhaps just present
+#   fastet of weekend comparison with a note that about why finals isn't used.
+
+# ------------------------------------------------------------------------------
 # Simulate season
 # ------------------------------------------------------------------------------
-simulated_top_30_each_race <- fastest_possible_times |>
+simulated_top_30_each_race <- fastest_times_possible |>
   group_by(event_name) |>
-  arrange(fastest_possible_time, .by_group = TRUE) |>
+  arrange(fastest_time_possible, .by_group = TRUE) |>
   slice_head(n = 30) |>
   mutate(position = row_number()) |>
   ungroup()

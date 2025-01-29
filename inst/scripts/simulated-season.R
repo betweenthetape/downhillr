@@ -46,6 +46,14 @@ fastest_times_final <- world_cup_24_elite_men_results |>
 
 # ------------------------------------------------------------------------------
 # Fastest Possible times
+#
+# Notes:
+# - Start write-up introducing the idea of simulating a riders fastest race run
+# - Probably best to not show times at this point, as they are meaningless
+#   without a comparison (which comes later)
+# - Introduce why we would want to do this: see which riders left time on the
+#   track and has more potential to give. See who is consistent. See which
+#   tracks and sections proved most troublesome in the series.
 # ------------------------------------------------------------------------------
 fastest_possible_sections <- world_cup_24_elite_men_results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
@@ -74,7 +82,13 @@ fastest_times_possible <- fastest_possible_sections |>
 
 # ------------------------------------------------------------------------------
 # Validate fastest possible time as a metric
-# For write-up: Make tables GT tables.
+#
+# Notes:
+# - Next, summary stats showing which races and riders had the most time left on
+#   the track when using simulated race runs.
+# - Just use comparison with fastest weekend time as this takes into
+#   consideration changing weather and track conditions. See notes in this
+#   section for more details.
 # ------------------------------------------------------------------------------
 fastest_times_all <- fastest_times_weekend |>
   left_join(fastest_times_final) |>
@@ -120,6 +134,7 @@ fastest_times_all |>
 #   consideration track conditions and weather. For example, for
 #   Mont-Sainte-Anne we can see that weather deterioated over the weekend, so it
 #   is no surprised that finals were slower:
+
 world_cup_24_elite_men_results |>
   distinct(
     event_name,
@@ -134,6 +149,7 @@ world_cup_24_elite_men_results |>
 #   riders could have acheived a faster time than their fastest run of the
 #   weekend. This inisght also hints in the other direction, that ~70% of riders
 #   are able to piece together their fastest run in a single run. Who are they?
+
 fastest_times_all |>
   filter(!is.na(possible_faster_than_weekend)) |>
   summarise(
@@ -144,9 +160,11 @@ fastest_times_all |>
     total_races_completed = n(),
     .by = name
   ) |>
-  mutate(percentage_races_time_left = possible_faster_than_weekend / total_races_completed * 100) |>
-  arrange(desc(percentage_races_time_left)) |>
-  View()
+  mutate(
+    percentage_races_time_left = possible_faster_than_weekend /
+      total_races_completed * 100
+  ) |>
+  arrange(desc(percentage_races_time_left))
 
 # Insight:
 # - It is very surprising to see Bruni in position 11. The overall champ still
@@ -162,7 +180,10 @@ fastest_times_all |>
     total_races_completed = n(),
     .by = name
   ) |>
-  mutate(percentage_races_time_left = possible_faster_than_finals / total_races_completed * 100) |>
+  mutate(
+    percentage_races_time_left = possible_faster_than_finals /
+      total_races_completed * 100
+  ) |>
   arrange(desc(percentage_races_time_left))
 
 # Insight:
@@ -206,8 +227,10 @@ actual_overall <- world_cup_24_elite_men_results |>
 
 # ------------------------------------------------------------------------------
 # Bump plot
-# Start the narrative by showing how the top of table would have changed in a
-# simulated season
+#
+# Notes:
+# - Start the narrative by showing how the top of table would have changed in a
+#   simulated season
 # ------------------------------------------------------------------------------
 # Keep seasonal data incase useful down the line
 bump_data_season <- simulated_season |>
@@ -314,14 +337,16 @@ ggplot() +
 
 # ------------------------------------------------------------------------------
 # Delta scores per season and overall
+#
+# Notes:
 # - Then we can break down the season by race, highlighting which races were
 #   pivotal to the story
-# - Insights for title and story text:
-#   - Dak should have won Les Gets, we all knew this, but the data confirms it.
-#   - Troy and Ronan show incredible consistency. They find their pace, and
-#     show little variation. Impressive. Good bets for fantasy league for
-#     consistent points.
-#   -
+# - Insights for title and story text (TODO: highlight these cells in the
+#   table):
+#   - Dak could have won Les Gets, we all knew this, but the data confirms it.
+#   - Troy and Ronan show incredible consistency. They find their pace, and show
+#     little variation. Impressive. Good bets for fantasy league for consistent
+#     points.
 # ------------------------------------------------------------------------------
 # E.g., a delta of -6 means they ranked 6 places below their potential. A delta
 # of +2 means they ranked 2 places higher than their raw speed alone would

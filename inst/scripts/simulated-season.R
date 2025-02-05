@@ -333,13 +333,13 @@ ggplot() +
   labs(
     title = "<span>**WHAT COULD HAVE BEEN**</span>",
     subtitle = "<span> Each riders fastest splits from across each race weekend
-    were combined to simulate their fastest hypothetical run. These runs were
-    then rescored to created a new overall simulated leaderboard. Even in this
-    simulated world, <span style='color:#57106e;background:red;'>**Loic
+    were combined to simulate their fastest hypothetical runs. These runs were
+    then rescored to create a new overall simulated leaderboard. Even in this
+    simulated world, <span style='color:#57106e;'>**Loic
     Bruni**</span> reigns king with unmatched speed. Other riders like <span
-    style='color:#f98e09;'>**Dakotah Norton**</span> fall up to 6 places
-    behind their potential, leaving time on the track. Could these riders be a
-    good bet next season?</span>"
+    style='color:#f98e09;'>**Dakotah Norton**</span> climb up to 6 places,
+    showing they still left time left on the hill. Could these riders be a good
+    bet next season?</span>"
   )
 
 # ------------------------------------------------------------------------------
@@ -408,6 +408,7 @@ delta_all_wide |>
     "simulated_rank_Mont-Sainte-Anne", "actual_rank_Mont-Sainte-Anne", "delta_Mont-Sainte-Anne"
   ) |>
   filter(simulated_rank_Overall <= 10) |>
+  arrange(actual_rank_Overall) |>
   gt() |>
   cols_label("path" = "", "name" = "") |>
   tab_spanner(
@@ -515,6 +516,119 @@ delta_all_wide |>
     style = cell_text(align = "center"),
     locations = cells_body(columns = !name)
   ) |>
+  opt_row_striping() |>
+  data_color(
+    columns = ends_with("_rank_Loudenvielle"),
+    rows = name == "Loic Bruni",
+    palette = "#7fb7db", # Jersey stripe colour
+  ) |>
+  tab_style(
+    style = cell_borders(
+      sides = c("left", "top", "bottom"), style = "solid", color = "#3c3737"
+    ),
+    locations = cells_body(
+      columns = "actual_rank_Loudenvielle",
+      rows = name == "Loic Bruni"
+    )
+  ) |>
+  tab_style(
+    style = cell_borders(
+      sides = c("right", "top", "bottom"), style = "solid", color = "#3c3737"
+    ),
+    locations = cells_body(
+      columns = "simulated_rank_Loudenvielle",
+      rows = name == "Loic Bruni"
+    )
+  ) |>
+  data_color(
+    columns = ends_with("_rank_Les Gets"),
+    rows = name == "Dakotah Norton",
+    palette = "#f3d39d", # Hat colour
+    alpha = .7
+  ) |>
+  tab_style(
+    style = cell_borders(
+      sides = c("left", "top", "bottom"), style = "solid", color = "#3c3737"
+    ),
+    locations = cells_body(
+      columns = "actual_rank_Les Gets",
+      rows = name == "Dakotah Norton"
+    )
+  ) |>
+  tab_style(
+    style = cell_borders(
+      sides = c("right", "top", "bottom"), style = "solid", color = "#3c3737"
+    ),
+    locations = cells_body(
+      columns = "simulated_rank_Les Gets",
+      rows = name == "Dakotah Norton"
+    )
+  ) |>
+  data_color(
+    columns = ends_with("delta_Fort William"),
+    palette = "#d9d9d9",
+    alpha = .7
+  ) |>
+  tab_style(
+    style = cell_borders(
+      sides = c("left"), style = "solid", color = "#3c3737"
+    ),
+    locations = cells_body(
+      columns = "delta_Fort William",
+    )
+  ) |>
+  tab_style(
+    style = cell_borders(
+      sides = c("right"), style = "solid", color = "#3c3737"
+    ),
+    locations = cells_body(
+      columns = "delta_Fort William"
+    )
+  ) |>
+  tab_style(
+    style = cell_borders(
+      sides = c("top"), style = "solid", color = "#3c3737"
+    ),
+    locations = cells_body(
+      columns = "delta_Fort William",
+      rows = name == "Loic Bruni"
+    )
+  ) |>
+  tab_style(
+    style = cell_borders(
+      sides = c("bottom"), style = "solid", color = "#3c3737"
+    ),
+    locations = cells_body(
+      columns = "delta_Fort William",
+      rows = name == "Loris Vergier"
+    )
+  ) |>
+  data_color(
+    columns = starts_with("delta_") & !delta_Loudenvielle,
+    rows = name == "Troy Brosnan",
+    palette = "#1daa28", # Jersey colour
+    alpha = .5
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "all", style = "solid", color = "#3c3737"),
+    locations = cells_body(
+      columns = starts_with("delta_") & !delta_Loudenvielle,
+      rows = name == "Troy Brosnan"
+    )
+  ) |>
+  data_color(
+    columns = starts_with("delta_"),
+    rows = name == "Ronan Dunne",
+    palette = "#00007f", # Jersey colour
+    alpha = .3
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "all", style = "solid", color = "#3c3737"),
+    locations = cells_body(
+      columns = starts_with("delta_"),
+      rows = name == "Ronan Dunne"
+    )
+  ) |>
   data_color(
     columns = starts_with("delta_"),
     alpha = 1,
@@ -527,7 +641,29 @@ delta_all_wide |>
       )
     }
   ) |>
-  opt_row_striping()
+  tab_header(
+    title = md("## Simulated Results Table"),
+    subtitle = md(
+      "For each race of the season, we can we see the
+      actual result, simulated result, and the difference between the two.
+      A negative difference,
+      <span style='color:red;'>**shown in red**</span>,
+      means their actual result was slower than their potential. Some riders
+      such as
+      <span style='background:rgba(29, 170, 40, 0.5); border: 1px solid #3c3737; padding: 1px;'>**Troy Brosnan**</span>
+      and
+      <span style='background:rgba(0, 0, 127, .3); border: 1px solid #3c3737; padding: 1px;'>**Ronan Dunne**</span>
+      demonstrate impressive consistency across the season. Might these be a good bet for this years Vital fantasy league?
+      In only two races,
+      <span style='background:rgba(127, 183, 219, .7); border: 1px solid #3c3737; padding: 1px;'>**Loudenvielle**</span>
+      and
+      <span style='background:rgba(243, 211, 157, .7); border: 1px solid #3c3737; padding: 1px;'>**Les Gets**</span>
+      might we have seen a different winner.
+      <span style='background:rgba(217, 217, 217, .7); border: 1px solid #3c3737; padding: 1px;'>**Fort William**</span>
+      was the only race where every rider in the top 10 was riding at their potential for that race.
+      "
+    )
+  )
 
 # ------------------------------------------------------------------------------
 # Heat maps

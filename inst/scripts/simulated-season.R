@@ -54,6 +54,8 @@ fastest_times_final <- world_cup_24_elite_men_results |>
 # - Introduce why we would want to do this: see which riders left time on the
 #   track and has more potential to give. See who is consistent. See which
 #   tracks and sections proved most troublesome in the series.
+# - Consider using GT here to build a table of actual times and splits for a
+#   single rider (Dak?) and show the differences between actual and simulated.
 # ------------------------------------------------------------------------------
 fastest_possible_sections <- world_cup_24_elite_men_results |>
   select(name, starts_with("split"), time, event_name, round_type) |>

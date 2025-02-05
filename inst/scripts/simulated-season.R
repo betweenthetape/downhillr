@@ -382,14 +382,6 @@ delta_all_wide <- bind_rows(delta_overall_subset, delta_season_subset) |>
   left_join(image_data)
 
 # TODO:
-# - Add title and subtitle/description describing what it does/how to read
-# - Add formatting/styling:
-#   - I think we should just use a binary colour scale of Red/Green if it is
-#     worse/better, and then use cell shading to highlight partiular results.
-#     This way we can use a title with red and green text to explain the two
-#     simple colours, and use background shading in the title to explain that we
-#     are drawing attention to certain results. This way we need no legend for
-#     the colour scale
 # - In addition to the table, how about copying the distrubtion plots that are
 #   used to show male/female age distrubtions back-to-back, but instead have
 #   actual vs. simulated back-to-back? This could then be faceted by race. Would
@@ -604,28 +596,56 @@ delta_all_wide |>
     )
   ) |>
   data_color(
-    columns = starts_with("delta_") & !delta_Loudenvielle,
+    columns = !c(path, name) & !ends_with("Loudenvielle"),
     rows = name == "Troy Brosnan",
     palette = "#1daa28", # Jersey colour
     alpha = .5
   ) |>
   tab_style(
-    style = cell_borders(sides = "all", style = "solid", color = "#3c3737"),
+    style = cell_borders(sides = c("top", "bottom"), style = "solid", color = "#3c3737"),
     locations = cells_body(
-      columns = starts_with("delta_") & !delta_Loudenvielle,
+      columns = !c(path, name),
+      rows = name == "Troy Brosnan"
+    )
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "left", style = "solid", color = "#3c3737"),
+    locations = cells_body(
+      columns = actual_rank_Overall,
+      rows = name == "Troy Brosnan"
+    )
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "right", style = "solid", color = "#3c3737"),
+    locations = cells_body(
+      columns = "delta_Mont-Sainte-Anne",
       rows = name == "Troy Brosnan"
     )
   ) |>
   data_color(
-    columns = starts_with("delta_"),
+    columns = !c(path, name),
     rows = name == "Ronan Dunne",
     palette = "#00007f", # Jersey colour
     alpha = .3
   ) |>
   tab_style(
-    style = cell_borders(sides = "all", style = "solid", color = "#3c3737"),
+    style = cell_borders(sides = c("top", "bottom"), style = "solid", color = "#3c3737"),
     locations = cells_body(
-      columns = starts_with("delta_"),
+      columns = !c(path, name),
+      rows = name == "Ronan Dunne"
+    )
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "left", style = "solid", color = "#3c3737"),
+    locations = cells_body(
+      columns = actual_rank_Overall,
+      rows = name == "Ronan Dunne"
+    )
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "right", style = "solid", color = "#3c3737"),
+    locations = cells_body(
+      columns = "delta_Mont-Sainte-Anne",
       rows = name == "Ronan Dunne"
     )
   ) |>
@@ -644,23 +664,25 @@ delta_all_wide |>
   tab_header(
     title = md("## Simulated Results Table"),
     subtitle = md(
-      "For each race of the season, we can we see the
+      "<span style='font-size: 1.2em; font-weight: 500; line-height: 1.5; display: inline-block; width: 80%; text-align: justify;'>
+      For each race of the season, we can we see the
       actual result, simulated result, and the difference between the two.
       A negative difference,
-      <span style='color:red;'>**shown in red**</span>,
+      <span style='color:red;'><b>shown in red</b></span>,
       means their actual result was slower than their potential. Some riders
       such as
-      <span style='background:rgba(29, 170, 40, 0.5); border: 1px solid #3c3737; padding: 1px;'>**Troy Brosnan**</span>
+      <span style='background:rgba(29, 170, 40, 0.5); border: 1px solid #3c3737; padding: 1px;'><b>Troy Brosnan</b></span>
       and
-      <span style='background:rgba(0, 0, 127, .3); border: 1px solid #3c3737; padding: 1px;'>**Ronan Dunne**</span>
+      <span style='background:rgba(0, 0, 127, .3); border: 1px solid #3c3737; padding: 1px;'><b>Ronan Dunne</b></span>
       demonstrate impressive consistency across the season. Might these be a good bet for this years Vital fantasy league?
       In only two races,
-      <span style='background:rgba(127, 183, 219, .7); border: 1px solid #3c3737; padding: 1px;'>**Loudenvielle**</span>
+      <span style='background:rgba(127, 183, 219, .7); border: 1px solid #3c3737; padding: 1px;'><b>Loudenvielle</b></span>
       and
-      <span style='background:rgba(243, 211, 157, .7); border: 1px solid #3c3737; padding: 1px;'>**Les Gets**</span>
+      <span style='background:rgba(243, 211, 157, .7); border: 1px solid #3c3737; padding: 1px;'><b>Les Gets</b></span>
       might we have seen a different winner.
-      <span style='background:rgba(217, 217, 217, .7); border: 1px solid #3c3737; padding: 1px;'>**Fort William**</span>
+      <span style='background:rgba(217, 217, 217, .7); border: 1px solid #3c3737; padding: 1px;'><b>Fort William</b></span>
       was the only race where every rider in the top 10 was riding at their potential for that race.
+      </span>
       "
     )
   )

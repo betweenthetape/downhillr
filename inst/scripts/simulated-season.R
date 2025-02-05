@@ -106,6 +106,7 @@ fastest_times_all <- fastest_times_weekend |>
     )
   )
 
+# Percentage riders where possible faster than weekend
 fastest_times_all |>
   filter(!is.na(possible_faster_than_weekend)) |>
   summarise(
@@ -118,6 +119,7 @@ fastest_times_all |>
   ) |>
   mutate(percentage_riders = possible_faster_than_weekend / total_riders * 100)
 
+# Percentage riders where possible faster than finals
 fastest_times_all |>
   filter(!is.na(possible_faster_than_finals)) |>
   summarise(
@@ -131,7 +133,7 @@ fastest_times_all |>
   mutate(percentage_riders = possible_faster_than_finals / total_riders * 100)
 
 # Insights:
-# - Remove riders with incomplete data (e.g., didn't complete a full run)
+# - Only includes riders with complete data (completed full runs)
 # - Fastest time of weekend is preferred over finals, because it takes into
 #   consideration track conditions and weather. For example, for
 #   Mont-Sainte-Anne we can see that weather deterioated over the weekend, so it
@@ -192,7 +194,10 @@ fastest_times_all |>
 # - Again, it is better to not use finals results for a comparison because it
 #   doesn't take into account weather and track conditions. It is unsurprising
 #   that the percentages are higher here. For the write-up, perhaps just present
-#   fastet of weekend comparison with a note that about why finals isn't used.
+#   fastest of weekend comparison with a note that about why finals isn't used.
+# - We need to be careful in this section to not present simulated season
+#   results, or take too much away from the next section. This section should be
+#   about validating the measure in the simplest way possible.
 
 # ------------------------------------------------------------------------------
 # Simulate season

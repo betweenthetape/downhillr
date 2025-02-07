@@ -729,7 +729,6 @@ fastest_possible_splits_ranked |>
     section_4_rank = "Split 4",
     section_5_rank = "Split 5"
   ) |>
-  tab_stubhead(label = "") |>
   data_color(
     columns = ends_with("_rank"),
     colors = scales::col_numeric(

@@ -698,7 +698,16 @@ delta_all_wide |>
 # riders position, then colour green for 1, and red for furthest back. We should
 # probably only do this for top 10 for controlled colour scale, or if above 10
 # positions back, all recevie the same colour to denote outside of top 10.
+world_cup_24_elite_men_results
 
+
+# ------------------------------------------------------------------------------
+# Split analysis
+# - From the heat maps, perform an analysis to determine which splits from which
+#   races were pivotal in the virtual season. Who smoked the rest of the field?
+#   Is there somewhere riders should be looking for next season (e.g., where
+#   top 10 were noticebly faster than the rest of the field?)
+# ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # gganimate races

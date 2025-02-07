@@ -688,7 +688,7 @@ delta_all_wide |>
   )
 
 # ------------------------------------------------------------------------------
-# Heat maps
+# Simulated heat maps
 # - Then, we can break down the pivotal races even further by showing which
 #   sections of track proved troublesome.
 # ------------------------------------------------------------------------------
@@ -698,7 +698,19 @@ delta_all_wide |>
 # riders position, then colour green for 1, and red for furthest back. We should
 # probably only do this for top 10 for controlled colour scale, or if above 10
 # positions back, all recevie the same colour to denote outside of top 10.
-world_cup_24_elite_men_results
+fastest_possible_splits_ranked <- fastest_possible_sections |>
+  rowwise() |>
+  mutate(
+    section_2 = section_1 + section_2,
+    section_3 = section_2 + section_3,
+    section_4 = section_3 + section_4,
+    section_5 = section_4 + section_5
+  ) |>
+  ungroup() |>
+  mutate(
+    across(starts_with("section_"), ~ rank(.x), .names = "{.col}_rank"),
+    .by = event_name
+  )
 
 
 # ------------------------------------------------------------------------------

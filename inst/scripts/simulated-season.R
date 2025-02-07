@@ -721,7 +721,8 @@ fastest_possible_splits_ranked |>
   select(name, event_name, ends_with("_rank")) |>
   group_by(event_name) |>
   arrange(section_5_rank, .by_group = TRUE) |>
-  gt(rowname_col = "name") |>
+  ungroup() |>
+  gt(rowname_col = "name", groupname_col = "event_name") |>
   cols_label(
     section_1_rank = "Split 1",
     section_2_rank = "Split 2",

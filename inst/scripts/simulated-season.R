@@ -669,7 +669,7 @@ delta_all_wide |>
       actual result, simulated result, and the difference between the two.
       A negative difference,
       <span style='color:red;'><b>shown in red</b></span>,
-      means their actual result was slower than their potential. Some riders
+      means their actual result was slower than their potential, simulated result. Some riders
       such as
       <span style='background:rgba(29, 170, 40, 0.5); border: 1px solid #3c3737; padding: 1px;'><b>Troy Brosnan</b></span>
       and
@@ -681,7 +681,7 @@ delta_all_wide |>
       <span style='background:rgba(243, 211, 157, .7); border: 1px solid #3c3737; padding: 1px;'><b>Les Gets</b></span>
       might we have seen a different winner.
       <span style='background:rgba(217, 217, 217, .7); border: 1px solid #3c3737; padding: 1px;'><b>Fort William</b></span>
-      was the only race where every rider in the top 10 was riding at their potential for that race.
+      was the only race where the simulated result for each rider was the same as their actual result.
       </span>
       "
     )

@@ -475,7 +475,7 @@ delta_all_wide |>
     "simulated_rank_Mont-Sainte-Anne" = "Simulated",
     "delta_Mont-Sainte-Anne" = "Difference"
   ) |>
-  fmt_missing(
+  sub_missing(
     columns = everything(),
     missing_text = "-"
   ) |>
@@ -689,12 +689,16 @@ delta_all_wide |>
 
 # ------------------------------------------------------------------------------
 # Heat maps
-# Then, we can break down the pivotal races even further by showing which
-# sections of track proved troublesome.
+# - Then, we can break down the pivotal races even further by showing which
+#   sections of track proved troublesome.
 # ------------------------------------------------------------------------------
 # Next, draw heat maps using red/green across split times to show how races
 # would have unfolded in the simulated season. Draw attention to where this is
-# significantly different from the actual season.
+# significantly different from the actual season. For each split, mark eeach
+# riders position, then colour green for 1, and red for furthest back. We should
+# probably only do this for top 10 for controlled colour scale, or if above 10
+# positions back, all recevie the same colour to denote outside of top 10.
+
 
 # ------------------------------------------------------------------------------
 # gganimate races

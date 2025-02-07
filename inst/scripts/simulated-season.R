@@ -716,6 +716,14 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
     .by = event_name
   )
 
+# TODO:
+# - Add rider images
+# - Style stub (e.g., indent rider names, or centre groupname_col above splits)
+# - Consider how we can use patchwork to reformat the layour into a grid so it
+#   isn't so long and will present nicer in an article
+# - Format colour scale correctly, how can the same rank for the same rider have
+#   two different shades?
+# - Find highlights and add catchy title/subtitle
 fastest_possible_splits_ranked |>
   filter(section_5_rank <= 10) |>
   select(name, event_name, ends_with("_rank")) |>

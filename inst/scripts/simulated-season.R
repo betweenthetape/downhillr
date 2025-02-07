@@ -708,10 +708,48 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
   ) |>
   ungroup() |>
   mutate(
-    across(starts_with("section_"), ~ rank(.x), .names = "{.col}_rank"),
+    across(
+      starts_with("section_"),
+      ~ rank(.x, ties.method = "min"),
+      .names = "{.col}_rank"
+    ),
     .by = event_name
   )
 
+fastest_possible_splits_ranked |>
+  filter(section_5_rank <= 10) |>
+  select(name, event_name, ends_with("_rank")) |>
+  group_by(event_name) |>
+  arrange(section_5_rank, .by_group = TRUE) |>
+  gt(rowname_col = "name") |>
+  cols_label(
+    section_1_rank = "Split 1",
+    section_2_rank = "Split 2",
+    section_3_rank = "Split 3",
+    section_4_rank = "Split 4",
+    section_5_rank = "Split 5"
+  ) |>
+  tab_stubhead(label = "") |>
+  data_color(
+    columns = ends_with("_rank"),
+    colors = scales::col_numeric(
+      palette = c("#4daf4a", "#ffffbf", "#e41a1c"),
+      domain = NULL
+    )
+  ) |>
+  tab_header(
+    title = "Race Split Rankings",
+    subtitle = "Rankings at each split (1 = fastest, colored green)"
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) |>
+  opt_row_striping() |>
+  tab_options(
+    table.font.size = px(12),
+    column_labels.font.weight = "bold"
+  )
 
 # ------------------------------------------------------------------------------
 # Split analysis

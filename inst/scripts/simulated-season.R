@@ -24,7 +24,16 @@ world_cup_24_elite_men_results <- world_cup_24_elite_men_results |>
 image_data <- tibble(path = dir_ls("inst/rider-images")) |>
   mutate(name = str_remove(path, "^inst/rider-images/")) |>
   mutate(name = str_remove(name, ".png$")) |>
-  mutate(name = str_replace(name, "(?<=[a-z])(?=[A-Z])", " "))
+  mutate(name = str_replace(name, "(?<=[a-z])(?=[A-Z])", " ")) |>
+  mutate(
+    name = case_when(
+      name == "Angel Suarez" ~ "Angel Alonso Suarez",
+      name == "Lachlan StevensMcNab" ~ "Lachlan Stevens-Mcnab",
+      name == "Oisin OCallaghan" ~ "Oisin Callaghan O",
+      name == "Remi Thirion" ~ "Rémi Thirion",
+      .default = name
+    )
+  )
 
 # ------------------------------------------------------------------------------
 # Fastest actual times
@@ -717,7 +726,6 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
   )
 
 # TODO:
-# - Add rider images
 # - Style stub (e.g., indent rider names, or centre groupname_col above splits)
 # - Consider how we can use patchwork to reformat the layour into a grid so it
 #   isn't so long and will present nicer in an article
@@ -726,11 +734,22 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
 # - Find highlights and add catchy title/subtitle
 fastest_possible_splits_ranked |>
   filter(section_5_rank <= 10) |>
-  select(name, event_name, ends_with("_rank")) |>
+  left_join(image_data) |>
+  select(path, name, event_name, ends_with("_rank")) |>
   group_by(event_name) |>
   arrange(section_5_rank, .by_group = TRUE) |>
   ungroup() |>
-  gt(rowname_col = "name", groupname_col = "event_name") |>
+  gt(groupname_col = "event_name") |>
+  cols_label("path" = "", "name" = "") |>
+  text_transform(
+    locations = cells_body(columns = path),
+    fn = function(path) {
+      local_image(
+        filename = path,
+        height = 60
+      )
+    }
+  ) |>
   cols_label(
     section_1_rank = "Split 1",
     section_2_rank = "Split 2",
@@ -757,6 +776,14 @@ fastest_possible_splits_ranked |>
   tab_options(
     table.font.size = px(12),
     column_labels.font.weight = "bold"
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = !name)
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = "name")
   )
 
 # ------------------------------------------------------------------------------

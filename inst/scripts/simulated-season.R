@@ -731,13 +731,33 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
     .by = "event_name"
   )
 
-# TODO:
-# - Style stub (e.g., indent rider names, or centre groupname_col above splits)
-# - Consider how we can use patchwork to reformat the layour into a grid so it
-#   isn't so long and will present nicer in an article
-# - Format colour scale correctly, how can the same rank for the same rider have
-#   two different shades?
-# - Find highlights and add catchy title/subtitle
+# Helper function to add data colors for all sections
+add_section_colors <- function(gt_tbl) {
+  reduce(1:5, \(gt_tbl, x) {
+    data_color(
+      gt_tbl,
+      columns = paste0("section_", x, "_rank"),
+      target_columns = paste0("section_", x, "_gap"),
+      palette = c("#4daf4a", "#ffffbf", "#e41a1c")
+    )
+  }, .init = gt_tbl)
+}
+
+# Helper function to merge gap and rank columns
+merge_section_columns <- function(gt_tbl) {
+  reduce(1:5, \(gt_tbl, x) {
+    cols_merge(
+      gt_tbl,
+      columns = c(
+        paste0("section_", x, "_gap"),
+        paste0("section_", x, "_rank")
+      ),
+      pattern = "{1} ({2})"
+    )
+  }, .init = gt_tbl)
+}
+
+# Use the helper functions in the pipeline
 fastest_possible_splits_ranked |>
   filter(section_5_rank <= 10) |>
   left_join(image_data) |>
@@ -769,51 +789,8 @@ fastest_possible_splits_ranked |>
     section_4_gap = "Split 4",
     section_5_gap = "Split 5"
   ) |>
-  data_color(
-    columns = section_1_rank,
-    target_columns = section_1_gap,
-    palette = c("#4daf4a", "#ffffbf", "#e41a1c")
-  ) |>
-  data_color(
-    columns = section_2_rank,
-    target_columns = section_2_gap,
-    palette = c("#4daf4a", "#ffffbf", "#e41a1c")
-  ) |>
-  data_color(
-    columns = section_3_rank,
-    target_columns = section_3_gap,
-    palette = c("#4daf4a", "#ffffbf", "#e41a1c")
-  ) |>
-  data_color(
-    columns = section_4_rank,
-    target_columns = section_4_gap,
-    palette = c("#4daf4a", "#ffffbf", "#e41a1c")
-  ) |>
-  data_color(
-    columns = section_5_rank,
-    target_columns = section_5_gap,
-    palette = c("#4daf4a", "#ffffbf", "#e41a1c")
-  ) |>
-  cols_merge(
-    columns = c(section_1_gap, section_1_rank),
-    pattern = "{1} ({2})"
-  ) |>
-  cols_merge(
-    columns = c(section_2_gap, section_2_rank),
-    pattern = "{1} ({2})"
-  ) |>
-  cols_merge(
-    columns = c(section_3_gap, section_3_rank),
-    pattern = "{1} ({2})"
-  ) |>
-  cols_merge(
-    columns = c(section_4_gap, section_4_rank),
-    pattern = "{1} ({2})"
-  ) |>
-  cols_merge(
-    columns = c(section_5_gap, section_5_rank),
-    pattern = "{1} ({2})"
-  ) |>
+  add_section_colors() |>
+  merge_section_columns() |>
   tab_header(
     title = md("## Race Split Rankings"),
     subtitle = md("### Time from leader (ranked)")

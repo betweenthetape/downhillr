@@ -791,10 +791,6 @@ fastest_possible_splits_ranked |>
   ) |>
   add_section_colors() |>
   merge_section_columns() |>
-  tab_header(
-    title = md("## Race Split Rankings"),
-    subtitle = md("### Time from leader (ranked)")
-  ) |>
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()
@@ -811,6 +807,10 @@ fastest_possible_splits_ranked |>
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_body(columns = "name")
+  ) |>
+  tab_header(
+    title = md("## Simulated Race Split Rankings"),
+    subtitle = md("### Time from leader (ranked)")
   )
 
 # ------------------------------------------------------------------------------

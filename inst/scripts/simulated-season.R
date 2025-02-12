@@ -705,7 +705,7 @@ delta_all_wide |>
 # ------------------------------------------------------------------------------
 # Next, draw heat maps using red/green across split times to show how races
 # would have unfolded in the simulated season. Draw attention to where this is
-# significantly different from the actual season. For each split, mark eeach
+# significantly different from the actual season. For each split, mark each
 # riders position, then colour green for 1, and red for furthest back. We should
 # probably only do this for top 10 for controlled colour scale, or if above 10
 # positions back, all recevie the same colour to denote outside of top 10.
@@ -725,6 +725,20 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
       .names = "{.col}_rank"
     ),
     .by = event_name
+  ) |>
+  mutate(
+    across(
+      starts_with("section_") & !ends_with("_rank"),
+      ~ .x - min(.x),
+      .names = "{.col}_gap"
+    ),
+    .by = "event_name"
+  ) |>
+  mutate(
+    across(
+      ends_with("_gap"),
+      ~ if_else(.x == 0, sprintf("%.3f", .x), paste("+", round(.x, 3)))
+    )
   )
 
 # TODO:
@@ -737,9 +751,9 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
 fastest_possible_splits_ranked |>
   filter(section_5_rank <= 10) |>
   left_join(image_data) |>
-  select(path, name, event_name, ends_with("_rank")) |>
+  select(path, name, event_name, ends_with("_gap")) |>
   group_by(event_name) |>
-  arrange(section_5_rank, .by_group = TRUE) |>
+  arrange(desc(section_5_gap), .by_group = TRUE) |>
   ungroup() |>
   gt(groupname_col = "event_name") |>
   cols_label("path" = "", "name" = "") |>
@@ -753,19 +767,19 @@ fastest_possible_splits_ranked |>
     }
   ) |>
   cols_label(
-    section_1_rank = "Split 1",
-    section_2_rank = "Split 2",
-    section_3_rank = "Split 3",
-    section_4_rank = "Split 4",
-    section_5_rank = "Split 5"
+    section_1_gap = "Split 1",
+    section_2_gap = "Split 2",
+    section_3_gap = "Split 3",
+    section_4_gap = "Split 4",
+    section_5_gap = "Split 5"
   ) |>
-  data_color(
-    columns = ends_with("_rank"),
-    colors = scales::col_numeric(
-      palette = c("#4daf4a", "#ffffbf", "#e41a1c"),
-      domain = NULL
-    )
-  ) |>
+  # data_color(
+  #   columns = ends_with("_gap"),
+  #   colors = scales::col_numeric(
+  #     palette = c("#4daf4a", "#ffffbf", "#e41a1c"),
+  #     domain = NULL
+  #   )
+  # ) |>
   tab_header(
     title = "Race Split Rankings",
     subtitle = "Rankings at each split (1 = fastest, colored green)"

@@ -391,6 +391,8 @@ delta_all_wide <- bind_rows(delta_overall_subset, delta_season_subset) |>
   left_join(image_data)
 
 # TODO:
+# - Consider changing coloured boxes for different types of grey shaded boxes so
+#   the red/green colours of the delta scores is clear.
 # - In addition to the table, how about copying the distrubtion plots that are
 #   used to show male/female age distrubtions back-to-back, but instead have
 #   actual vs. simulated back-to-back? This could then be faceted by race. Would

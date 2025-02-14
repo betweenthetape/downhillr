@@ -95,6 +95,7 @@ fastest_times_final <- world_cup_24_elite_men_results |>
 # ------------------------------------------------------------------------------
 fastest_possible_sections <- world_cup_24_elite_men_results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
+  bind_rows(timed_training) |>
   mutate(
     section_1 = split_1,
     section_2 = split_2 - split_1,
@@ -785,7 +786,7 @@ delta_all_wide |>
       actual result, simulated result, and the difference between the two.
       A negative difference,
       <span style='color:red;'><b>shown in red</b></span>,
-      means their actual result was slower than their potential, simulated result. Some riders
+      means their actual result was slower than their simulated result. Some riders
       such as
       <span style='background:rgba(29, 170, 40, 0.5); border: 1px solid #3c3737; padding: 1px;'><b>Troy Brosnan</b></span>
       and
@@ -797,7 +798,7 @@ delta_all_wide |>
       <span style='background:rgba(243, 211, 157, .7); border: 1px solid #3c3737; padding: 1px;'><b>Les Gets</b></span>
       might we have seen a different winner.
       <span style='background:rgba(217, 217, 217, .7); border: 1px solid #3c3737; padding: 1px;'><b>Fort William</b></span>
-      was the only race where the simulated result for each rider was the same as their actual result.
+      was the race which showed the smallest difference between the actual and simulated worlds.
       </span>
       "
     )
@@ -933,6 +934,12 @@ fastest_possible_splits_ranked |>
 #   Is there somewhere riders should be looking for next season (e.g., where
 #   top 10 were noticebly faster than the rest of the field?)
 # ------------------------------------------------------------------------------
+# Question: in which part of the weekend, did most riders peform their fastest
+# splits? Was it timed training, finals, etc.? Perhaps have a table breaking
+# down where riders performed best on average, then again for top 10, have a
+# table for each "round_type" showing which riders left the most time where.
+# We could then try to answer, who speeds up/down over a weekend? I think this
+# is for the actual analysis article.
 
 # ------------------------------------------------------------------------------
 # gganimate races

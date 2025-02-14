@@ -17,9 +17,36 @@ library(gt)
 world_cup_24_elite_men_results <- world_cup_24_elite_men_results |>
   mutate(name = str_to_title(name)) |>
   mutate(
-    name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
+    name = map_chr(str_split(name, " "), ~str_c(rev(.x), collapse = " "))
   ) |>
-  mutate(across(everything(), ~ if_else(is.infinite(.x), NA, .x)))
+  mutate(across(everything(), ~if_else(is.infinite(.x), NA, .x)))
+
+timed_training <- world_cup_24_elite_men_timed_training |>
+  mutate(name = str_to_title(name)) |>
+  mutate(
+    name = map_chr(str_split(name, " "), ~str_c(rev(.x), collapse = " "))
+  ) |>
+  mutate(across(everything(), ~if_else(is.infinite(.x), NA, .x))) |>
+  select(
+    name,
+    contains("_split_"),
+    matches("\\d+_time$"),
+    event_name,
+    round_type
+  ) |>
+  pivot_longer(
+    cols = matches("^(run_\\d+_split_\\d+|run_\\d+_time)$"),
+    names_to = c("run_number", "split_type"),
+    names_pattern = "run_(\\d+)_(.+)",
+    values_to = "value"
+  ) |>
+  mutate(round_type = paste(round_type, run_number)) |>
+  select(-run_number) |>
+  pivot_wider(
+    names_from = split_type,
+    values_from = value
+  ) |>
+  relocate(event_name, round_type, .after = time)
 
 image_data <- tibble(path = dir_ls("inst/rider-images")) |>
   mutate(name = str_remove(path, "^inst/rider-images/")) |>
@@ -76,10 +103,10 @@ fastest_possible_sections <- world_cup_24_elite_men_results |>
     section_5 = time - split_4
   ) |>
   summarise(
-    across(starts_with("section_"), ~ min(.x, na.rm = TRUE)),
+    across(starts_with("section_"), ~min(.x, na.rm = TRUE)),
     .by = c(name, event_name)
   ) |>
-  filter(if_all(starts_with("section_"), ~ !is.infinite(.x)))
+  filter(if_all(starts_with("section_"), ~!is.infinite(.x)))
 
 fastest_times_possible <- fastest_possible_sections |>
   rowwise(name, event_name) |>
@@ -106,12 +133,16 @@ fastest_times_all <- fastest_times_weekend |>
   left_join(fastest_times_possible) |>
   mutate(
     possible_faster_than_weekend = if_else(
-      fastest_time_possible < fastest_time_weekend, TRUE, FALSE
+      fastest_time_possible < fastest_time_weekend,
+      TRUE,
+      FALSE
     )
   ) |>
   mutate(
     possible_faster_than_finals = if_else(
-      fastest_time_possible < fastest_time_finals, TRUE, FALSE
+      fastest_time_possible < fastest_time_finals,
+      TRUE,
+      FALSE
     )
   )
 
@@ -175,7 +206,8 @@ fastest_times_all |>
   ) |>
   mutate(
     percentage_races_time_left = possible_faster_than_weekend /
-      total_races_completed * 100
+      total_races_completed *
+      100
   ) |>
   arrange(desc(percentage_races_time_left))
 
@@ -195,7 +227,8 @@ fastest_times_all |>
   ) |>
   mutate(
     percentage_races_time_left = possible_faster_than_finals /
-      total_races_completed * 100
+      total_races_completed *
+      100
   ) |>
   arrange(desc(percentage_races_time_left))
 
@@ -268,7 +301,8 @@ bump_data_overall <- simulated_overall |>
   select(-ends_with("_points")) |>
   pivot_longer(
     ends_with("_rank"),
-    names_to = "season", values_to = "rank"
+    names_to = "season",
+    values_to = "rank"
   ) |>
   mutate(
     season = if_else(
@@ -277,11 +311,13 @@ bump_data_overall <- simulated_overall |>
       "Simulated \noverall rank"
     )
   ) |>
-  mutate(color = case_when(
-    name == "Loic Bruni" ~ "#57106e",
-    name == "Dakotah Norton" ~ "#f98e09",
-    TRUE ~ "#E7E7E7"
-  )) |>
+  mutate(
+    color = case_when(
+      name == "Loic Bruni" ~ "#57106e",
+      name == "Dakotah Norton" ~ "#f98e09",
+      TRUE ~ "#E7E7E7"
+    )
+  ) |>
   left_join(image_data)
 
 ggplot() +
@@ -299,14 +335,17 @@ ggplot() +
   theme(
     text = element_text(family = "sans"),
     plot.title = element_textbox_simple(
-      halign = 0.5, margin = margin(b = 10, t = 15), size = 22
+      halign = 0.5,
+      margin = margin(b = 10, t = 15),
+      size = 22
     ),
     plot.subtitle = element_textbox_simple(
       halign = 0,
       hjust = 0.5,
       margin = margin(b = 10),
       width = grid::unit(6, "in"),
-      size = 11, color = "#424242"
+      size = 11,
+      color = "#424242"
     ),
     axis.text.x = element_text(size = 10, vjust = 2),
     axis.ticks = element_blank(),
@@ -324,7 +363,9 @@ ggplot() +
       y = rank,
       label.size = NA,
       family = "sans",
-      label = glue("<span style='font-size:14px;'>{name}<span style='color:white;'>...</span><span style='font-size:16px;'>**{rank}**</span></span>")
+      label = glue(
+        "<span style='font-size:14px;'>{name}<span style='color:white;'>...</span><span style='font-size:16px;'>**{rank}**</span></span>"
+      )
     )
   ) +
   geom_richtext(
@@ -336,7 +377,9 @@ ggplot() +
       x = season,
       y = rank,
       label.size = NA,
-      label = glue("<span style='font-size:14px;'><span style='font-size:16px;'>**{rank}**</span><span style='color:white;'>...</span>{name}</span>")
+      label = glue(
+        "<span style='font-size:14px;'><span style='font-size:16px;'>**{rank}**</span><span style='color:white;'>...</span>{name}</span>"
+      )
     )
   ) +
   labs(
@@ -369,13 +412,13 @@ ggplot() +
 # dictate.
 delta_overall <-
   simulated_overall |>
-  left_join(actual_overall) |>
-  mutate(delta = simulated_rank - actual_rank)
+    left_join(actual_overall) |>
+    mutate(delta = simulated_rank - actual_rank)
 
 delta_season <-
   simulated_season |>
-  left_join(actual_season) |>
-  mutate(delta = simulated_rank - actual_rank)
+    left_join(actual_season) |>
+    mutate(delta = simulated_rank - actual_rank)
 
 delta_overall_subset <- delta_overall |>
   mutate(event_name = "Overall") |>
@@ -386,7 +429,8 @@ delta_season_subset <- delta_season |>
 
 delta_all_wide <- bind_rows(delta_overall_subset, delta_season_subset) |>
   pivot_wider(
-    names_from = event_name, values_from = c(simulated_rank, actual_rank, delta)
+    names_from = event_name,
+    values_from = c(simulated_rank, actual_rank, delta)
   ) |>
   left_join(image_data)
 
@@ -400,15 +444,32 @@ delta_all_wide <- bind_rows(delta_overall_subset, delta_season_subset) |>
 #   single plot?
 delta_all_wide |>
   dplyr::select(
-    path, name,
-    "simulated_rank_Overall", "actual_rank_Overall", "delta_Overall",
-    "simulated_rank_Fort William", "actual_rank_Fort William", "delta_Fort William",
-    "simulated_rank_Bielsko-Biala", "actual_rank_Bielsko-Biala", "delta_Bielsko-Biala",
-    "simulated_rank_Leogang", "actual_rank_Leogang", "delta_Leogang",
-    "simulated_rank_Val di Sole", "actual_rank_Val di Sole", "delta_Val di Sole",
-    "simulated_rank_Les Gets", "actual_rank_Les Gets", "delta_Les Gets",
-    "simulated_rank_Loudenvielle", "actual_rank_Loudenvielle", "delta_Loudenvielle",
-    "simulated_rank_Mont-Sainte-Anne", "actual_rank_Mont-Sainte-Anne", "delta_Mont-Sainte-Anne"
+    path,
+    name,
+    "simulated_rank_Overall",
+    "actual_rank_Overall",
+    "delta_Overall",
+    "simulated_rank_Fort William",
+    "actual_rank_Fort William",
+    "delta_Fort William",
+    "simulated_rank_Bielsko-Biala",
+    "actual_rank_Bielsko-Biala",
+    "delta_Bielsko-Biala",
+    "simulated_rank_Leogang",
+    "actual_rank_Leogang",
+    "delta_Leogang",
+    "simulated_rank_Val di Sole",
+    "actual_rank_Val di Sole",
+    "delta_Val di Sole",
+    "simulated_rank_Les Gets",
+    "actual_rank_Les Gets",
+    "delta_Les Gets",
+    "simulated_rank_Loudenvielle",
+    "actual_rank_Loudenvielle",
+    "delta_Loudenvielle",
+    "simulated_rank_Mont-Sainte-Anne",
+    "actual_rank_Mont-Sainte-Anne",
+    "delta_Mont-Sainte-Anne"
   ) |>
   filter(simulated_rank_Overall <= 10) |>
   arrange(actual_rank_Overall) |>
@@ -425,7 +486,11 @@ delta_all_wide |>
   ) |>
   tab_spanner(
     "Fort William",
-    c("actual_rank_Fort William", "simulated_rank_Fort William", "delta_Fort William")
+    c(
+      "actual_rank_Fort William",
+      "simulated_rank_Fort William",
+      "delta_Fort William"
+    )
   ) |>
   cols_label(
     "actual_rank_Fort William" = "Actual",
@@ -434,7 +499,11 @@ delta_all_wide |>
   ) |>
   tab_spanner(
     "Bielsko-Biala",
-    c("actual_rank_Bielsko-Biala", "simulated_rank_Bielsko-Biala", "delta_Bielsko-Biala")
+    c(
+      "actual_rank_Bielsko-Biala",
+      "simulated_rank_Bielsko-Biala",
+      "delta_Bielsko-Biala"
+    )
   ) |>
   cols_label(
     "actual_rank_Bielsko-Biala" = "Actual",
@@ -452,7 +521,11 @@ delta_all_wide |>
   ) |>
   tab_spanner(
     "Val di Sole",
-    c("actual_rank_Val di Sole", "simulated_rank_Val di Sole", "delta_Val di Sole")
+    c(
+      "actual_rank_Val di Sole",
+      "simulated_rank_Val di Sole",
+      "delta_Val di Sole"
+    )
   ) |>
   cols_label(
     "actual_rank_Val di Sole" = "Actual",
@@ -470,7 +543,11 @@ delta_all_wide |>
   ) |>
   tab_spanner(
     "Loudenvielle",
-    c("actual_rank_Loudenvielle", "simulated_rank_Loudenvielle", "delta_Loudenvielle")
+    c(
+      "actual_rank_Loudenvielle",
+      "simulated_rank_Loudenvielle",
+      "delta_Loudenvielle"
+    )
   ) |>
   cols_label(
     "actual_rank_Loudenvielle" = "Actual",
@@ -479,7 +556,11 @@ delta_all_wide |>
   ) |>
   tab_spanner(
     "Mont-Sainte-Anne",
-    c("actual_rank_Mont-Sainte-Anne", "simulated_rank_Mont-Sainte-Anne", "delta_Mont-Sainte-Anne")
+    c(
+      "actual_rank_Mont-Sainte-Anne",
+      "simulated_rank_Mont-Sainte-Anne",
+      "delta_Mont-Sainte-Anne"
+    )
   ) |>
   cols_label(
     "actual_rank_Mont-Sainte-Anne" = "Actual",
@@ -527,7 +608,9 @@ delta_all_wide |>
   ) |>
   tab_style(
     style = cell_borders(
-      sides = c("left", "top", "bottom"), style = "solid", color = "#3c3737"
+      sides = c("left", "top", "bottom"),
+      style = "solid",
+      color = "#3c3737"
     ),
     locations = cells_body(
       columns = "actual_rank_Loudenvielle",
@@ -536,7 +619,9 @@ delta_all_wide |>
   ) |>
   tab_style(
     style = cell_borders(
-      sides = c("right", "top", "bottom"), style = "solid", color = "#3c3737"
+      sides = c("right", "top", "bottom"),
+      style = "solid",
+      color = "#3c3737"
     ),
     locations = cells_body(
       columns = "simulated_rank_Loudenvielle",
@@ -551,7 +636,9 @@ delta_all_wide |>
   ) |>
   tab_style(
     style = cell_borders(
-      sides = c("left", "top", "bottom"), style = "solid", color = "#3c3737"
+      sides = c("left", "top", "bottom"),
+      style = "solid",
+      color = "#3c3737"
     ),
     locations = cells_body(
       columns = "actual_rank_Les Gets",
@@ -560,7 +647,9 @@ delta_all_wide |>
   ) |>
   tab_style(
     style = cell_borders(
-      sides = c("right", "top", "bottom"), style = "solid", color = "#3c3737"
+      sides = c("right", "top", "bottom"),
+      style = "solid",
+      color = "#3c3737"
     ),
     locations = cells_body(
       columns = "simulated_rank_Les Gets",
@@ -574,7 +663,9 @@ delta_all_wide |>
   ) |>
   tab_style(
     style = cell_borders(
-      sides = c("left"), style = "solid", color = "#3c3737"
+      sides = c("left"),
+      style = "solid",
+      color = "#3c3737"
     ),
     locations = cells_body(
       columns = "delta_Fort William",
@@ -582,7 +673,9 @@ delta_all_wide |>
   ) |>
   tab_style(
     style = cell_borders(
-      sides = c("right"), style = "solid", color = "#3c3737"
+      sides = c("right"),
+      style = "solid",
+      color = "#3c3737"
     ),
     locations = cells_body(
       columns = "delta_Fort William"
@@ -590,7 +683,9 @@ delta_all_wide |>
   ) |>
   tab_style(
     style = cell_borders(
-      sides = c("top"), style = "solid", color = "#3c3737"
+      sides = c("top"),
+      style = "solid",
+      color = "#3c3737"
     ),
     locations = cells_body(
       columns = "delta_Fort William",
@@ -599,7 +694,9 @@ delta_all_wide |>
   ) |>
   tab_style(
     style = cell_borders(
-      sides = c("bottom"), style = "solid", color = "#3c3737"
+      sides = c("bottom"),
+      style = "solid",
+      color = "#3c3737"
     ),
     locations = cells_body(
       columns = "delta_Fort William",
@@ -613,7 +710,11 @@ delta_all_wide |>
     alpha = .5
   ) |>
   tab_style(
-    style = cell_borders(sides = c("top", "bottom"), style = "solid", color = "#3c3737"),
+    style = cell_borders(
+      sides = c("top", "bottom"),
+      style = "solid",
+      color = "#3c3737"
+    ),
     locations = cells_body(
       columns = !c(path, name),
       rows = name == "Troy Brosnan"
@@ -640,7 +741,11 @@ delta_all_wide |>
     alpha = .3
   ) |>
   tab_style(
-    style = cell_borders(sides = c("top", "bottom"), style = "solid", color = "#3c3737"),
+    style = cell_borders(
+      sides = c("top", "bottom"),
+      style = "solid",
+      color = "#3c3737"
+    ),
     locations = cells_body(
       columns = !c(path, name),
       rows = name == "Ronan Dunne"
@@ -717,7 +822,7 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
   mutate(
     across(
       starts_with("section_"),
-      ~ rank(.x, ties.method = "min"),
+      ~rank(.x, ties.method = "min"),
       .names = "{.col}_rank"
     ),
     .by = event_name
@@ -725,7 +830,7 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
   mutate(
     across(
       starts_with("section_") & !ends_with("_rank"),
-      ~ .x - min(.x),
+      ~.x - min(.x),
       .names = "{.col}_gap"
     ),
     .by = "event_name"
@@ -733,28 +838,36 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
 
 # Helper function to add data colors for all sections
 add_section_colors <- function(gt_tbl) {
-  reduce(1:5, \(gt_tbl, x) {
-    data_color(
-      gt_tbl,
-      columns = paste0("section_", x, "_rank"),
-      target_columns = paste0("section_", x, "_gap"),
-      palette = c("#4daf4a", "#ffffbf", "#e41a1c")
-    )
-  }, .init = gt_tbl)
+  reduce(
+    1:5,
+    \(gt_tbl, x) {
+      data_color(
+        gt_tbl,
+        columns = paste0("section_", x, "_rank"),
+        target_columns = paste0("section_", x, "_gap"),
+        palette = c("#4daf4a", "#ffffbf", "#e41a1c")
+      )
+    },
+    .init = gt_tbl
+  )
 }
 
 # Helper function to merge gap and rank columns
 merge_section_columns <- function(gt_tbl) {
-  reduce(1:5, \(gt_tbl, x) {
-    cols_merge(
-      gt_tbl,
-      columns = c(
-        paste0("section_", x, "_gap"),
-        paste0("section_", x, "_rank")
-      ),
-      pattern = "{1} ({2})"
-    )
-  }, .init = gt_tbl)
+  reduce(
+    1:5,
+    \(gt_tbl, x) {
+      cols_merge(
+        gt_tbl,
+        columns = c(
+          paste0("section_", x, "_gap"),
+          paste0("section_", x, "_rank")
+        ),
+        pattern = "{1} ({2})"
+      )
+    },
+    .init = gt_tbl
+  )
 }
 
 # Use the helper functions in the pipeline
@@ -768,7 +881,7 @@ fastest_possible_splits_ranked |>
   mutate(
     across(
       ends_with("_gap"),
-      ~ if_else(.x == 0, sprintf("%.3f", .x), paste("+", round(.x, 3)))
+      ~if_else(.x == 0, sprintf("%.3f", .x), paste("+", round(.x, 3)))
     )
   ) |>
   gt(groupname_col = "event_name") |>

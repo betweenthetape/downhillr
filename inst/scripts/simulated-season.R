@@ -52,21 +52,15 @@ timed_training <- world_cup_24_elite_men_timed_training |>
 # the raw data)
 timed_training <- timed_training |>
   mutate(
-    split_3 = if_else(
-      name == "Kimi Viardot" &
-        event_name == "Bielsko-Biala" &
-        round_type == "Timed Training 1",
-      NA,
-      split_3
-    )
-  ) |>
-  mutate(
-    split_4 = if_else(
-      name == "Kimi Viardot" &
-        event_name == "Bielsko-Biala" &
-        round_type == "Timed Training 1",
-      NA,
-      split_4
+    across(
+      c(split_3, split_4),
+      ~if_else(
+        name == "Kimi Viardot" &
+          event_name == "Bielsko-Biala" &
+          round_type == "Timed Training 1",
+        NA,
+        .x
+      )
     )
   )
 

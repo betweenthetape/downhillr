@@ -48,6 +48,28 @@ timed_training <- world_cup_24_elite_men_timed_training |>
   ) |>
   relocate(event_name, round_type, .after = time)
 
+# Correct data entry error for Kimi Viardot (hours are mistaken as minutes in
+# the raw data)
+timed_training <- timed_training |>
+  mutate(
+    split_3 = if_else(
+      name == "Kimi Viardot" &
+        event_name == "Bielsko-Biala" &
+        round_type == "Timed Training 1",
+      NA,
+      split_3
+    )
+  ) |>
+  mutate(
+    split_4 = if_else(
+      name == "Kimi Viardot" &
+        event_name == "Bielsko-Biala" &
+        round_type == "Timed Training 1",
+      NA,
+      split_4
+    )
+  )
+
 image_data <- tibble(path = dir_ls("inst/rider-images")) |>
   mutate(name = str_remove(path, "^inst/rider-images/")) |>
   mutate(name = str_remove(name, ".png$")) |>

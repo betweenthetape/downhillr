@@ -848,6 +848,9 @@ delta_all_wide |>
 # ------------------------------------------------------------------------------
 # TODO:
 # - Consider presenting this as a grid using patchwork
+# - Should the heatmaps show the simulated top 10, or the actual top 10?
+#   currently it shows the former, but it doesn't create consistency with the
+#   rest of the narrative
 fastest_possible_splits_ranked <- fastest_possible_sections |>
   rowwise() |>
   mutate(

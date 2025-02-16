@@ -141,7 +141,13 @@ fastest_possible_sections <- world_cup_24_elite_men_results |>
     section_5 = time - split_4
   ) |>
   summarise(
-    across(starts_with("section_"), ~min(.x, na.rm = TRUE)),
+    across(
+      starts_with("section_"),
+      list(
+        time = ~min(.x, na.rm = TRUE),
+        round = ~round_type[which.min(.x)]
+      )
+    ),
     .by = c(name, event_name)
   ) |>
   filter(if_all(starts_with("section_"), ~!is.infinite(.x)))
@@ -150,7 +156,7 @@ fastest_times_possible <- fastest_possible_sections |>
   rowwise(name, event_name) |>
   summarise(
     fastest_time_possible = sum(
-      c_across(starts_with("section_")),
+      c_across(ends_with("_time")),
       na.rm = TRUE
     ),
     .groups = "drop"
@@ -852,45 +858,48 @@ delta_all_wide |>
 # - Highlight that these heatmaps show what the top 10 for each race could have
 #   been (it is fine that this is inconsistent with the overall leaderboards
 #   shown so far).
-fastest_possible_splits_ranked <- fastest_possible_sections |>
-  rowwise() |>
-  mutate(
-    section_2 = section_1 + section_2,
-    section_3 = section_2 + section_3,
-    section_4 = section_3 + section_4,
-    section_5 = section_4 + section_5
-  ) |>
-  ungroup() |>
-  mutate(
-    across(
-      starts_with("section_"),
-      ~rank(.x, ties.method = "min"),
-      .names = "{.col}_rank"
-    ),
-    .by = event_name
-  ) |>
-  mutate(
-    across(
-      starts_with("section_") & !ends_with("_rank"),
-      ~.x - min(.x),
-      .names = "{.col}_gap"
-    ),
-    .by = "event_name"
-  ) |>
-  mutate(
-    event_name = factor(
-      event_name,
-      levels = c(
-        "Fort William",
-        "Bielsko-Biala",
-        "Leogang",
-        "Val di Sole",
-        "Les Gets",
-        "Loudenvielle",
-        "Mont-Sainte-Anne"
+fastest_possible_splits_ranked <-
+  fastest_possible_sections |>
+    select(-ends_with("_round")) |>
+    rename_with(\(x) str_remove_all(x, "_time"), starts_with("section_")) |>
+    rowwise() |>
+    mutate(
+      section_2 = section_1 + section_2,
+      section_3 = section_2 + section_3,
+      section_4 = section_3 + section_4,
+      section_5 = section_4 + section_5
+    ) |>
+    ungroup() |>
+    mutate(
+      across(
+        starts_with("section_"),
+        ~rank(.x, ties.method = "min"),
+        .names = "{.col}_rank"
+      ),
+      .by = event_name
+    ) |>
+    mutate(
+      across(
+        starts_with("section_") & !ends_with("_rank"),
+        ~.x - min(.x),
+        .names = "{.col}_gap"
+      ),
+      .by = "event_name"
+    ) |>
+    mutate(
+      event_name = factor(
+        event_name,
+        levels = c(
+          "Fort William",
+          "Bielsko-Biala",
+          "Leogang",
+          "Val di Sole",
+          "Les Gets",
+          "Loudenvielle",
+          "Mont-Sainte-Anne"
+        )
       )
     )
-  )
 
 merge_section_columns <- function(gt_tbl) {
   reduce(
@@ -997,6 +1006,7 @@ fastest_possible_splits_ranked |>
 # to answer, who speeds up/down over a weekend? I think this is for the actual
 # analysis article.
 # ------------------------------------------------------------------------------
+fastest_possible_sections
 
 # ------------------------------------------------------------------------------
 # gganimate races

@@ -998,15 +998,88 @@ fastest_possible_splits_ranked |>
 
 # ------------------------------------------------------------------------------
 # Split analysis
-# Question: in which part of the weekend, did most riders peform their fastest
-# splits? Is there a difference between the top 10 and the rest of the field?
-# Was it timed training, finals, etc.? Perhaps have a table breaking down where
-# riders performed best on average, then again for top 10, have a table for each
-# "round_type" showing which riders left the most time where. We could then try
-# to answer, who speeds up/down over a weekend? I think this is for the actual
-# analysis article.
+# NOTE:
+# - All of these questions step out the realm of the simulated world, and into
+#   the world of actual performance. Should these feature in the next or a
+#   separate article? Can we end the simulated article by asking the questions
+#   featured below as a cliff-hanger? It might be a nice way to transition to
+#   the next article.
 # ------------------------------------------------------------------------------
-fastest_possible_sections
+# ---- Question 1 ----
+# In which part of the weekend did riders perform their fastest splits?
+fastest_sections_by_round <- fastest_possible_sections |>
+  select(name, event_name, ends_with("_round")) |>
+  pivot_longer(
+    !c(name, event_name),
+    names_to = "section",
+    values_to = "round_type",
+    names_pattern = "section_(.*)_round"
+  )
+
+# We need percentagres here, as not every rider completes every round type
+total_splits_ridden_by_round <- world_cup_24_elite_men_results |>
+  select(name, starts_with("split"), time, event_name, round_type) |>
+  bind_rows(timed_training) |>
+  count(event_name, round_type) |>
+  mutate(total_splits_ridden = n * 5) |>
+  select(-n)
+
+fastest_sections_by_round |>
+  count(event_name, round_type, name = "fastest_splits") |>
+  left_join(total_splits_ridden_by_round) |>
+  summarise(
+    "percentage_fastest_splits" = fastest_splits / total_splits_ridden,
+    .by = c(event_name, round_type)
+  )
+
+# The percentages are not intuitive because we have to factor in that not every
+# rider makes it into each round. Better, may be to just take the riders that
+# made it into the final in each race and calculate the percentages from that.
+finals_list <- world_cup_24_elite_men_results |>
+  filter(round_type == "Final") |>
+  select(name, event_name)
+
+fastest_sections_locations_finals_riders <- fastest_sections_by_round |>
+  semi_join(finals_list) |>
+  count(event_name, round_type) |>
+  mutate(percentage = n / sum(n), .by = event_name)
+
+# TODO:
+# - event_name isn't printing in the correct order, despite the levels,
+# - remove "event_name" column heading
+# - Format cells to percentages
+# - Replace NA with 0 to make it clear that it had no impact on race
+# - Colour by red to green to show highest to low impact
+# - Add titles (make note that weather probably had an effect where there are
+#   zeros - check this and add commentary to table with actual weather reports
+#   from metadata saved in the .rda files)
+# - Add styling (e.g., alternating row colours and fonts)
+fastest_sections_locations_finals_riders |>
+  mutate(
+    event_name = factor(
+      event_name,
+      levels = c(
+        "Fort William",
+        "Bielsko-Biala",
+        "Leogang",
+        "Val di Sole",
+        "Les Gets",
+        "Loudenvielle",
+        "Mont-Sainte-Anne"
+      )
+    )
+  ) |>
+  select(-n) |>
+  pivot_wider(names_from = round_type, values_from = percentage) |>
+  relocate(Qualifying, `Semi-Final`, Final, .after = `Timed Training 3`) |>
+  gt()
+
+# ---- Question 2 ----
+# Is there a difference between the top 10 and the test of the finals riders?
+# If no, does this hint that there isn't much in it between the top and bottom?
+
+# ---- Question 3 ----
+# Which riders speed up / slow down the most during a weekend?
 
 # ------------------------------------------------------------------------------
 # gganimate races

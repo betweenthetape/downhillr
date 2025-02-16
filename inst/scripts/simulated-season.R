@@ -843,8 +843,9 @@ delta_all_wide |>
 
 # ------------------------------------------------------------------------------
 # Simulated heat maps
-# - Then, we can break down the pivotal races even further by showing which
-#   sections of track proved troublesome.
+# - Then, we can break down the races even further by showing how things would
+#   have played out across the different splits. Note that there will be no
+#   narrative here and readers are encouraged to find their own stories
 # ------------------------------------------------------------------------------
 # TODO:
 # - Consider presenting this as a grid using patchwork
@@ -980,23 +981,22 @@ fastest_possible_splits_ranked |>
     locations = cells_body(columns = "name")
   ) |>
   tab_header(
-    title = md("## Simulated Race Split Rankings"),
-    subtitle = md("### With time from the leader (and ranks)")
+    title = md("## Simulated Race Split Times and Rankings"),
+    subtitle = md(
+      "### Each split in each race is colored by split time from fastest (green) to slowest (red)"
+    )
   )
 
 # ------------------------------------------------------------------------------
 # Split analysis
-# - From the heat maps, perform an analysis to determine which splits from which
-#   races were pivotal in the virtual season. Who smoked the rest of the field?
-#   Is there somewhere riders should be looking for next season (e.g., where
-#   top 10 were noticebly faster than the rest of the field?)
-# ------------------------------------------------------------------------------
 # Question: in which part of the weekend, did most riders peform their fastest
-# splits? Was it timed training, finals, etc.? Perhaps have a table breaking
-# down where riders performed best on average, then again for top 10, have a
-# table for each "round_type" showing which riders left the most time where.
-# We could then try to answer, who speeds up/down over a weekend? I think this
-# is for the actual analysis article.
+# splits? Is there a difference between the top 10 and the rest of the field?
+# Was it timed training, finals, etc.? Perhaps have a table breaking down where
+# riders performed best on average, then again for top 10, have a table for each
+# "round_type" showing which riders left the most time where. We could then try
+# to answer, who speeds up/down over a weekend? I think this is for the actual
+# analysis article.
+# ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # gganimate races

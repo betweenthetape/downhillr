@@ -848,9 +848,9 @@ delta_all_wide |>
 # ------------------------------------------------------------------------------
 # TODO:
 # - Consider presenting this as a grid using patchwork
-# - Should the heatmaps show the simulated top 10, or the actual top 10?
-#   currently it shows the former, but it doesn't create consistency with the
-#   rest of the narrative
+# - Highlight that these heatmaps show what the top 10 for each race could have
+#   been (it is fine that this is inconsistent with the overall leaderboards
+#   shown so far).
 fastest_possible_splits_ranked <- fastest_possible_sections |>
   rowwise() |>
   mutate(
@@ -924,7 +924,8 @@ apply_event_colors <- function(gt_tbl, event_names) {
 }
 
 fastest_possible_splits_ranked |>
-  filter(section_5_rank <= 10) |>
+  filter(section_5_rank <= 10) |> # Top 10 each race
+  # filter(name %in% actual_overall$name[1:10]) |> # Top 10 from actual overall
   left_join(image_data) |>
   select(path, name, event_name, ends_with("_gap"), ends_with("_rank")) |>
   group_by(event_name) |>

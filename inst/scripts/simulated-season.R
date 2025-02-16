@@ -851,6 +851,8 @@ delta_all_wide |>
 # - Should the heatmaps show the simulated top 10, or the actual top 10?
 #   currently it shows the former, but it doesn't create consistency with the
 #   rest of the narrative
+# - The colour scales are off, we need to do a colwise, not rowwise colouring.
+# - It doesn't make sense to use the same colour scale between different splits.
 fastest_possible_splits_ranked <- fastest_possible_sections |>
   rowwise() |>
   mutate(
@@ -965,7 +967,7 @@ fastest_possible_splits_ranked |>
   ) |>
   tab_header(
     title = md("## Simulated Race Split Rankings"),
-    subtitle = md("### Time from leader (ranked)")
+    subtitle = md("### With time from the leader (and ranks)")
   )
 
 # ------------------------------------------------------------------------------

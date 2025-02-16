@@ -1052,7 +1052,9 @@ fastest_sections_locations_finals_riders <- fastest_sections_by_round |>
 # - Colour by red to green to show highest to low impact
 # - Add titles (make note that weather probably had an effect where there are
 #   zeros - check this and add commentary to table with actual weather reports
-#   from metadata saved in the .rda files)
+#   from metadata saved in the .rda files). Another question for the title: are
+#   there pivotal rounds in each race which determine rider peak performance
+#   (or something along those lines)?
 # - Add styling (e.g., alternating row colours and fonts)
 fastest_sections_locations_finals_riders |>
   mutate(

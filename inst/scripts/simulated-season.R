@@ -851,8 +851,6 @@ delta_all_wide |>
 # - Should the heatmaps show the simulated top 10, or the actual top 10?
 #   currently it shows the former, but it doesn't create consistency with the
 #   rest of the narrative
-# - The colour scales are off, we need to do a colwise, not rowwise colouring.
-# - It doesn't make sense to use the same colour scale between different splits.
 fastest_possible_splits_ranked <- fastest_possible_sections |>
   rowwise() |>
   mutate(
@@ -879,23 +877,6 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
     .by = "event_name"
   )
 
-# Helper function to add data colors for all sections
-add_section_colors <- function(gt_tbl) {
-  reduce(
-    1:5,
-    \(gt_tbl, x) {
-      data_color(
-        gt_tbl,
-        columns = paste0("section_", x, "_rank"),
-        target_columns = paste0("section_", x, "_gap"),
-        palette = c("#4daf4a", "#ffffbf", "#e41a1c")
-      )
-    },
-    .init = gt_tbl
-  )
-}
-
-# Helper function to merge gap and rank columns
 merge_section_columns <- function(gt_tbl) {
   reduce(
     1:5,
@@ -913,7 +894,21 @@ merge_section_columns <- function(gt_tbl) {
   )
 }
 
-# Use the helper functions in the pipeline
+apply_event_colors <- function(gt_tbl, event_names) {
+  reduce(
+    event_names,
+    \(tbl, event) {
+      data_color(
+        tbl,
+        columns = ends_with("_gap"),
+        rows = event_name == event,
+        palette = c("#4daf4a", "#ffffbf", "#e41a1c")
+      )
+    },
+    .init = gt_tbl
+  )
+}
+
 fastest_possible_splits_ranked |>
   filter(section_5_rank <= 10) |>
   left_join(image_data) |>
@@ -921,12 +916,6 @@ fastest_possible_splits_ranked |>
   group_by(event_name) |>
   arrange(section_5_gap, .by_group = TRUE) |>
   ungroup() |>
-  mutate(
-    across(
-      ends_with("_gap"),
-      ~if_else(.x == 0, sprintf("%.3f", .x), paste("+", round(.x, 3)))
-    )
-  ) |>
   gt(groupname_col = "event_name") |>
   text_transform(
     locations = cells_body(columns = path),
@@ -946,8 +935,18 @@ fastest_possible_splits_ranked |>
     section_4_gap = "Split 4",
     section_5_gap = "Finish"
   ) |>
-  add_section_colors() |>
+  apply_event_colors(unique(fastest_possible_splits_ranked$event_name)) |>
+  text_transform(
+    fn = \(x) if_else(x == "0.000", paste0(x), paste("+", x)),
+    locations = cells_body(columns = ends_with("_gap"))
+  ) |>
   merge_section_columns() |>
+  tab_style(
+    style = cell_borders(sides = "all", style = "solid", color = "#e9e9e9"),
+    locations = cells_body(
+      columns = ends_with("_gap")
+    )
+  ) |>
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels()

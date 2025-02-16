@@ -926,7 +926,6 @@ fastest_possible_splits_ranked |>
     )
   ) |>
   gt(groupname_col = "event_name") |>
-  cols_label("path" = "", "name" = "") |>
   text_transform(
     locations = cells_body(columns = path),
     fn = function(path) {
@@ -937,11 +936,13 @@ fastest_possible_splits_ranked |>
     }
   ) |>
   cols_label(
+    path = "",
+    name = "",
     section_1_gap = "Split 1",
     section_2_gap = "Split 2",
     section_3_gap = "Split 3",
     section_4_gap = "Split 4",
-    section_5_gap = "Split 5"
+    section_5_gap = "Finish"
   ) |>
   add_section_colors() |>
   merge_section_columns() |>

@@ -875,6 +875,20 @@ fastest_possible_splits_ranked <- fastest_possible_sections |>
       .names = "{.col}_gap"
     ),
     .by = "event_name"
+  ) |>
+  mutate(
+    event_name = factor(
+      event_name,
+      levels = c(
+        "Fort William",
+        "Bielsko-Biala",
+        "Leogang",
+        "Val di Sole",
+        "Les Gets",
+        "Loudenvielle",
+        "Mont-Sainte-Anne"
+      )
+    )
   )
 
 merge_section_columns <- function(gt_tbl) {

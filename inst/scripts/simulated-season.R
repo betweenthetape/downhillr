@@ -99,6 +99,46 @@ image_data <- tibble(path = dir_ls("inst/rider-images")) |>
     )
   )
 
+weather <- world_cup_24_elite_men_results |>
+  distinct(event_name, round_type, metadata_weather, metadata_temp_deg_c) |>
+  mutate(
+    weather = paste(
+      metadata_weather,
+      paste0("(", metadata_temp_deg_c, "°C)"),
+      sep = " "
+    )
+  ) |>
+  select(event_name, round_type, weather) |>
+  pivot_wider(
+    names_from = round_type,
+    values_from = weather,
+    names_prefix = "weather_"
+  )
+
+weather_emoji <- world_cup_24_elite_men_results |>
+  distinct(event_name, round_type, metadata_weather) |>
+  mutate(
+    metadata_weather = case_when(
+      metadata_weather == "Mostly sunny" ~ "Mostly Sunny",
+      metadata_weather == "Light rain" ~ "Light Rain",
+      .default = metadata_weather
+    )
+  ) |>
+  mutate(
+    metadata_weather = case_when(
+      metadata_weather == "Cloudy" ~ "☁️",
+      metadata_weather == "Light Rain" ~ "🌦️",
+      metadata_weather == "Rain" ~ "🌧️",
+      metadata_weather == "Mostly Sunny" ~ "⛅️",
+      metadata_weather == "Sunny" ~ "☀️"
+    )
+  ) |>
+  pivot_wider(
+    names_from = round_type,
+    values_from = metadata_weather,
+    names_prefix = "weather_"
+  )
+
 # ------------------------------------------------------------------------------
 # Fastest actual times
 # ------------------------------------------------------------------------------
@@ -1044,18 +1084,12 @@ fastest_sections_locations_finals_riders <- fastest_sections_by_round |>
   count(event_name, round_type) |>
   mutate(percentage = n / sum(n), .by = event_name)
 
-# TODO:
-# - event_name isn't printing in the correct order, despite the levels,
-# - remove "event_name" column heading
-# - Format cells to percentages
-# - Replace NA with 0 to make it clear that it had no impact on race
-# - Colour by red to green to show highest to low impact
-# - Add titles (make note that weather probably had an effect where there are
-#   zeros - check this and add commentary to table with actual weather reports
-#   from metadata saved in the .rda files). Another question for the title: are
-#   there pivotal rounds in each race which determine rider peak performance
-#   (or something along those lines)?
-# - Add styling (e.g., alternating row colours and fonts)
+# Insights:
+# - Timed training means nothing
+# - Weather obviously impacted rider speed, but in some races such as Val di Sole
+#   where weather had no effect, riders still were faster in Semi-Final. I think
+#   semi's destory the excitement of the race as riders build and build over the
+#   weekend. It's like they are peaking too early.
 fastest_sections_locations_finals_riders |>
   mutate(
     event_name = factor(
@@ -1074,7 +1108,77 @@ fastest_sections_locations_finals_riders |>
   select(-n) |>
   pivot_wider(names_from = round_type, values_from = percentage) |>
   relocate(Qualifying, `Semi-Final`, Final, .after = `Timed Training 3`) |>
-  gt()
+  left_join(weather_emoji) |>
+  gt(rowname_col = "event_name") |>
+  fmt_percent(
+    columns = c(
+      `Timed Training 1`,
+      `Timed Training 2`,
+      `Timed Training 3`,
+      Qualifying,
+      `Semi-Final`,
+      Final
+    ),
+    decimals = 1
+  ) |>
+  tab_spanner(label = "Timed Training", columns = starts_with("Timed")) |>
+  sub_missing(missing_text = "0 %") |>
+  cols_label(
+    "Timed Training 1" = "1",
+    "Timed Training 2" = "2",
+    "Timed Training 3" = "3"
+  ) |>
+  cols_merge(
+    columns = c(Qualifying, weather_Qualifying),
+    pattern = "{2}<br>{1}"
+  ) |>
+  cols_merge(
+    columns = c(`Semi-Final`, `weather_Semi-Final`),
+    pattern = "{2}<br>{1}"
+  ) |>
+  cols_merge(
+    columns = c(Final, weather_Final),
+    pattern = "{2}<br>{1}"
+  ) |>
+  tab_options(
+    table.font.size = px(16),
+    column_labels.font.weight = "bold"
+  ) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_stub(rows = TRUE)
+  ) |>
+  data_color(
+    palette = c("#e41a1c", "#ffffbf", "#4daf4a"),
+    na_color = "white",
+    direction = "row",
+    columns = c(
+      `Timed Training 1`,
+      `Timed Training 2`,
+      `Timed Training 3`,
+      Qualifying,
+      `Semi-Final`,
+      Final
+    )
+  ) |>
+  tab_style(
+    style = cell_borders(sides = "all", style = "solid", color = "#e9e9e9"),
+    locations = cells_body(columns = everything())
+  ) |>
+  text_transform(
+    fn = \(x) str_replace(x, ".*", "*"),
+    locations = cells_body(
+      columns = "Semi-Final",
+      rows = event_name == "Loudenvielle"
+    )
+  ) |>
+  tab_header(
+    title = md(
+      "## Most riders had their fastest splits in semi-finals on average"
+    ),
+    subtitle = md("#### Weather conditions partially explain this trend")
+  ) |>
+  tab_footnote("* Race cancelled", placement = "right")
 
 # ---- Question 2 ----
 # Is there a difference between the top 10 and the test of the finals riders?
@@ -1092,8 +1196,7 @@ fastest_sections_locations_finals_riders |>
 
 # ------------------------------------------------------------------------------
 # Closing notes
-# - We need to rerun this analysis with the elite women.
-# - There is too much data to also do juniors. We could recreate all data/plots
-#   and host them as interactive graphics (using crosstalk) for people to
-#   explore on betweenthetape.com. This would be a good use of the website.
+# - We need to rerun this analysis with the elite women, juniors, and the rest
+#   of the elite men. Best solution is to write a shiny dashboard in python, and
+#   host this as a static .html file via shinylive.
 # ------------------------------------------------------------------------------

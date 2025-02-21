@@ -273,7 +273,7 @@ luca_les_gets <- world_cup_24_elite_men_results |>
     palette = "#4daf4a"
   )
 
-gtsave(luca_les_gets, "inst/scripts/luca-les-gets.png")
+gtsave(luca_les_gets, "inst/scripts/luca-les-gets.png", zoom = 10)
 
 fastest_times_all <- fastest_times_weekend |>
   left_join(fastest_times_final) |>
@@ -1153,7 +1153,7 @@ fastest_sections_locations_finals_riders <- fastest_sections_by_round |>
 #   where weather had no effect, riders still were faster in Semi-Final. I think
 #   semi's destory the excitement of the race as riders build and build over the
 #   weekend. It's like they are peaking too early.
-fastest_sections_locations_finals_riders |>
+fastest_sections_locations_finals_gt <- fastest_sections_locations_finals_riders |>
   mutate(
     event_name = factor(
       event_name,
@@ -1242,6 +1242,12 @@ fastest_sections_locations_finals_riders |>
     subtitle = md("#### Weather conditions partially explain this trend")
   ) |>
   tab_footnote("* Race cancelled", placement = "right")
+
+gtsave(
+  fastest_sections_locations_finals_gt,
+  "inst/scripts/fastest-splits-locations.png",
+  zoom = 10
+)
 
 # ---- Question 2 ----
 # Is there a difference between the top 10 and the test of the finals riders?

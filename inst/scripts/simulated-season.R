@@ -467,7 +467,7 @@ bump_data_overall <- simulated_overall |>
   ) |>
   left_join(image_data)
 
-ggplot() +
+bump_plot <- ggplot() +
   geom_bump(
     aes(season, rank, group = name, color = I(color)),
     data = bump_data_overall,
@@ -541,6 +541,17 @@ ggplot() +
     bet next season?</span>"
   )
 
+ggsave(
+  "inst/scripts/bump_plot.png",
+  plot = bump_plot,
+  width = 2200,
+  height = 1500,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)
+
 # ------------------------------------------------------------------------------
 # Delta scores per season and overall
 #
@@ -589,7 +600,7 @@ delta_all_wide <- bind_rows(delta_overall_subset, delta_season_subset) |>
 #   actual vs. simulated back-to-back? This could then be faceted by race. Would
 #   this be a nice way to visualise a riders virtual vs actual season in a
 #   single plot?
-delta_all_wide |>
+delta_table_gt <- delta_all_wide |>
   dplyr::select(
     path,
     name,
@@ -950,6 +961,13 @@ delta_all_wide |>
     )
   )
 
+gtsave(
+  delta_table_gt,
+  "inst/scripts/delta_table_gt.png",
+  zoom = 10,
+  expand = 20
+)
+
 # ------------------------------------------------------------------------------
 # Simulated heat maps
 # - Then, we can break down the races even further by showing how things would
@@ -1036,7 +1054,7 @@ apply_event_colors <- function(gt_tbl, event_names) {
   )
 }
 
-fastest_possible_splits_ranked |>
+heat_map_gt <- fastest_possible_splits_ranked |>
   filter(section_5_rank <= 10) |> # Top 10 each race
   # filter(name %in% actual_overall$name[1:10]) |> # Top 10 from actual overall
   left_join(image_data) |>
@@ -1098,6 +1116,8 @@ fastest_possible_splits_ranked |>
       "### Each split in each race is colored by split time from fastest (green) to slowest (red)"
     )
   )
+
+gtsave(heat_map_gt, "inst/scripts/heat_map_gt.png", zoom = 10)
 
 # ------------------------------------------------------------------------------
 # Split analysis

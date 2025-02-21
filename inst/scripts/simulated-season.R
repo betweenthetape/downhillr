@@ -17,16 +17,16 @@ library(gt)
 world_cup_24_elite_men_results <- world_cup_24_elite_men_results |>
   mutate(name = str_to_title(name)) |>
   mutate(
-    name = map_chr(str_split(name, " "), ~str_c(rev(.x), collapse = " "))
+    name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
   ) |>
-  mutate(across(everything(), ~if_else(is.infinite(.x), NA, .x)))
+  mutate(across(everything(), ~ if_else(is.infinite(.x), NA, .x)))
 
 timed_training <- world_cup_24_elite_men_timed_training |>
   mutate(name = str_to_title(name)) |>
   mutate(
-    name = map_chr(str_split(name, " "), ~str_c(rev(.x), collapse = " "))
+    name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
   ) |>
-  mutate(across(everything(), ~if_else(is.infinite(.x), NA, .x))) |>
+  mutate(across(everything(), ~ if_else(is.infinite(.x), NA, .x))) |>
   select(
     name,
     contains("_split_"),
@@ -54,7 +54,7 @@ timed_training <- timed_training |>
   mutate(
     across(
       c(split_3, split_4, time),
-      ~if_else(
+      ~ if_else(
         name == "Kimi Viardot" &
           event_name == "Bielsko-Biala" &
           round_type == "Timed Training 1",
@@ -64,7 +64,7 @@ timed_training <- timed_training |>
     ),
     across(
       c(split_3, split_4, time),
-      ~if_else(
+      ~ if_else(
         name == "Valentin Rohrmoser" &
           event_name == "Val di Sole" &
           round_type == "Timed Training 1",
@@ -159,16 +159,6 @@ fastest_times_final <- world_cup_24_elite_men_results |>
 
 # ------------------------------------------------------------------------------
 # Fastest Possible times
-#
-# Notes:
-# - Start write-up introducing the idea of simulating a riders fastest race run
-# - Probably best to not show times at this point, as they are meaningless
-#   without a comparison (which comes later)
-# - Introduce why we would want to do this: see which riders left time on the
-#   track and has more potential to give. See who is consistent. See which
-#   tracks and sections proved most troublesome in the series.
-# - Consider using GT here to build a table of actual times and splits for a
-#   single rider (Dak?) and show the differences between actual and simulated.
 # ------------------------------------------------------------------------------
 fastest_possible_sections <- world_cup_24_elite_men_results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
@@ -184,13 +174,13 @@ fastest_possible_sections <- world_cup_24_elite_men_results |>
     across(
       starts_with("section_"),
       list(
-        time = ~min(.x, na.rm = TRUE),
-        round = ~round_type[which.min(.x)]
+        time = ~ min(.x, na.rm = TRUE),
+        round = ~ round_type[which.min(.x)]
       )
     ),
     .by = c(name, event_name)
   ) |>
-  filter(if_all(starts_with("section_"), ~!is.infinite(.x)))
+  filter(if_all(starts_with("section_"), ~ !is.infinite(.x)))
 
 fastest_times_possible <- fastest_possible_sections |>
   rowwise(name, event_name) |>
@@ -212,6 +202,79 @@ fastest_times_possible <- fastest_possible_sections |>
 #   consideration changing weather and track conditions. See notes in this
 #   section for more details.
 # ------------------------------------------------------------------------------
+# Use Finn's Leogang results to show how simulation works
+luca_les_gets <- world_cup_24_elite_men_results |>
+  select(name, starts_with("split"), time, event_name, round_type) |>
+  bind_rows(timed_training) |>
+  filter(name == "Luca Shaw") |>
+  filter(event_name == "Les Gets") |>
+  mutate(
+    `1` = split_1,
+    `2` = split_2 - split_1,
+    `3` = split_3 - split_2,
+    `4` = split_4 - split_3,
+    `5` = time - split_4
+  ) |>
+  select(-name, -starts_with("split_"), -event_name) |>
+  mutate(
+    round_type = factor(
+      round_type,
+      levels = c(
+        "Timed Training 1",
+        "Timed Training 2",
+        "Timed Training 3",
+        "Qualifying",
+        "Semi-Final",
+        "Final"
+      )
+    )
+  ) |>
+  relocate(time, .after = `5`) |>
+  arrange(round_type) |>
+  gt(rowname_col = "round_type") |>
+  sub_missing() |>
+  opt_row_striping() |>
+  cols_label("round_type" = "") |>
+  fmt_number(!round_type, decimals = 2) |>
+  tab_spanner(label = "Section", columns = !round_type) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_stub()
+  ) |>
+  tab_header(
+    md(
+      "**Luca Shaw's fastest sections in Les Gets were spread across the event**"
+    ),
+    md("Fastest splits are highlighted in green")
+  ) |>
+  data_color(
+    columns = `1`,
+    rows = round_type == "Qualifying",
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = `2`,
+    rows = round_type == "Timed Training 1",
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = `3`,
+    rows = round_type == "Semi-Final",
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = `4`,
+    rows = round_type == "Semi-Final",
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = `5`,
+    rows = round_type == "Semi-Final",
+    palette = "#4daf4a"
+  )
+
+gtsave(luca_les_gets, "inst/scripts/luca-les-gets.png")
+
 fastest_times_all <- fastest_times_weekend |>
   left_join(fastest_times_final) |>
   left_join(fastest_times_possible) |>
@@ -496,13 +559,13 @@ ggplot() +
 # dictate.
 delta_overall <-
   simulated_overall |>
-    left_join(actual_overall) |>
-    mutate(delta = simulated_rank - actual_rank)
+  left_join(actual_overall) |>
+  mutate(delta = simulated_rank - actual_rank)
 
 delta_season <-
   simulated_season |>
-    left_join(actual_season) |>
-    mutate(delta = simulated_rank - actual_rank)
+  left_join(actual_season) |>
+  mutate(delta = simulated_rank - actual_rank)
 
 delta_overall_subset <- delta_overall |>
   mutate(event_name = "Overall") |>
@@ -900,46 +963,46 @@ delta_all_wide |>
 #   shown so far).
 fastest_possible_splits_ranked <-
   fastest_possible_sections |>
-    select(-ends_with("_round")) |>
-    rename_with(\(x) str_remove_all(x, "_time"), starts_with("section_")) |>
-    rowwise() |>
-    mutate(
-      section_2 = section_1 + section_2,
-      section_3 = section_2 + section_3,
-      section_4 = section_3 + section_4,
-      section_5 = section_4 + section_5
-    ) |>
-    ungroup() |>
-    mutate(
-      across(
-        starts_with("section_"),
-        ~rank(.x, ties.method = "min"),
-        .names = "{.col}_rank"
-      ),
-      .by = event_name
-    ) |>
-    mutate(
-      across(
-        starts_with("section_") & !ends_with("_rank"),
-        ~.x - min(.x),
-        .names = "{.col}_gap"
-      ),
-      .by = "event_name"
-    ) |>
-    mutate(
-      event_name = factor(
-        event_name,
-        levels = c(
-          "Fort William",
-          "Bielsko-Biala",
-          "Leogang",
-          "Val di Sole",
-          "Les Gets",
-          "Loudenvielle",
-          "Mont-Sainte-Anne"
-        )
+  select(-ends_with("_round")) |>
+  rename_with(\(x) str_remove_all(x, "_time"), starts_with("section_")) |>
+  rowwise() |>
+  mutate(
+    section_2 = section_1 + section_2,
+    section_3 = section_2 + section_3,
+    section_4 = section_3 + section_4,
+    section_5 = section_4 + section_5
+  ) |>
+  ungroup() |>
+  mutate(
+    across(
+      starts_with("section_"),
+      ~ rank(.x, ties.method = "min"),
+      .names = "{.col}_rank"
+    ),
+    .by = event_name
+  ) |>
+  mutate(
+    across(
+      starts_with("section_") & !ends_with("_rank"),
+      ~ .x - min(.x),
+      .names = "{.col}_gap"
+    ),
+    .by = "event_name"
+  ) |>
+  mutate(
+    event_name = factor(
+      event_name,
+      levels = c(
+        "Fort William",
+        "Bielsko-Biala",
+        "Leogang",
+        "Val di Sole",
+        "Les Gets",
+        "Loudenvielle",
+        "Mont-Sainte-Anne"
       )
     )
+  )
 
 merge_section_columns <- function(gt_tbl) {
   reduce(

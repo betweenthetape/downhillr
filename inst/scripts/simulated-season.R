@@ -403,6 +403,29 @@ finals_points <- world_cup_24_elite_men_points_scale |>
   filter(round_type == "Final") |>
   select(-round_type)
 
+finals_plot <- finals_points |>
+  ggplot(aes(x = position, y = points)) +
+  geom_col() +
+  coord_flip() +
+  scale_x_reverse(breaks = c(1, seq(5, 30, 5))) +
+  theme_minimal() +
+  labs(
+    title = "Simulated runs were scored using the same exponential points distribtuion \nused in Finals.",
+    x = "Position",
+    y = "Points"
+  )
+
+ggsave(
+  "inst/scripts/finals_plot.png",
+  plot = finals_plot,
+  width = 2200,
+  height = 1500,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)
+
 simulated_season <- simulated_top_30_each_race |>
   left_join(finals_points) |>
   rename(simulated_rank = position, simulated_points = points)
@@ -484,7 +507,7 @@ bump_plot <- ggplot() +
     plot.title = element_textbox_simple(
       halign = 0.5,
       margin = margin(b = 10, t = 15),
-      size = 22
+      size = 16
     ),
     plot.subtitle = element_textbox_simple(
       halign = 0,
@@ -536,7 +559,7 @@ bump_plot <- ggplot() +
     then rescored to create a new overall simulated leaderboard. Even in this
     simulated world, <span style='color:#57106e;'>**Loic
     Bruni**</span> reigns king with unmatched speed. Other riders like <span
-    style='color:#f98e09;'>**Dakotah Norton**</span> climb up to 6 places,
+    style='color:#f98e09;'>**Dakotah Norton**</span> climb up to 4 places,
     showing they still left time left on the hill. Could these riders be a good
     bet next season?</span>"
   )

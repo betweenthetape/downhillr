@@ -360,7 +360,7 @@ gt_riders_with_most_time_left <- riders_with_most_time_left |>
   fmt_percent(percentage_races_time_left, decimals = 0) |>
   tab_header(
     title = md(
-      "Each riders in this table left time on each track they completed."
+      "Each rider in this table left time on each track they completed."
     )
   )
 

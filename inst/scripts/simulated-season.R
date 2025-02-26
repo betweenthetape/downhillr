@@ -202,7 +202,7 @@ fastest_times_possible <- fastest_possible_sections |>
 #   consideration changing weather and track conditions. See notes in this
 #   section for more details.
 # ------------------------------------------------------------------------------
-# Use Finn's Leogang results to show how simulation works
+# Use Luca's Leogang results to show how simulation works
 luca_les_gets <- world_cup_24_elite_men_results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
   bind_rows(timed_training) |>

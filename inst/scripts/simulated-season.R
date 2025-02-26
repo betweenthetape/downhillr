@@ -199,8 +199,7 @@ fastest_times_possible <- fastest_possible_sections |>
 # - Next, summary stats showing which races and riders had the most time left on
 #   the track when using simulated race runs.
 # - Just use comparison with fastest weekend time as this takes into
-#   consideration changing weather and track conditions. See notes in this
-#   section for more details.
+#   consideration changing weather and track conditions.
 # ------------------------------------------------------------------------------
 # Use Luca's Leogang results to show how simulation works
 luca_les_gets <- world_cup_24_elite_men_results |>
@@ -275,6 +274,8 @@ luca_les_gets <- world_cup_24_elite_men_results |>
 
 gtsave(luca_les_gets, "inst/scripts/luca-les-gets.png", zoom = 10)
 
+# Next, let's calculate the percentage of riders where their simulated result
+# was faster than their fastest weekend time
 fastest_times_all <- fastest_times_weekend |>
   left_join(fastest_times_final) |>
   left_join(fastest_times_possible) |>
@@ -293,8 +294,7 @@ fastest_times_all <- fastest_times_weekend |>
     )
   )
 
-# Percentage riders where possible faster than weekend
-fastest_times_all |>
+gt_possible_faster_than_weekend <- fastest_times_all |>
   filter(!is.na(possible_faster_than_weekend)) |>
   summarise(
     possible_faster_than_weekend = sum(
@@ -304,45 +304,34 @@ fastest_times_all |>
     total_riders = n(),
     .by = event_name
   ) |>
-  mutate(percentage_riders = possible_faster_than_weekend / total_riders * 100)
-
-# Percentage riders where possible faster than finals
-fastest_times_all |>
-  filter(!is.na(possible_faster_than_finals)) |>
-  summarise(
-    possible_faster_than_finals = sum(
-      possible_faster_than_finals,
-      na.rm = TRUE
+  mutate(percentage_riders = possible_faster_than_weekend / total_riders) |>
+  relocate(total_riders, .after = event_name) |>
+  gt() |>
+  opt_row_striping() |>
+  cols_label(
+    event_name = "",
+    total_riders = "Riders (count)",
+    possible_faster_than_weekend = "Faster simulation (count)",
+    percentage_riders = "Faster simulation (%)"
+  ) |>
+  fmt_percent(columns = percentage_riders, decimals = 1) |>
+  tab_header(
+    title = md(
+      "The count & percentage of riders with faster simulation times than actual times."
     ),
-    total_riders = n(),
-    .by = event_name
-  ) |>
-  mutate(percentage_riders = possible_faster_than_finals / total_riders * 100)
+    subtitle = md(
+      "Actual times determined as each riders fastest time from each event."
+    )
+  )
 
-# Insights:
-# - Only includes riders with complete data (completed full runs)
-# - Fastest time of weekend is preferred over finals, because it takes into
-#   consideration track conditions and weather. For example, for
-#   Mont-Sainte-Anne we can see that weather deterioated over the weekend, so it
-#   is no surprised that finals were slower:
+gtsave(
+  gt_possible_faster_than_weekend,
+  "inst/scripts/validation.png",
+  zoom = 10
+)
 
-world_cup_24_elite_men_results |>
-  distinct(
-    event_name,
-    round_type,
-    round_category,
-    metadata_weather,
-    metadata_temp_deg_c
-  ) |>
-  tail(3)
-
-# - For fastest time of the weekend, across all tracks, an average of 29.6% of
-#   riders could have acheived a faster time than their fastest run of the
-#   weekend. This inisght also hints in the other direction, that ~70% of riders
-#   are able to piece together their fastest run in a single run. Who are they?
-
-fastest_times_all |>
-  filter(!is.na(possible_faster_than_weekend)) |>
+# Which riders had the most time left?
+riders_with_most_time_left <- fastest_times_all |>
   summarise(
     possible_faster_than_weekend = sum(
       possible_faster_than_weekend,
@@ -353,40 +342,33 @@ fastest_times_all |>
   ) |>
   mutate(
     percentage_races_time_left = possible_faster_than_weekend /
-      total_races_completed *
-      100
+      total_races_completed
   ) |>
-  arrange(desc(percentage_races_time_left))
+  arrange(desc(percentage_races_time_left), desc(total_races_completed))
 
-# Insight:
-# - It is very surprising to see Bruni in position 11. The overall champ still
-#   had time to play with.
-
-fastest_times_all |>
-  filter(!is.na(possible_faster_than_finals)) |>
-  summarise(
-    possible_faster_than_finals = sum(
-      possible_faster_than_finals,
-      na.rm = TRUE
-    ),
-    total_races_completed = n(),
-    .by = name
+gt_riders_with_most_time_left <- riders_with_most_time_left |>
+  relocate(total_races_completed, .after = name) |>
+  slice_head(n = 10) |>
+  gt() |>
+  opt_row_striping() |>
+  cols_label(
+    name = "",
+    total_races_completed = "Events done (count)",
+    possible_faster_than_weekend = "Simulation faster (count)",
+    percentage_races_time_left = "Simulation faster (%)"
   ) |>
-  mutate(
-    percentage_races_time_left = possible_faster_than_finals /
-      total_races_completed *
-      100
-  ) |>
-  arrange(desc(percentage_races_time_left))
+  fmt_percent(percentage_races_time_left, decimals = 0) |>
+  tab_header(
+    title = md(
+      "Each riders in this table left time on each track they completed."
+    )
+  )
 
-# Insight:
-# - Again, it is better to not use finals results for a comparison because it
-#   doesn't take into account weather and track conditions. It is unsurprising
-#   that the percentages are higher here. For the write-up, perhaps just present
-#   fastest of weekend comparison with a note that about why finals isn't used.
-# - We need to be careful in this section to not present simulated season
-#   results, or take too much away from the next section. This section should be
-#   about validating the measure in the simplest way possible.
+gtsave(
+  gt_riders_with_most_time_left,
+  "inst/scripts/riders_time_left.png",
+  zoom = 10
+)
 
 # ------------------------------------------------------------------------------
 # Simulate season

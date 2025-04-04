@@ -97,3 +97,26 @@
 #'
 #' @source <https://prod.chronorace.be/angular/results.html#/uci/event/20240503_mtb/DHI/CG1>
 "world_cup_24_elite_men_timed_training"
+
+#' Elite Men World Cup 2024 Simulated Results
+#'
+#' This dataset takes the fastest section times available (from timed training,
+#' qualifying, semi-finals, and finals) for each rider across at each event and
+#' combines them together to simulate what could have been their fastest race
+#' run. These fastest runs are then ranked to determine a new simulated set of
+#' race results.
+#'
+#' @format A data frame with variables:
+#' \describe{
+#'   \item{split_1}{Rider's fastest first split time (in seconds).}
+#'   \item{split_2}{Rider's fastest second split time (in seconds).}
+#'   \item{split_3}{Rider's fastest third split time (in seconds).}
+#'   \item{split_4}{Rider's fastest fourth split time (in seconds).}
+#'   \item{time}{Rider's fastest possible time to complete the course (in seconds).}
+#'   \item{rank}{The finishing rank of the rider based on time.}
+#'   \item{time_from_leader}{Time difference from the fastest rider (in seconds).}
+#'   \item{event_name}{Name of the event (e.g., "Fort William").}
+#' }
+#'
+#' @source Simulated from section analysis of 2024 World Cup events
+"world_cup_elite_men_simulated"

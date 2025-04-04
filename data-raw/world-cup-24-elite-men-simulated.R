@@ -105,45 +105,43 @@ fastest_possible_sections <- world_cup_24_elite_men_results |>
   ) |>
   filter(if_all(starts_with("section_"), ~ !is.infinite(.x)))
 
-fastest_times_possible <- fastest_possible_sections |>
-  rowwise(name, event_name) |>
-  summarise(
-    fastest_time_possible = sum(
-      c_across(ends_with("_time")),
-      na.rm = TRUE
-    ),
-    .groups = "drop"
-  )
+world_cup_elite_men_simulated <- fastest_possible_sections |>
+  select(-ends_with("_round")) |>
+  rename_with(\(x) str_remove_all(x, "_time"), starts_with("section_")) |>
+  rowwise() |>
+  mutate(
+    section_2 = section_1 + section_2,
+    section_3 = section_2 + section_3,
+    section_4 = section_3 + section_4,
+    section_5 = section_4 + section_5
+  ) |>
+  ungroup() |>
+  mutate(rank = rank(section_5, ties.method = "min"), .by = event_name) |>
+  mutate(time_from_leader = section_5 - min(section_5), .by = event_name) |>
+  rename(
+    split_1 = section_1,
+    split_2 = section_2,
+    split_3 = section_3,
+    split_4 = section_4,
+    time = section_5
+  ) |>
+  mutate(
+    event_name = factor(
+      event_name,
+      levels = c(
+        "Fort William",
+        "Bielsko-Biala",
+        "Leogang",
+        "Val di Sole",
+        "Les Gets",
+        "Loudenvielle",
+        "Mont-Sainte-Anne"
+      )
+    )
+  ) |>
+  arrange(event_name, rank)
 
 # ------------------------------------------------------------------------------
-# Simulate season
+# Export
 # ------------------------------------------------------------------------------
-simulated_top_30_each_race <- fastest_times_possible |>
-  group_by(event_name) |>
-  arrange(fastest_time_possible, .by_group = TRUE) |>
-  slice_head(n = 30) |>
-  mutate(position = row_number()) |>
-  ungroup()
-
-# Points are only given to top 30 for each race run
-finals_points <- world_cup_24_elite_men_points_scale |>
-  filter(round_type == "Final") |>
-  select(-round_type)
-
-simulated_season <- simulated_top_30_each_race |>
-  left_join(finals_points) |>
-  rename(simulated_rank = position, simulated_points = points)
-
-simulated_overall <- simulated_season |>
-  summarise(simulated_points = sum(simulated_points), .by = name) |>
-  arrange(desc(simulated_points)) |>
-  mutate(simulated_rank = row_number())
-
-actual_season <- world_cup_24_elite_men_results |>
-  filter(round_type == "Final") |>
-  select(name, event_name, time, actual_rank = rank, actual_points = points)
-
-actual_overall <- world_cup_24_elite_men_results |>
-  summarise(actual_points = sum(points, na.rm = TRUE), .by = name) |>
-  arrange(desc(actual_points)) |>
-  mutate(actual_rank = row_number())
+usethis::use_data(world_cup_elite_men_simulated, overwrite = TRUE)

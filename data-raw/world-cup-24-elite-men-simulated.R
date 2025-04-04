@@ -105,7 +105,7 @@ fastest_possible_sections <- world_cup_24_elite_men_results |>
   ) |>
   filter(if_all(starts_with("section_"), ~ !is.infinite(.x)))
 
-world_cup_elite_men_simulated <- fastest_possible_sections |>
+world_cup_24_elite_men_simulated <- fastest_possible_sections |>
   select(-ends_with("_round")) |>
   rename_with(\(x) str_remove_all(x, "_time"), starts_with("section_")) |>
   rowwise() |>
@@ -144,4 +144,4 @@ world_cup_elite_men_simulated <- fastest_possible_sections |>
 # ------------------------------------------------------------------------------
 # Export
 # ------------------------------------------------------------------------------
-usethis::use_data(world_cup_elite_men_simulated, overwrite = TRUE)
+usethis::use_data(world_cup_24_elite_men_simulated, overwrite = TRUE)

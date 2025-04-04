@@ -3,3 +3,5 @@
 ^data-raw$
 ^LICENSE\.md$
 ^inst/extdata$
+^inst/rider-images$
+^inst/scripts$

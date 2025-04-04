@@ -120,4 +120,4 @@
 #' }
 #'
 #' @source Simulated from section analysis of 2024 World Cup events
-"world_cup_elite_men_simulated"
+"world_cup_24_elite_men_simulated"

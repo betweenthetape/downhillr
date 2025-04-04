@@ -7,6 +7,8 @@
 \format{
 A data frame with variables:
 \describe{
+\item{name}{Rider's name (e.g., "NORTON Dakotah").}
+\item{event_name}{Name of the event (e.g., "Fort William").}
 \item{split_1}{Rider's fastest first split time (in seconds).}
 \item{split_2}{Rider's fastest second split time (in seconds).}
 \item{split_3}{Rider's fastest third split time (in seconds).}
@@ -14,7 +16,6 @@ A data frame with variables:
 \item{time}{Rider's fastest possible time to complete the course (in seconds).}
 \item{rank}{The finishing rank of the rider based on time.}
 \item{time_from_leader}{Time difference from the fastest rider (in seconds).}
-\item{event_name}{Name of the event (e.g., "Fort William").}
 }
 }
 \source{

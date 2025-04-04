@@ -5,3 +5,5 @@
 ^inst/extdata$
 ^inst/rider-images$
 ^inst/scripts$
+^\.cursor/$
+^air\.toml$

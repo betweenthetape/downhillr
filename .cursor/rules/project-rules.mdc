@@ -1,0 +1,18 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+## Testing
+- When running examples in an R package, run the command `pkgload::load_all()` and then call functions and package objects directly.
+
+## Style Guidelines
+- Use roxygen2 for documentation
+- Always import functions in `R/` with `::`. Do not use `@import` or `@importFrom` statements
+- Follow tidyverse style: snake_case for functions and variables
+- Use pipe operator `|>` for function chains
+- Document all exported functions with roxygen
+- Tag internal functions with `@keywords internal` and `@noRd`
+- Use `@autoglobal` for functions that use global variables
+- Prefere to use tidyverse package functions over alternatives

@@ -48,11 +48,11 @@ all_sectors <- results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
   bind_rows(timed_training) |>
   mutate(
-    `1` = split_1,
-    `2` = split_2 - split_1,
-    `3` = split_3 - split_2,
-    `4` = split_4 - split_3,
-    `5` = time - split_4
+    section_1 = split_1,
+    section_2 = split_2 - split_1,
+    section_3 = split_3 - split_2,
+    section_4 = split_4 - split_3,
+    section_5 = time - split_4
   ) |>
   select(-starts_with("split_")) |>
   mutate(
@@ -68,7 +68,7 @@ all_sectors <- results |>
       )
     )
   ) |>
-  relocate(time, .after = `5`) |>
+  relocate(time, .after = section_5) |>
   arrange(round_type)
 
 write_csv(all_sectors, "all_sectors.csv")

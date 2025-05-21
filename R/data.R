@@ -175,31 +175,31 @@
 #'   \item{nr}{Rider's race number.}
 #'   \item{name}{Rider's name (e.g., "NORTON Dakotah").}
 #'   \item{uci_team}{Rider's UCI team (e.g., "MONDRAKER FACTORY RACING").}
-#'   \item{run_1_speed}{Rider's average speed in km/h during Run 1.}
+#'   \item{run_1_speed_kmh}{Rider's average speed in km/h during Run 1.}
 #'   \item{run_1_split_1}{Time at the first split during Run 1 (in seconds).}
 #'   \item{run_1_split_2}{Time at the second split during Run 1 (in seconds).}
 #'   \item{run_1_split_3}{Time at the third split during Run 1 (in seconds).}
 #'   \item{run_1_split_4}{Time at the fourth split during Run 1 (in seconds).}
 #'   \item{run_1_time}{Total time for Run 1 (in seconds).}
-#'   \item{run_2_speed}{Rider's average speed in km/h during Run 2.}
+#'   \item{run_2_speed_kmh}{Rider's average speed in km/h during Run 2.}
 #'   \item{run_2_split_1}{Time at the first split during Run 2 (in seconds).}
 #'   \item{run_2_split_2}{Time at the second split during Run 2 (in seconds).}
 #'   \item{run_2_split_3}{Time at the third split during Run 2 (in seconds).}
 #'   \item{run_2_split_4}{Time at the fourth split during Run 2 (in seconds).}
 #'   \item{run_2_time}{Total time for Run 2 (in seconds).}
-#'   \item{run_3_speed}{Rider's average speed in km/h during Run 3.}
+#'   \item{run_3_speed_kmh}{Rider's average speed in km/h during Run 3.}
 #'   \item{run_3_split_1}{Time at the first split during Run 3 (in seconds).}
 #'   \item{run_3_split_2}{Time at the second split during Run 3 (in seconds).}
 #'   \item{run_3_split_3}{Time at the third split during Run 3 (in seconds).}
 #'   \item{run_3_split_4}{Time at the fourth split during Run 3 (in seconds).}
 #'   \item{run_3_time}{Total time for Run 3 (in seconds).}
-#'   \item{run_4_speed}{Rider's average speed in km/h during Run 4.}
+#'   \item{run_4_speed_kmh}{Rider's average speed in km/h during Run 4.}
 #'   \item{run_4_split_1}{Time at the first split during Run 4 (in seconds).}
 #'   \item{run_4_split_2}{Time at the second split during Run 4 (in seconds).}
 #'   \item{run_4_split_3}{Time at the third split during Run 4 (in seconds).}
 #'   \item{run_4_split_4}{Time at the fourth split during Run 4 (in seconds).}
 #'   \item{run_4_time}{Total time for Run 4 (in seconds).}
-#'   \item{run_5_speed}{Rider's average speed in km/h during Run 5.}
+#'   \item{run_5_speed_kmh}{Rider's average speed in km/h during Run 5.}
 #'   \item{run_5_split_1}{Time at the first split during Run 5 (in seconds).}
 #'   \item{run_5_split_2}{Time at the second split during Run 5 (in seconds).}
 #'   \item{run_5_split_3}{Time at the third split during Run 5 (in seconds).}

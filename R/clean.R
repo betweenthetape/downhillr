@@ -269,16 +269,16 @@ clean_timed_training_25 <- function(data) {
       rank = Rank,
       nr = Nr,
       name = `Name / UCI MTB Team`,
-      nat = NAT,
-      run_1_speed = Speed...5,
-      run_1_split_1 = Splits...6,
-      run_1_time = Time...7,
-      run_2_speed = Speed...8,
-      run_2_split_1 = Splits...9,
-      run_2_time = Time...10,
-      run_3_speed = Speed...11,
-      run_3_split_1 = Splits...12,
-      run_3_time = Time...13,
+      run_1_split_1 = Splits...4,
+      run_1_time = Time...5,
+      run_2_split_1 = Splits...6,
+      run_2_time = Time...7,
+      run_3_split_1 = Splits...8,
+      run_3_time = Time...9,
+      run_4_split_1 = Splits...10,
+      run_4_time = Time...11,
+      run_5_split_1 = Splits...12,
+      run_5_time = Time...13,
       best_time = Time...14
     )
 
@@ -287,9 +287,16 @@ clean_timed_training_25 <- function(data) {
     select(
       nr = Nr,
       uci_team = `Name / UCI MTB Team`,
-      run_1_split_2 = Splits...6,
-      run_2_split_2 = Splits...9,
-      run_3_split_2 = Splits...12,
+      run_1_split_2 = Splits...4,
+      run_2_split_2 = Splits...6,
+      run_3_split_2 = Splits...8,
+      run_4_split_2 = Splits...10,
+      run_5_split_2 = Splits...12,
+      run_1_speed_kmh = Time...5,
+      run_2_speed_kmh = Time...7,
+      run_3_speed_kmh = Time...9,
+      run_4_speed_kmh = Time...11,
+      run_5_speed_kmh = Time...13,
       best_time_from_leader = Time...14
     )
 
@@ -297,47 +304,54 @@ clean_timed_training_25 <- function(data) {
     filter((row_number() - 3) %% 4 == 0) |>
     select(
       nr = Nr,
-      run_1_split_3 = Splits...6,
-      run_2_split_3 = Splits...9,
-      run_3_split_3 = Splits...12,
+      run_1_split_3 = Splits...4,
+      run_2_split_3 = Splits...6,
+      run_3_split_3 = Splits...8,
+      run_4_split_3 = Splits...10,
+      run_5_split_3 = Splits...12,
     )
 
   split_4 <- data |>
     filter((row_number() - 4) %% 4 == 0) |>
     select(
       nr = Nr,
-      run_1_split_4 = Splits...6,
-      run_2_split_4 = Splits...9,
-      run_3_split_4 = Splits...12,
+      run_1_split_4 = Splits...4,
+      run_2_split_4 = Splits...6,
+      run_3_split_4 = Splits...8,
+      run_4_split_4 = Splits...10,
+      run_5_split_4 = Splits...12,
     )
 
   list(split_1, split_2, split_3, split_4) |>
     reduce(left_join) |>
-    mutate(
-      name = str_squish(str_remove(name, "\\*$")),
-      best_time_from_leader = str_remove(best_time_from_leader, "^\\+"),
-      across(everything(), ~ if_else(.x == "-", NA, .x)),
-      across(
-        c(starts_with("run_"), starts_with("best_time")),
-        ~ convert_to_seconds(.x)
-      ),
-      across(c(rank, nr), ~ as.numeric(.x))
-    ) |>
+    mutate(name = str_squish(str_remove(name, "\\*$"))) |>
+    mutate(best_time_from_leader = str_remove(best_time_from_leader, "^\\+")) |>
+    mutate(across(ends_with("_kmh"), ~ str_remove(.x, "kmh$"))) |>
+    mutate(across(
+      !c(rank, nr, name, uci_team, ends_with("_speed")),
+      ~ convert_to_seconds(.x)
+    )) |>
+    mutate(across(c(rank, nr), ~ as.numeric(.x))) |>
     select(
       rank,
       nr,
       name,
       uci_team,
-      nat,
-      run_1_speed,
+      run_1_speed_kmh,
       starts_with("run_1_split"),
       run_1_time,
-      run_2_speed,
+      run_2_speed_kmh,
       starts_with("run_2_split"),
       run_2_time,
-      run_3_speed,
+      run_3_speed_kmh,
       starts_with("run_3_split"),
       run_3_time,
+      run_4_speed_kmh,
+      starts_with("run_4_split"),
+      run_4_time,
+      run_5_speed_kmh,
+      starts_with("run_5_split"),
+      run_5_time,
       best_time,
       best_time_from_leader
     )

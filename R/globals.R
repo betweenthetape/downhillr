@@ -3,11 +3,9 @@
 utils::globalVariables(c(
   "UCI ID", # <clean_results>
   "Nr Name / UCI MTB Team", # <clean_results>
-  "x2", # <clean_results>
   "name_uci_mtb_team", # <clean_results>
   "i1_i2", # <clean_results>
   "i3_i4", # <clean_results>
-  "protected", # <clean_results>
   "name", # <clean_results>
   "I1 / I2", # <clean_results>
   "I3 / I4", # <clean_results>

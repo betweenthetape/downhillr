@@ -59,7 +59,7 @@ spec <- tribble(
     event_name = "Bielsko-Biala",
     event_type = "World Cup",
     event_year = "2025",
-    round_type = "Final",
+    round_type = "Qualifying Round 2",
     round_category = "Men Elite",
     metadata_weather = "Rainy",
     metadata_temp_deg_c = 9,
@@ -81,7 +81,7 @@ results <- pmap(
       output = "tibble"
     ) |>
       bind_tables() |>
-      clean_results() |>
+      clean_results_25() |>
       mutate(!!!metadata)
   }
 )

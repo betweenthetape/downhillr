@@ -1,6 +1,6 @@
 # ------------------------------------------------------------------------------
 # README:
-# To run this script, you first need to run manually download the results PDF's
+# To run this script, you first need to manually download the results PDF's
 # from https://www.uci.org/competition-hub/2024-uci-mountain-bike-world-cup/6BCZY2ZIDMZdCWN7Ee5WD3
 # matching the file names to those below
 # ------------------------------------------------------------------------------

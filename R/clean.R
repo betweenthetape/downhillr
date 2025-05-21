@@ -21,12 +21,12 @@ clean_results <- function(data) {
     ) |>
     janitor::clean_names() |>
     rename(
-      protected = x2,
+      # protected = x2,
       name = name_uci_mtb_team,
       split_1 = i1_i2,
       split_3 = i3_i4
     ) |>
-    mutate(protected = if_else(!is.na(protected), TRUE, FALSE)) |>
+    # mutate(protected = if_else(!is.na(protected), TRUE, FALSE)) |>
     mutate(name = str_remove(name, "\\*$")) |>
     mutate(name = str_squish(name))
 
@@ -50,13 +50,31 @@ clean_results <- function(data) {
       across(starts_with("sp"), ~ str_remove(.x, "\\s*\\(\\d+\\)$")),
       time_from_leader = str_remove(time_from_leader, "^\\+"),
       across(
-        c(starts_with("split_"), starts_with("time")), ~ convert_to_seconds(.x)
+        c(starts_with("split_"), starts_with("time")),
+        ~ convert_to_seconds(.x)
       ),
       across(c(rank, nr, uci_id, speed, points), ~ as.numeric(.x))
     ) |>
     select(
-      rank, protected, nr, name, uci_team, uci_id, nat, yob, speed, split_1,
-      split_2, split_3, split_4, time, time_from_leader, dnf, dsq, dns, points
+      rank,
+      # protected,
+      nr,
+      name,
+      uci_team,
+      uci_id,
+      nat,
+      yob,
+      speed,
+      split_1,
+      split_2,
+      split_3,
+      split_4,
+      time,
+      time_from_leader,
+      dnf,
+      dsq,
+      dns,
+      points
     )
 }
 
@@ -135,9 +153,21 @@ clean_timed_training <- function(data) {
       across(c(rank, nr), ~ as.numeric(.x))
     ) |>
     select(
-      rank, nr, name, uci_team, nat, run_1_speed, starts_with("run_1_split"),
-      run_1_time, run_2_speed, starts_with("run_2_split"), run_2_time,
-      run_3_speed, starts_with("run_3_split"), run_3_time, best_time,
+      rank,
+      nr,
+      name,
+      uci_team,
+      nat,
+      run_1_speed,
+      starts_with("run_1_split"),
+      run_1_time,
+      run_2_speed,
+      starts_with("run_2_split"),
+      run_2_time,
+      run_3_speed,
+      starts_with("run_3_split"),
+      run_3_time,
+      best_time,
       best_time_from_leader
     )
 }

@@ -215,4 +215,4 @@
 #' }
 #'
 #' @source <https://prod.chronorace.be/angular/results.html#/uci/event/20240503_mtb/DHI/CG1>
-"world_cup_24_elite_men_timed_training"
+"world_cup_25_elite_men_timed_training"

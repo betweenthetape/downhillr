@@ -156,6 +156,11 @@ actual |>
 # Contrast this to last seasons overall bump chart, where we can see this did
 # not hold true. Is this a signal Q1/Q2 works? That the reduced field is making
 # for better racing?
+# Fort william has almost identical simulated and actual overall results in
+# 24 season, but then variance increased as season progressed. Is there
+# something special about the openeing round? Perhaps it takes riders a while to
+# get up to speed, where as in subsequent rounds they know the level better
+# straight off the bat?
 
 # ------------------------------------------------------------------------------
 # Fastest run comparison

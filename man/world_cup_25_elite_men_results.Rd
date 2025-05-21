@@ -5,7 +5,7 @@
 \alias{world_cup_25_elite_men_results}
 \title{Elite Men World Cup 2025 Results}
 \format{
-A data frame with 1,690 rows and 28 variables:
+A data frame with 208 rows and 27 variables:
 \describe{
 \item{rank}{The finishing rank of the rider.}
 \item{nr}{Rider's race number.}
@@ -27,7 +27,7 @@ A data frame with 1,690 rows and 28 variables:
 \item{points}{UCI points awarded for the race.}
 \item{event_name}{Name of the event (e.g., "Fort William").}
 \item{event_type}{Type of the event (e.g., "World Cup").}
-\item{event_year}{Year of the event (e.g., "2024").}
+\item{event_year}{Year of the event (e.g., "2025").}
 \item{round_type}{Round type (e.g., "Final").}
 \item{round_category}{Category of the round (e.g., "Men Elite").}
 \item{metadata_weather}{Weather conditions during the event (e.g., "Light rain").}

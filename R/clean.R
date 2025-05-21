@@ -324,7 +324,9 @@ clean_timed_training_25 <- function(data) {
 
   list(split_1, split_2, split_3, split_4) |>
     reduce(left_join) |>
-    mutate(name = str_squish(str_remove(name, "\\*$"))) |>
+    mutate(name = str_replace_all(name, "\\s*\\*\\s*", " ")) |>
+    mutate(name = str_replace_all(name, "\\s*\\([A-Z]{3}\\)", "")) |>
+    mutate(name = str_squish(name)) |>
     mutate(best_time_from_leader = str_remove(best_time_from_leader, "^\\+")) |>
     mutate(across(ends_with("_kmh"), ~ str_remove(.x, "kmh$"))) |>
     mutate(across(

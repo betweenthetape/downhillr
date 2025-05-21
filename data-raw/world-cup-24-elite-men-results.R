@@ -12,7 +12,9 @@ library(tabulapdf)
 # ---- Create spec ----
 # Run `pdf_areas(<INSERT PATH>)` on each path to determine PDF table areas.
 spec <- tribble(
-  ~path, ~areas, ~metadata,
+  ~path,
+  ~areas,
+  ~metadata,
   "inst/extdata/20240503-fwil_dhi_me_results_f.pdf",
   list(
     c(133.5767, 20.1788, 634.5883, 575.0968)
@@ -359,7 +361,7 @@ results <- pmap(
       output = "tibble"
     ) |>
       bind_tables() |>
-      clean_results() |>
+      clean_results_24() |>
       mutate(!!!metadata)
   }
 )

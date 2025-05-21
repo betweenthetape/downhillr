@@ -1,4 +1,4 @@
-#' Clean a results table extracted from a PDF
+#' Clean a results table extracted from a PDF for the 2024 season
 #'
 #' Use this function to clean qualifying, semi-final, and final result tables
 #' after they have been extracted from a PDF and comined into a single table in
@@ -9,7 +9,7 @@
 #' @return A tibble with cleaned results.
 #' @noRd
 #' @autoglobal
-clean_results <- function(data) {
+clean_results_24 <- function(data) {
   data <- data |>
     fill(`UCI ID`)
 
@@ -21,12 +21,12 @@ clean_results <- function(data) {
     ) |>
     janitor::clean_names() |>
     rename(
-      # protected = x2,
+      protected = x2,
       name = name_uci_mtb_team,
       split_1 = i1_i2,
       split_3 = i3_i4
     ) |>
-    # mutate(protected = if_else(!is.na(protected), TRUE, FALSE)) |>
+    mutate(protected = if_else(!is.na(protected), TRUE, FALSE)) |>
     mutate(name = str_remove(name, "\\*$")) |>
     mutate(name = str_squish(name))
 
@@ -57,7 +57,7 @@ clean_results <- function(data) {
     ) |>
     select(
       rank,
-      # protected,
+      protected,
       nr,
       name,
       uci_team,

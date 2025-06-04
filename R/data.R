@@ -169,7 +169,7 @@
 #' of the 2025 Mountain Bike World Cup. It includes detailed information about
 #' each rider's performance across multiple runs, as well as event metadata.
 #'
-#' @format A data frame with 97 rows and 41 variables:
+#' @format A data frame with 197 rows and 41 variables:
 #' \describe{
 #'   \item{rank}{The finishing rank of the rider based on their best time.}
 #'   \item{nr}{Rider's race number.}

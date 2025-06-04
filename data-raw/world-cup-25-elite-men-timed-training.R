@@ -32,6 +32,22 @@ spec <- tribble(
     event_year = "2025",
     round_type = "Timed Training",
     round_category = "Men Elite"
+  ),
+  "inst/extdata/20250530-loud_dhi_me_results_tt.pdf",
+  1:5,
+  list(
+    c(140.7004, 19.7062, 738.1955, 576.3403),
+    c(139.9295, 19.7062, 737.4245, 575.5693),
+    c(139.9295, 19.7062, 737.4245, 574.0274),
+    c(139.9295, 19.7062, 737.4245, 576.3403),
+    c(140.7004, 19.7062, 284.8702, 574.0274)
+  ),
+  list(
+    event_name = "Loudenvielle",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Timed Training",
+    round_category = "Men Elite"
   )
 )
 

@@ -65,6 +65,56 @@ spec <- tribble(
     metadata_temp_deg_c = 9,
     metadata_distance_km = 2.000,
     metadata_average_speed_kmh = 37.586
+  ),
+  # ---- Loudenvielle ----
+  "inst/extdata/20250530-loud_dhi_me_results_f.pdf",
+  NULL,
+  list(c(132.7839, 18.9897, 618.7335, 576.2859)),
+  list(
+    event_name = "Loudenvielle",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Men Elite",
+    metadata_weather = "Cloudy",
+    metadata_temp_deg_c = 22,
+    metadata_distance_km = 2.530,
+    metadata_average_speed_kmh = 47.145
+  ),
+  "inst/extdata/20250530-loud_dhi_me_results_q1.pdf",
+  NULL,
+  list(
+    c(133.5767, 19.7825, 741.6082, 576.2859),
+    c(132.7839, 18.9897, 740.8154, 575.4931),
+    c(132.7839, 19.7825, 428.4759, 576.2859)
+  ),
+  list(
+    event_name = "Loudenvielle",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Men Elite",
+    metadata_weather = "Mostly Sunny",
+    metadata_temp_deg_c = 22,
+    metadata_distance_km = 2.530,
+    metadata_average_speed_kmh = 46.200
+  ),
+  "inst/extdata/20250530-loud_dhi_me_results_q2.pdf",
+  1:2,
+  list(
+    c(132.7839, 19.7825, 742.4009, 576.2859),
+    c(132.7839, 19.7825, 630.6246, 575.4931)
+  ),
+  list(
+    event_name = "Loudenvielle",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Men Elite",
+    metadata_weather = "Mostly Sunny",
+    metadata_temp_deg_c = 22,
+    metadata_distance_km = 2.530,
+    metadata_average_speed_kmh = 46.160
   )
 )
 

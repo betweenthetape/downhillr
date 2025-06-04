@@ -260,6 +260,26 @@ clean_timed_training_24 <- function(data) {
 #' @noRd
 #' @autoglobal
 clean_timed_training_25 <- function(data) {
+  # There is a data entry error for Christian Hauser in Loudenvielle where his
+  # Nr is inputted as 10 on his first row, and 1 on his second row, rather than
+  # 101 on his first row. Use a combination of columns as a unique indentifier:
+  data <- data |>
+    mutate(
+      Nr = case_when(
+        Rank == "84" &
+          `Name / UCI MTB Team` == "HAUSER Christian * (ITA)" &
+          Nr == "10" &
+          `Time...14` == "6:38.697" ~
+          "101",
+        is.na(Rank) &
+          `Name / UCI MTB Team` == "TREK FACTORY RACING DH" &
+          Nr == "1" &
+          `Time...14` == "+3:19.842" ~
+          NA_character_,
+        .default = Nr
+      )
+    )
+
   data <- data |>
     fill(Nr)
 

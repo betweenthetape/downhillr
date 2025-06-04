@@ -34,7 +34,8 @@ world_cup_25_elite_men_results <- world_cup_25_elite_men_results |>
     name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
   ) |>
   mutate(across(everything(), ~ if_else(is.infinite(.x), NA, .x))) |>
-  filter(event_name == "Loudenvielle")
+  filter(event_name == "Loudenvielle") |>
+  mutate(name = if_else(name == "Oisin Callaghan O", "Oisin O'Callaghan", name))
 
 timed_training <- world_cup_25_elite_men_timed_training |>
   mutate(name = str_to_title(name)) |>
@@ -105,9 +106,11 @@ image_data <- tibble(path = dir_ls("inst/rider-images")) |>
     name = case_when(
       name == "Angel Suarez" ~ "Angel Alonso Suarez",
       name == "Lachlan StevensMcNab" ~ "Lachlan Stevens-Mcnab",
-      name == "Oisin OCallaghan" ~ "Oisin Callaghan O",
+      name == "Oisin OCallaghan" ~ "Oisin O'Callaghan",
       name == "Remi Thirion" ~ "Rémi Thirion",
       name == "Ethan Craik" ~ "Ethan George Craik",
+      name == "Tuhoto ArikiPene" ~ "Tuhoto-Ariki Pene",
+      name == "Luke MeierSmith" ~ "Luke Meier-Smith",
       .default = name
     )
   )
@@ -332,11 +335,11 @@ table_loris_vergier <- world_cup_25_elite_men_results |>
     palette = "#4daf4a"
   )
 
-gtsave(
-  table_loris_vergier,
-  "inst/scripts/analysis-loudenvielle-25/table_loris_vergier.png",
-  zoom = 10
-)
+# gtsave(
+#   table_loris_vergier,
+#   "inst/scripts/analysis-loudenvielle-25/table_loris_vergier.png",
+#   zoom = 10
+# )
 
 # ------------------------------------------------------------------------------
 # Table showing % ridets with fastest simulated results
@@ -386,11 +389,11 @@ table_possible_faster <- fastest_times_all |>
     )
   )
 
-gtsave(
-  table_possible_faster,
-  "inst/scripts/analysis-loudenvielle-25/table_possible_faster.png",
-  zoom = 10
-)
+# gtsave(
+#   table_possible_faster,
+#   "inst/scripts/analysis-loudenvielle-25/table_possible_faster.png",
+#   zoom = 10
+# )
 
 # ------------------------------------------------------------------------------
 # Who left the most time on the track
@@ -421,11 +424,11 @@ table_time_left <- fastest_times_all |>
     )
   )
 
-gtsave(
-  table_time_left,
-  "inst/scripts/analysis-loudenvielle-25/table_time_left.png",
-  zoom = 10
-)
+# gtsave(
+#   table_time_left,
+#   "inst/scripts/analysis-loudenvielle-25/table_time_left.png",
+#   zoom = 10
+# )
 
 # ------------------------------------------------------------------------------
 # Bump plot
@@ -440,9 +443,231 @@ simulated <- fastest_possible_times |>
   mutate(rank_simulated = row_number()) |>
   select(name, rank_simulated)
 
-actual |>
+bump_data <- actual |>
   left_join(simulated) |>
-  View()
+  pivot_longer(
+    starts_with("rank_"),
+    names_to = "type",
+    values_to = "rank"
+  ) |>
+  mutate(
+    type = if_else(
+      type == "rank_actual",
+      "Actual \noverall rank",
+      "Simulated \noverall rank"
+    )
+  ) |>
+  mutate(
+    color = case_when(
+      name == "Jackson Goldstone" ~ "#57106e",
+      name == "Tuhoto-Ariki Pene" ~ "#f98e09",
+      TRUE ~ "#E7E7E7"
+    )
+  ) |>
+  left_join(image_data) |>
+  filter(rank <= 28)
+
+plot_bump <- ggplot() +
+  geom_bump(
+    aes(type, rank, group = name, color = I(color)),
+    data = bump_data,
+    linewidth = 1.5
+  ) +
+  geom_image(
+    data = bump_data,
+    aes(type, rank, image = path)
+  ) +
+  scale_y_reverse() +
+  theme_minimal() +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_textbox_simple(
+      halign = 0.5,
+      margin = margin(b = 10, t = 15),
+      size = 16
+    ),
+    plot.subtitle = element_textbox_simple(
+      halign = 0,
+      hjust = 0.5,
+      margin = margin(b = 10),
+      width = grid::unit(6, "in"),
+      size = 11,
+      color = "#424242"
+    ),
+    axis.text.x = element_text(size = 10, vjust = 2),
+    axis.ticks = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background = element_blank(),
+    panel.grid = element_blank(),
+    axis.title = element_blank()
+  ) +
+  geom_richtext(
+    data = filter(bump_data, type == "Actual \noverall rank"),
+    hjust = 1,
+    nudge_x = -0.1,
+    mapping = aes(
+      x = type,
+      y = rank,
+      label.size = NA,
+      family = "sans",
+      label = glue(
+        "<span style='font-size:14px;'>{name}<span style='color:white;'>...</span><span style='font-size:16px;'>**{rank}**</span></span>"
+      )
+    )
+  ) +
+  geom_richtext(
+    data = filter(bump_data, type == "Simulated \noverall rank"),
+    nudge_x = 0.1,
+    hjust = 0,
+    family = "sans",
+    mapping = aes(
+      x = type,
+      y = rank,
+      label.size = NA,
+      label = glue(
+        "<span style='font-size:14px;'><span style='font-size:16px;'>**{rank}**</span><span style='color:white;'>...</span>{name}</span>"
+      )
+    )
+  ) +
+  labs(
+    title = "<span>**What Could Have Been**</span>",
+    subtitle = "<span> Each riders fastest splits from across the Loudenvielle
+    race weekend were combined to simulate their fastest hypothetical runs.
+    These runs were then ranked to create a new simulated leaderboard. Even in
+    this simulated world, <span style='color:#57106e;'>**Jackson Goldstone**</span>
+    reigns king with unmatched speed. Other riders like <span
+    style='color:#f98e09;'>**Tuhoto-Ariki Pene**</span> climb a whopping 17
+    places, showing they still left time left on the hill. Could these riders be
+    a good bet for the next race?</span>"
+  )
+
+# ggsave(
+#   "inst/scripts/analysis-loudenvielle-25/plot_bump.png",
+#   plot = plot_bump,
+#   width = 2300,
+#   height = 3200,
+#   units = "px",
+#   bg = "white",
+#   limitsize = FALSE,
+#   dpi = 330
+# )
+
+# ------------------------------------------------------------------------------
+# Simulated heat map
+# ------------------------------------------------------------------------------
+fastest_possible_splits_ranked <-
+  fastest_possible_sections |>
+  select(-ends_with("_round")) |>
+  rename_with(\(x) str_remove_all(x, "_time"), starts_with("section_")) |>
+  rowwise() |>
+  mutate(
+    section_2 = section_1 + section_2,
+    section_3 = section_2 + section_3,
+    section_4 = section_3 + section_4,
+    section_5 = section_4 + section_5
+  ) |>
+  ungroup() |>
+  mutate(
+    across(
+      starts_with("section_"),
+      ~ rank(.x, ties.method = "min"),
+      .names = "{.col}_rank"
+    )
+  ) |>
+  mutate(
+    across(
+      starts_with("section_") & !ends_with("_rank"),
+      ~ .x - min(.x),
+      .names = "{.col}_gap"
+    )
+  )
+
+merge_section_columns <- function(gt_tbl) {
+  reduce(
+    1:5,
+    \(gt_tbl, x) {
+      cols_merge(
+        gt_tbl,
+        columns = c(
+          paste0("section_", x, "_gap"),
+          paste0("section_", x, "_rank")
+        ),
+        pattern = "{1} ({2})"
+      )
+    },
+    .init = gt_tbl
+  )
+}
+
+table_heat_map <- fastest_possible_splits_ranked |>
+  filter(section_5_rank <= 10) |>
+  left_join(image_data) |>
+  select(path, name, ends_with("_gap"), ends_with("_rank")) |>
+  arrange(section_5_gap) |>
+  gt() |>
+  text_transform(
+    locations = cells_body(columns = path),
+    fn = function(path) {
+      local_image(
+        filename = path,
+        height = 60
+      )
+    }
+  ) |>
+  cols_label(
+    path = "",
+    name = "",
+    section_1_gap = "Split 1",
+    section_2_gap = "Split 2",
+    section_3_gap = "Split 3",
+    section_4_gap = "Split 4",
+    section_5_gap = "Finish"
+  ) |>
+  data_color(
+    columns = ends_with("_gap"),
+    rows = everything(),
+    palette = c("#4daf4a", "#ffffbf", "#e41a1c")
+  ) |>
+  text_transform(
+    fn = \(x) if_else(x == "0.000", paste0(x), paste("+", x)),
+    locations = cells_body(columns = ends_with("_gap"))
+  ) |>
+  merge_section_columns() |>
+  tab_style(
+    style = cell_borders(sides = "all", style = "solid", color = "#e9e9e9"),
+    locations = cells_body(
+      columns = ends_with("_gap")
+    )
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) |>
+  opt_row_striping() |>
+  tab_options(
+    table.font.size = px(12),
+    column_labels.font.weight = "bold"
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = !name)
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = "name")
+  ) |>
+  tab_header(
+    title = md("## Simulated Race Split Times and Rankings"),
+    subtitle = md(
+      "### Each split is colored by split time from fastest (green) to slowest (red)"
+    )
+  )
+
+gtsave(
+  table_heat_map,
+  "inst/scripts/analysis-loudenvielle-25/table_heat_map.png",
+  zoom = 10
+)
 
 # ------------------------------------------------------------------------------
 # Fastest run comparison

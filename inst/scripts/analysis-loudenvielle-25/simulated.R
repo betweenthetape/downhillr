@@ -1,5 +1,17 @@
-# TODO: ADD TIMED TRAINING RESULTS INTO FASTEST TIMES COMPUTATIONS AND RERUN TO
-# SEE WHAT CHANGES!
+# ------------------------------------------------------------------------------
+# Analysis questions/ideas
+# 1. Create "fastest possible run" by combining times for the fastest splits
+# 2. Print tables of riders fastest splits, showing difference from fastest
+#    possible splits and where they could have gained time
+# 3. Plot variance in split times (for Q1/Q2/finals)
+# 4. Which split was most important for the race? Show which rider gained the
+#    most in a single split (normalise split times to make them comparable?)
+# 5. Show simulated heat map
+# 6. Show what could have been bump chart
+# 7. Comment on weather
+# 8. What's to come in the next round (reference 2024 simulated results to say
+#    who could have gone fastest last year)
+# ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # Load
@@ -49,7 +61,31 @@ timed_training <- world_cup_25_elite_men_timed_training |>
     names_from = split_type,
     values_from = value
   ) |>
-  relocate(event_name, round_type, .after = time)
+  relocate(event_name, round_type, .after = time) |>
+  filter(event_name == "Loudenvielle") |>
+  mutate(name = if_else(name == "Oisin Callaghan O", "Oisin O'Callaghan", name))
+
+# There are data entry errors where split_4 times are impossibly close to
+# split_3 times for riders: Alexandre Fayolle, Jon Pardos Pardo, Rémi Thirion,
+# Toby Meek, Oising O'Callaghan and Simon Chapelet. In each instance the time
+# difference between split_4 and split_3 is 0.00100. This must have been an
+# error with the recording equipment. We need to remove these entries.
+timed_training <- timed_training |>
+  mutate(
+    split_4 = if_else(
+      name %in%
+        c(
+          "Alexandre Fayolle",
+          "Jon Pardos Pardo",
+          "Rémi Thirion",
+          "Toby Meek",
+          "Oisin O'Callaghan",
+          "Simon Chapelet"
+        ),
+      NA,
+      split_4
+    )
+  )
 
 # Check that later splits are always larger than earlier splits to catch any
 # other data entry errors
@@ -140,6 +176,7 @@ fastest_times_final <- world_cup_25_elite_men_results |>
 # ------------------------------------------------------------------------------
 fastest_possible_sections <- world_cup_25_elite_men_results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
+  bind_rows(timed_training) |>
   mutate(
     section_1 = split_1,
     section_2 = split_2 - split_1,
@@ -162,7 +199,7 @@ fastest_possible_sections <- world_cup_25_elite_men_results |>
 # There is a data entry with Christian Hauser's Q2 section 4 time, where it is a
 # repeat of his section 3 time. Assign him the mean of his two nearest
 # competitors for Q2, Troy Brosnan and Jakob Jewett.
-q2_section_4_times <- world_cup_25_elite_men_results |>
+all_section_times <- world_cup_25_elite_men_results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
   mutate(
     section_1 = split_1,
@@ -172,7 +209,7 @@ q2_section_4_times <- world_cup_25_elite_men_results |>
     section_5 = time - split_4
   )
 
-troy_brosnan_q2_section_4_time <- q2_section_4_times |>
+troy_brosnan_q2_section_4_time <- all_section_times |>
   filter(
     name == "Troy Brosnan",
     event_name == "Loudenvielle",
@@ -180,7 +217,7 @@ troy_brosnan_q2_section_4_time <- q2_section_4_times |>
   ) |>
   pull(section_4)
 
-jakob_jewett_q2_section_4_time <- q2_section_4_times |>
+jakob_jewett_q2_section_4_time <- all_section_times |>
   filter(
     name == "Jakob Jewett",
     event_name == "Loudenvielle",
@@ -214,6 +251,181 @@ fastest_possible_run <- fastest_possible_sections |>
       ~ min(.x, na.rm = TRUE)
     )
   )
+
+# ------------------------------------------------------------------------------
+# Loris Vergier table showing origin of fastest splits
+# ------------------------------------------------------------------------------
+table_loris_vergier <- world_cup_25_elite_men_results |>
+  select(name, starts_with("split"), time, event_name, round_type) |>
+  bind_rows(timed_training) |>
+  filter(name == "Loris Vergier") |>
+  mutate(
+    `1` = split_1,
+    `2` = split_2 - split_1,
+    `3` = split_3 - split_2,
+    `4` = split_4 - split_3,
+    `5` = time - split_4
+  ) |>
+  select(-name, -starts_with("split_"), -event_name) |>
+  mutate(
+    round_type = factor(
+      round_type,
+      levels = c(
+        "Timed Training 1",
+        "Timed Training 2",
+        "Timed Training 3",
+        "Timed Training 4",
+        "Timed Training 5",
+        "Qualifying Round 1",
+        "Final"
+      )
+    )
+  ) |>
+  relocate(time, .after = `5`) |>
+  arrange(round_type) |>
+  gt(rowname_col = "round_type") |>
+  sub_missing() |>
+  opt_row_striping() |>
+  cols_label("round_type" = "") |>
+  fmt_number(!round_type, decimals = 2) |>
+  tab_spanner(label = "Section", columns = !round_type) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_stub()
+  ) |>
+  tab_header(
+    md(
+      "**Loris Vergier's fastest sections were spread across the event**"
+    ),
+    md("Fastest sections (in seconds) are highlighted in green")
+  ) |>
+  tab_source_note(
+    md("_Timed Training runs 4 and 5 were not performed_")
+  ) |>
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = cells_source_notes()
+  ) |>
+  data_color(
+    columns = `1`,
+    rows = round_type == "Timed Training 2",
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = `2`,
+    rows = round_type == "Final",
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = `3`,
+    rows = round_type == "Timed Training 3",
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = `4`,
+    rows = round_type == "Final",
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = `5`,
+    rows = round_type == "Qualifying Round 1",
+    palette = "#4daf4a"
+  )
+
+gtsave(
+  table_loris_vergier,
+  "inst/scripts/analysis-loudenvielle-25/table_loris_vergier.png",
+  zoom = 10
+)
+
+# ------------------------------------------------------------------------------
+# Table showing % ridets with fastest simulated results
+# ------------------------------------------------------------------------------
+fastest_times_all <- fastest_times_weekend |>
+  left_join(fastest_times_final) |>
+  left_join(fastest_possible_times) |>
+  mutate(
+    possible_faster_than_weekend = if_else(
+      fastest_time_possible < fastest_time_weekend,
+      TRUE,
+      FALSE
+    )
+  ) |>
+  mutate(
+    possible_faster_than_finals = if_else(
+      fastest_time_possible < fastest_time_finals,
+      TRUE,
+      FALSE
+    )
+  )
+
+table_possible_faster <- fastest_times_all |>
+  filter(!is.na(possible_faster_than_weekend)) |>
+  summarise(
+    possible_faster_than_weekend = sum(
+      possible_faster_than_weekend,
+      na.rm = TRUE
+    ),
+    total_riders = n()
+  ) |>
+  mutate(percentage_riders = possible_faster_than_weekend / total_riders) |>
+  gt() |>
+  opt_row_striping() |>
+  cols_label(
+    total_riders = "Riders (count)",
+    possible_faster_than_weekend = "Faster simulation (count)",
+    percentage_riders = "Faster simulation (%)"
+  ) |>
+  fmt_percent(columns = percentage_riders, decimals = 1) |>
+  tab_header(
+    title = md(
+      "**The count & percentage of riders with faster simulation times than actual times**"
+    ),
+    subtitle = md(
+      "Actual times determined as each riders fastest time from each event"
+    )
+  )
+
+gtsave(
+  table_possible_faster,
+  "inst/scripts/analysis-loudenvielle-25/table_possible_faster.png",
+  zoom = 10
+)
+
+# ------------------------------------------------------------------------------
+# Who left the most time on the track
+# ------------------------------------------------------------------------------
+table_time_left <- fastest_times_all |>
+  mutate(diff = fastest_time_finals - fastest_time_possible) |>
+  arrange(desc(diff)) |>
+  slice(1:10) |>
+  select(name, fastest_time_finals, fastest_time_possible, time_left = diff) |>
+  gt() |>
+  opt_row_striping() |>
+  fmt_number(
+    columns = c(fastest_time_finals, fastest_time_possible, time_left),
+    decimals = 2
+  ) |>
+  cols_label(
+    name = "Rider",
+    fastest_time_finals = "Finals Time",
+    fastest_time_possible = "Simulated Fastest Time",
+    time_left = "Time Left on Track"
+  ) |>
+  tab_header(
+    title = md(
+      "**The top 10 riders with the most time left on the track**"
+    ),
+    subtitle = md(
+      "The time left on the track was calculated as the difference between their Finals time and their simulated fastest time"
+    )
+  )
+
+gtsave(
+  table_time_left,
+  "inst/scripts/analysis-loudenvielle-25/table_time_left.png",
+  zoom = 10
+)
 
 # ------------------------------------------------------------------------------
 # Bump plot

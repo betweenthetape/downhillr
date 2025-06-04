@@ -140,10 +140,12 @@ fastest_possible_run <- fastest_possible_sections |>
 # Bump plot
 # ------------------------------------------------------------------------------
 actual <- fastest_times_final |>
+  arrange(fastest_time_finals) |>
   mutate(rank_actual = row_number()) |>
   select(name, rank_actual)
 
 simulated <- fastest_possible_times |>
+  arrange(fastest_time_possible) |>
   mutate(rank_simulated = row_number()) |>
   select(name, rank_simulated)
 

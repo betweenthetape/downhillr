@@ -721,12 +721,13 @@ table_combined_run <- fastest_combined_run |>
       "### Combining the fastest section times achieved by any rider to create the ultimate run"
     )
   ) |>
+  fmt_number(time, decimals = 2) |>
   grand_summary_rows(
     fns = list(
       "Total Time" = ~ sum(.x, na.rm = TRUE)
     ),
     columns = time,
-    fmt = ~ fmt_number(., decimals = 3)
+    fmt = ~ fmt_number(., decimals = 2)
   )
 
 # gtsave(

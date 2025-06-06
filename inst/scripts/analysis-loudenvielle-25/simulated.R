@@ -101,47 +101,6 @@ image_data <- tibble(path = dir_ls("inst/rider-images")) |>
     )
   )
 
-weather <- world_cup_25_elite_men_results |>
-  distinct(event_name, round_type, metadata_weather, metadata_temp_deg_c) |>
-  mutate(
-    weather = paste(
-      metadata_weather,
-      paste0("(", metadata_temp_deg_c, "°C)"),
-      sep = " "
-    )
-  ) |>
-  select(event_name, round_type, weather) |>
-  pivot_wider(
-    names_from = round_type,
-    values_from = weather,
-    names_prefix = "weather_"
-  )
-
-weather_emoji <- world_cup_25_elite_men_results |>
-  distinct(event_name, round_type, metadata_weather) |>
-  mutate(
-    metadata_weather = case_when(
-      metadata_weather == "Mostly sunny" ~ "Mostly Sunny",
-      metadata_weather == "Light rain" ~ "Light Rain",
-      .default = metadata_weather
-    )
-  ) |>
-  mutate(
-    metadata_weather = case_when(
-      metadata_weather == "Cloudy" ~ "☁️",
-      metadata_weather == "Light Rain" ~ "🌦️",
-      metadata_weather == "Rain" ~ "🌧️",
-      metadata_weather == "Rainy" ~ "🌧️",
-      metadata_weather == "Mostly Sunny" ~ "⛅️",
-      metadata_weather == "Sunny" ~ "☀️"
-    )
-  ) |>
-  pivot_wider(
-    names_from = round_type,
-    values_from = metadata_weather,
-    names_prefix = "weather_"
-  )
-
 # ------------------------------------------------------------------------------
 # Fastest actual times
 # ------------------------------------------------------------------------------

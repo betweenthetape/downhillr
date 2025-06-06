@@ -789,7 +789,6 @@ plot_ridges <- final_section_times_from_leader |>
 #   dpi = 330
 # )
 
-# What is the fastest possible run total time?
-# How far off were each rider from this hypotehtical fastest run?
-# Per section, what is the variance in times?
-# Which section was the most important in the race
+final_section_times_from_leader |>
+  select(name, section, time_from_leader) |>
+  slice_min(time_from_leader, n = 2, by = section)

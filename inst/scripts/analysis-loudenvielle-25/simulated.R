@@ -663,22 +663,84 @@ table_heat_map <- fastest_possible_splits_ranked |>
     )
   )
 
-gtsave(
-  table_heat_map,
-  "inst/scripts/analysis-loudenvielle-25/table_heat_map.png",
-  zoom = 10
-)
+# gtsave(
+#   table_heat_map,
+#   "inst/scripts/analysis-loudenvielle-25/table_heat_map.png",
+#   zoom = 10
+# )
 
 # ------------------------------------------------------------------------------
 # Fastest run comparison
 # ------------------------------------------------------------------------------
-fastest_possible_run |>
-  rowwise() |>
-  mutate(total_time = sum(c_across(everything()))) |>
-  ungroup()
+fastest_combined_run <- fastest_possible_sections |>
+  select(name, ends_with("time")) |>
+  pivot_longer(
+    cols = ends_with("_time"),
+    names_to = "section",
+    values_to = "time"
+  ) |>
+  filter(time == min(time), .by = section) |>
+  arrange(section) |>
+  mutate(section = str_extract(section, "\\d+"))
+
+table_combined_run <- fastest_combined_run |>
+  left_join(image_data) |>
+  relocate(path) |>
+  gt() |>
+  text_transform(
+    locations = cells_body(columns = path),
+    fn = function(path) {
+      local_image(
+        filename = path,
+        height = 60
+      )
+    }
+  ) |>
+  cols_label(
+    path = "",
+    name = "",
+    section = "Section",
+    time = "Time"
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) |>
+  opt_row_striping() |>
+  tab_options(
+    table.font.size = px(12),
+    column_labels.font.weight = "bold"
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = "name")
+  ) |>
+  tab_header(
+    title = md("## Simulated Combined Fastest Race Run"),
+    subtitle = md(
+      "### Combining the fastest section times achieved by any rider to create the ultimate run"
+    )
+  ) |>
+  grand_summary_rows(
+    fns = list(
+      "Total Time" = ~ sum(.x, na.rm = TRUE)
+    ),
+    columns = time,
+    fmt = ~ fmt_number(., decimals = 3)
+  )
+
+# gtsave(
+#   table_combined_run,
+#   "inst/scripts/analysis-loudenvielle-25/table_combined_run.png",
+#   zoom = 10
+# )
+
+# ------------------------------------------------------------------------------
+# Which section was won by the biggest margin, relative to its length?
+# ------------------------------------------------------------------------------
+# i.e., how many SD's above was biggest gap from all other times?
 
 # What is the fastest possible run total time?
 # How far off were each rider from this hypotehtical fastest run?
 # Per section, what is the variance in times?
-# Which section was the most important in the race (seems like Amaury smoked
-# everyone on the lower section)
+# Which section was the most important in the race

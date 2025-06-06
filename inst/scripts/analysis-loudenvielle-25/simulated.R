@@ -232,6 +232,7 @@ table_loris_vergier <- world_cup_25_elite_men_results |>
   relocate(time, .after = `5`) |>
   arrange(round_type) |>
   gt(rowname_col = "round_type") |>
+  cols_label(time = "Time (s)") |>
   sub_missing() |>
   opt_row_striping() |>
   cols_label("round_type" = "") |>
@@ -280,11 +281,11 @@ table_loris_vergier <- world_cup_25_elite_men_results |>
     palette = "#4daf4a"
   )
 
-# gtsave(
-#   table_loris_vergier,
-#   "inst/scripts/analysis-loudenvielle-25/table_loris_vergier.png",
-#   zoom = 10
-# )
+gtsave(
+  table_loris_vergier,
+  "inst/scripts/analysis-loudenvielle-25/table_loris_vergier.png",
+  zoom = 10
+)
 
 # ------------------------------------------------------------------------------
 # Table showing % ridets with fastest simulated results
@@ -334,11 +335,11 @@ table_possible_faster <- fastest_times_all |>
     )
   )
 
-# gtsave(
-#   table_possible_faster,
-#   "inst/scripts/analysis-loudenvielle-25/table_possible_faster.png",
-#   zoom = 10
-# )
+gtsave(
+  table_possible_faster,
+  "inst/scripts/analysis-loudenvielle-25/table_possible_faster.png",
+  zoom = 10
+)
 
 # ------------------------------------------------------------------------------
 # Who left the most time on the track
@@ -356,9 +357,9 @@ table_time_left <- fastest_times_all |>
   ) |>
   cols_label(
     name = "Rider",
-    fastest_time_finals = "Finals Time",
-    fastest_time_possible = "Simulated Fastest Time",
-    time_left = "Time Left on Track"
+    fastest_time_finals = "Finals Time (s)",
+    fastest_time_possible = "Simulated Fastest Time (s)",
+    time_left = "Time Left on Track (s)"
   ) |>
   tab_header(
     title = md(
@@ -369,11 +370,11 @@ table_time_left <- fastest_times_all |>
     )
   )
 
-# gtsave(
-#   table_time_left,
-#   "inst/scripts/analysis-loudenvielle-25/table_time_left.png",
-#   zoom = 10
-# )
+gtsave(
+  table_time_left,
+  "inst/scripts/analysis-loudenvielle-25/table_time_left.png",
+  zoom = 10
+)
 
 # ------------------------------------------------------------------------------
 # Bump plot
@@ -423,9 +424,9 @@ plot_bump <- ggplot() +
     aes(type, rank, image = path)
   ) +
   scale_y_reverse() +
+  scale_x_discrete(position = "top") +
   theme_minimal() +
   theme(
-    text = element_text(family = "sans"),
     plot.title = element_textbox_simple(
       halign = 0.5,
       margin = margin(b = 10, t = 15),
@@ -439,7 +440,7 @@ plot_bump <- ggplot() +
       size = 11,
       color = "#424242"
     ),
-    axis.text.x = element_text(size = 10, vjust = 2),
+    axis.text.x = element_text(size = 12, vjust = 2, face = "bold"),
     axis.ticks = element_blank(),
     axis.text.y = element_blank(),
     panel.background = element_blank(),
@@ -454,7 +455,6 @@ plot_bump <- ggplot() +
       x = type,
       y = rank,
       label.size = NA,
-      family = "sans",
       label = glue(
         "<span style='font-size:14px;'>{name}<span style='color:white;'>...</span><span style='font-size:16px;'>**{rank}**</span></span>"
       )
@@ -464,7 +464,6 @@ plot_bump <- ggplot() +
     data = filter(bump_data, type == "Simulated \noverall rank"),
     nudge_x = 0.1,
     hjust = 0,
-    family = "sans",
     mapping = aes(
       x = type,
       y = rank,
@@ -604,15 +603,15 @@ table_heat_map <- fastest_possible_splits_ranked |>
   tab_header(
     title = md("## Simulated Race Split Times and Rankings"),
     subtitle = md(
-      "### Each split is colored by split time from fastest (green) to slowest (red)"
+      "### Each split in seconds (with rank in brackets) is colored by split time from fastest (green) to slowest (red)"
     )
   )
 
-# gtsave(
-#   table_heat_map,
-#   "inst/scripts/analysis-loudenvielle-25/table_heat_map.png",
-#   zoom = 10
-# )
+gtsave(
+  table_heat_map,
+  "inst/scripts/analysis-loudenvielle-25/table_heat_map.png",
+  zoom = 10
+)
 
 # ------------------------------------------------------------------------------
 # Fastest run comparison
@@ -645,7 +644,7 @@ table_combined_run <- fastest_combined_run |>
     path = "",
     name = "",
     section = "Section",
-    time = "Time"
+    time = "Time (s)"
   ) |>
   tab_style(
     style = cell_text(weight = "bold"),
@@ -669,7 +668,7 @@ table_combined_run <- fastest_combined_run |>
   fmt_number(time, decimals = 2) |>
   grand_summary_rows(
     fns = list(
-      "Total Time" = ~ sum(.x, na.rm = TRUE)
+      "Total Time (s)" = ~ sum(.x, na.rm = TRUE)
     ),
     columns = time,
     fmt = ~ fmt_number(., decimals = 2)
@@ -679,11 +678,11 @@ table_combined_run <- fastest_combined_run |>
     locations = cells_grand_summary(columns = "time")
   )
 
-# gtsave(
-#   table_combined_run,
-#   "inst/scripts/analysis-loudenvielle-25/table_combined_run.png",
-#   zoom = 10
-# )
+gtsave(
+  table_combined_run,
+  "inst/scripts/analysis-loudenvielle-25/table_combined_run.png",
+  zoom = 10
+)
 
 # ------------------------------------------------------------------------------
 # Which section was won by the biggest margin, relative to its length?
@@ -716,22 +715,22 @@ plot_ridges <- final_section_times_from_leader |>
   theme_ridges() +
   scale_fill_viridis_d(option = "C", begin = .3, end = .8, guide = "none") +
   labs(
-    title = "Section 3 appeared to be the most important section in Finals",
-    subtitle = "Gaps of greater than 7s have been removed (e.g., due to rider crashes)",
-    y = "Section",
-    x = "Distribution of time from leader for all riders (s)"
+    title = "Distribution of Time Gaps from Leader Across Sections in Finals",
+    subtitle = "Outlier time gaps > 7s (e.g., due to crashes) removed for clarity.",
+    y = "Race Section",
+    x = "Time from leader (s)"
   )
 
-# ggsave(
-#   "inst/scripts/analysis-loudenvielle-25/plot_ridges.png",
-#   plot = plot_ridges,
-#   width = 2200,
-#   height = 1800,
-#   units = "px",
-#   bg = "white",
-#   limitsize = FALSE,
-#   dpi = 330
-# )
+ggsave(
+  "inst/scripts/analysis-loudenvielle-25/plot_ridges.png",
+  plot = plot_ridges,
+  width = 2200,
+  height = 1800,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)
 
 final_section_times_from_leader |>
   select(name, section, time_from_leader) |>

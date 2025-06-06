@@ -24,6 +24,7 @@ library(ggimage)
 library(ggtext)
 library(glue)
 library(gt)
+library(ggridges)
 
 # ------------------------------------------------------------------------------
 # Prepare data sets
@@ -743,7 +744,47 @@ table_combined_run <- fastest_combined_run |>
 # ------------------------------------------------------------------------------
 # Which section was won by the biggest margin, relative to its length?
 # ------------------------------------------------------------------------------
-# i.e., how many SD's above was biggest gap from all other times?
+final_section_times <- all_section_times |>
+  filter(round_type == "Final") |>
+  slice(-28:-30) |>
+  select(name, starts_with("section_")) |>
+  pivot_longer(
+    cols = starts_with("section_"),
+    names_to = "section",
+    values_to = "time"
+  ) |>
+  mutate(section = str_extract(section, "\\d+"))
+
+final_section_times_from_leader <- final_section_times |>
+  mutate(fastest_section_time = min(time), .by = section) |>
+  mutate(time_from_leader = time - fastest_section_time)
+
+plot_ridges <- final_section_times_from_leader |>
+  filter(time_from_leader < 7) |>
+  ggplot(aes(x = time_from_leader, y = section, fill = section)) +
+  geom_density_ridges(scale = 2, alpha = .5) +
+  scale_y_discrete(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  coord_cartesian(clip = "off") +
+  theme_ridges() +
+  scale_fill_viridis_d(option = "C", begin = .3, end = .8, guide = "none") +
+  labs(
+    title = "Section 3 appeared to be the most important section in Finals",
+    subtitle = "Gaps of greater than 7s have been removed (e.g., due to rider crashes)",
+    y = "Section",
+    x = "Distribution of time from leader for all riders (s)"
+  )
+
+ggsave(
+  "inst/scripts/analysis-loudenvielle-25/plot_ridges.png",
+  plot = plot_ridges,
+  width = 2200,
+  height = 1800,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)
 
 # What is the fastest possible run total time?
 # How far off were each rider from this hypotehtical fastest run?

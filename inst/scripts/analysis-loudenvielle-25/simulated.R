@@ -1,19 +1,4 @@
 # ------------------------------------------------------------------------------
-# Analysis questions/ideas
-# 1. Create "fastest possible run" by combining times for the fastest splits
-# 2. Print tables of riders fastest splits, showing difference from fastest
-#    possible splits and where they could have gained time
-# 3. Plot variance in split times (for Q1/Q2/finals)
-# 4. Which split was most important for the race? Show which rider gained the
-#    most in a single split (normalise split times to make them comparable?)
-# 5. Show simulated heat map
-# 6. Show what could have been bump chart
-# 7. Comment on weather
-# 8. What's to come in the next round (reference 2024 simulated results to say
-#    who could have gone fastest last year)
-# ------------------------------------------------------------------------------
-
-# ------------------------------------------------------------------------------
 # Load
 # ------------------------------------------------------------------------------
 pkgload::load_all()

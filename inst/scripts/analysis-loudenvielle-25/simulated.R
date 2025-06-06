@@ -728,6 +728,10 @@ table_combined_run <- fastest_combined_run |>
     ),
     columns = time,
     fmt = ~ fmt_number(., decimals = 2)
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_grand_summary(columns = "time")
   )
 
 # gtsave(

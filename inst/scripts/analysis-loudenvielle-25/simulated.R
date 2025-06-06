@@ -764,7 +764,10 @@ plot_ridges <- final_section_times_from_leader |>
   ggplot(aes(x = time_from_leader, y = section, fill = section)) +
   geom_density_ridges(scale = 2, alpha = .5) +
   scale_y_discrete(expand = c(0, 0)) +
-  scale_x_continuous(expand = c(0, 0)) +
+  scale_x_continuous(
+    expand = c(0, 0),
+    breaks = seq(0, 7, by = 1)
+  ) +
   coord_cartesian(clip = "off") +
   theme_ridges() +
   scale_fill_viridis_d(option = "C", begin = .3, end = .8, guide = "none") +
@@ -775,16 +778,16 @@ plot_ridges <- final_section_times_from_leader |>
     x = "Distribution of time from leader for all riders (s)"
   )
 
-ggsave(
-  "inst/scripts/analysis-loudenvielle-25/plot_ridges.png",
-  plot = plot_ridges,
-  width = 2200,
-  height = 1800,
-  units = "px",
-  bg = "white",
-  limitsize = FALSE,
-  dpi = 330
-)
+# ggsave(
+#   "inst/scripts/analysis-loudenvielle-25/plot_ridges.png",
+#   plot = plot_ridges,
+#   width = 2200,
+#   height = 1800,
+#   units = "px",
+#   bg = "white",
+#   limitsize = FALSE,
+#   dpi = 330
+# )
 
 # What is the fastest possible run total time?
 # How far off were each rider from this hypotehtical fastest run?

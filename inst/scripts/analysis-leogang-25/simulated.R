@@ -201,7 +201,7 @@ table_harriet_harnden <- results |>
     md("Fastest sections (in seconds) are highlighted in green")
   ) |>
   tab_source_note(
-    md("_Timed Training runs 5 was not performed_.")
+    md("_Timed Training 5 was not performed_.")
   ) |>
   tab_style(
     style = cell_text(align = "left"),
@@ -382,14 +382,14 @@ plot_bump <- ggplot() +
     plot.title = element_textbox_simple(
       halign = 0.5,
       margin = margin(b = 10, t = 15),
-      size = 16
+      size = 20
     ),
     plot.subtitle = element_textbox_simple(
       halign = 0,
       hjust = 0.5,
       margin = margin(b = 10),
-      width = grid::unit(6, "in"),
-      size = 11,
+      width = grid::unit(8, "in"),
+      size = 14,
       color = "#424242"
     ),
     axis.text.x = element_text(size = 12, vjust = 2, face = "bold"),
@@ -431,7 +431,7 @@ plot_bump <- ggplot() +
     race weekend were combined to simulate their fastest hypothetical runs.
     These runs were then ranked to create a new simulated leaderboard.
     Even in the simulated world, the results would have been much the same. The
-    only realy differences would have been a slight shuffle at the bottom of the
+    only real differences would have been a slight shuffle at the bottom of the
     table between <span style='color:#57106e;'>**Veronika Widmann**</span>,
     <span style='color:#B45834;'>**Monika Hrastnik**</span> and
     <span style='color:#f98e09;'>**Lisa Bouladou**</span>. Collectively, these

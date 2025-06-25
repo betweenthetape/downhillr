@@ -48,6 +48,22 @@ spec <- tribble(
     event_year = "2025",
     round_type = "Timed Training",
     round_category = "Men Elite"
+  ),
+  "inst/extdata/20250619-vdso_dhi_me_results_tt.pdf",
+  1:5,
+  list(
+    c(140.7113, 20.1788, 738.4372, 575.8895),
+    c(139.9186, 19.3861, 738.4372, 574.304),
+    c(140.7113, 19.3861, 740.0227, 576.6822),
+    c(139.9186, 19.3861, 738.4372, 575.8895),
+    c(139.9186, 19.3861, 284.99, 575.0968)
+  ),
+  list(
+    event_name = "Val di Sole",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Timed Training",
+    round_category = "Men Elite"
   )
 )
 

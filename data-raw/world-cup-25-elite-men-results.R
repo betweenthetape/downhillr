@@ -115,6 +115,56 @@ spec <- tribble(
     metadata_temp_deg_c = 22,
     metadata_distance_km = 2.530,
     metadata_average_speed_kmh = 46.160
+  ),
+  # ---- Val di Sole ----
+  "inst/extdata/20250619-vdso_dhi_me_results_f.pdf",
+  NULL,
+  list(c(132.7839, 19.3861, 618.7335, 576.6822)),
+  list(
+    event_name = "Val di Sole",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Men Elite",
+    metadata_weather = "Mostly Sunny",
+    metadata_temp_deg_c = 23,
+    metadata_distance_km = 2.240,
+    metadata_average_speed_kmh = 36.845
+  ),
+  "inst/extdata/20250619-vdso_dhi_me_results_q1.pdf",
+  NULL,
+  list(
+    c(132.7839, 19.3861, 742.4009, 576.6822),
+    c(132.7839, 19.3861, 742.4009, 575.0968),
+    c(132.7839, 19.3861, 492.6878, 575.8895)
+  ),
+  list(
+    event_name = "Val di Sole",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Men Elite",
+    metadata_weather = "Cloudy",
+    metadata_temp_deg_c = 15,
+    metadata_distance_km = 2.240,
+    metadata_average_speed_kmh = 36.288
+  ),
+  "inst/extdata/20250619-vdso_dhi_me_results_q2.pdf",
+  1:2,
+  list(
+    c(132.7839, 19.3861, 743.1937, 575.8895),
+    c(131.9912, 19.3861, 680.5672, 575.8895)
+  ),
+  list(
+    event_name = "Val di Sole",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Men Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 24,
+    metadata_distance_km = 2.240,
+    metadata_average_speed_kmh = 36.162
   )
 )
 

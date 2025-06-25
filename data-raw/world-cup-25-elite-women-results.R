@@ -17,6 +17,7 @@ spec <- tribble(
   ~pages,
   ~areas,
   ~metadata,
+  # ---- Leogang ----
   "inst/extdata/20250605-leog_dhi_we_results_f.pdf",
   1,
   list(c(133.5767, 19.7825, 380.9115, 575.4931)),
@@ -58,6 +59,49 @@ spec <- tribble(
     metadata_temp_deg_c = 25,
     metadata_distance_km = 2.115,
     metadata_average_speed_kmh = 36.414
+  ),
+  # ---- Val di Sole ----
+  "inst/extdata/20250619-vdso_dhi_we_results_f.pdf",
+  1,
+  list(c(133.5767, 19.3861, 384.0825, 575.8895)),
+  list(
+    event_name = "Val di Sole",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Women Elite",
+    metadata_weather = "Mostly Sunny",
+    metadata_temp_deg_c = 21,
+    metadata_distance_km = 2.240,
+    metadata_average_speed_kmh = 32.216
+  ),
+  "inst/extdata/20250619-vdso_dhi_we_results_q1.pdf",
+  1,
+  list(c(132.7839, 19.3861, 700.3857, 576.6822)),
+  list(
+    event_name = "Val di Sole",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Women Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 24,
+    metadata_distance_km = 2.240,
+    metadata_average_speed_kmh = 31.607
+  ),
+  "inst/extdata/20250619-vdso_dhi_we_results_q2.pdf",
+  1,
+  list(c(132.7839, 20.1788, 522.0192, 575.8895)),
+  list(
+    event_name = "Val di Sole",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Women Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 24,
+    metadata_distance_km = 2.240,
+    metadata_average_speed_kmh = 30.777
   )
 )
 

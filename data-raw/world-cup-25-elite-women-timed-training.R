@@ -29,6 +29,19 @@ spec <- tribble(
     event_year = "2025",
     round_type = "Timed Training",
     round_category = "Women Elite"
+  ),
+  "inst/extdata/20250619-vdso_dhi_we_results_tt.pdf",
+  1:2,
+  list(
+    c(140.7113, 20.1788, 737.6445, 576.6822),
+    c(140.7113, 19.3861, 472.8693, 576.6822)
+  ),
+  list(
+    event_name = "Val di Sole",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Timed Training",
+    round_category = "Women Elite"
   )
 )
 

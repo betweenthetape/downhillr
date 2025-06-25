@@ -699,3 +699,66 @@ ggsave(
 final_section_times_from_leader |>
   select(name, section, time_from_leader) |>
   slice_min(time_from_leader, n = 2, by = section)
+
+# ------------------------------------------------------------------------------
+# Ramp-up speed
+# ------------------------------------------------------------------------------
+speed_index_raw <- results |>
+  select(name, starts_with("split"), time, event_name, round_type) |>
+  bind_rows(timed_training) |>
+  select(name, time, round_type)
+
+
+# Keep only riders who appeared in Finals and find best time for each of these
+# riders across training, qualies, and finals
+speed_index_best_times <- speed_index_raw |>
+  filter(!is.na(time)) |>
+  mutate(
+    round_type = case_when(
+      str_detect(round_type, "^Timed") ~ "Training",
+      str_detect(round_type, "^Qualifying") ~ "Qualifying",
+      .default = round_type
+    )
+  ) |>
+  filter("Final" %in% round_type, .by = name) |>
+  summarise(
+    time = min(time),
+    .by = c(name, round_type)
+  )
+
+# Let's calculate the rate of change of improvement in a riders speed over a
+# weekend:
+speed_index <- speed_index_best_times |>
+  pivot_wider(names_from = round_type, values_from = time) |>
+  select(name, training = Training, qualifying = Qualifying, finals = Final) |>
+  mutate(
+    rank = row_number(),
+    delta_1 = qualifying - training,
+    delta_2 = finals - qualifying,
+    index = delta_2 / delta_1
+  )
+
+plot_ramp_up <- speed_index |>
+  left_join(image_data) |>
+  ggplot(aes(rank, index)) +
+  geom_image(aes(image = path), size = .15) +
+  geom_smooth(se = FALSE, span = 1, linetype = "dashed", colour = "grey") +
+  scale_x_reverse() +
+  theme_minimal() +
+  labs(
+    title = "The rate of improvement of speed between runs does not predict performance.",
+    x = "Final position",
+    y = "Rate of change of speed improvment over the race"
+  ) +
+  theme_ridges()
+
+ggsave(
+  "inst/scripts/analysis-val-di-sole-25/elite-women/plot_ramp_up.png",
+  plot = plot_ramp_up,
+  width = 3500,
+  height = 2000,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)

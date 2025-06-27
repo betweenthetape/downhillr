@@ -242,11 +242,11 @@ table_eleonora_farina <- results |>
     palette = "#4daf4a"
   )
 
-gtsave(
-  table_eleonora_farina,
-  "inst/scripts/analysis-val-di-sole-25/elite-women/table_eleonora_farina.png",
-  zoom = 10
-)
+# gtsave(
+#   table_eleonora_farina,
+#   "inst/scripts/analysis-val-di-sole-25/elite-women/table_eleonora_farina.png",
+#   zoom = 10
+# )
 
 # ------------------------------------------------------------------------------
 # Table showing % ridets with fastest simulated results
@@ -296,11 +296,11 @@ table_possible_faster <- fastest_times_all |>
     )
   )
 
-gtsave(
-  table_possible_faster,
-  "inst/scripts/analysis-val-di-sole-25/elite-women/table_possible_faster.png",
-  zoom = 10
-)
+# gtsave(
+#   table_possible_faster,
+#   "inst/scripts/analysis-val-di-sole-25/elite-women/table_possible_faster.png",
+#   zoom = 10
+# )
 
 # ------------------------------------------------------------------------------
 # Who left the most time on the track
@@ -331,11 +331,11 @@ table_time_left <- fastest_times_all |>
     )
   )
 
-gtsave(
-  table_time_left,
-  "inst/scripts/analysis-val-di-sole-25/elite-women/table_time_left.png",
-  zoom = 10
-)
+# gtsave(
+#   table_time_left,
+#   "inst/scripts/analysis-val-di-sole-25/elite-women/table_time_left.png",
+#   zoom = 10
+# )
 
 # ------------------------------------------------------------------------------
 # Bump plot
@@ -433,7 +433,7 @@ plot_bump <- ggplot() +
     )
   ) +
   labs(
-    title = "<span>**Simulated Leader Board**</span>",
+    title = "<span>**Elite Women: Simulated Leader Board**</span>",
     subtitle = "<span> Each riders fastest splits from across the Leogang
     race weekend were combined to simulate their fastest hypothetical runs.
     These runs were then ranked to create a new simulated leaderboard.
@@ -560,17 +560,17 @@ table_heat_map <- fastest_possible_splits_ranked |>
     locations = cells_body(columns = "name")
   ) |>
   tab_header(
-    title = md("## Simulated Race Split Times and Rankings"),
+    title = md("## Elite Women: Simulated Race Split Times and Rankings"),
     subtitle = md(
       "### Each split in seconds (with rank in brackets) is colored by split time from fastest (green) to slowest (red)"
     )
   )
 
-gtsave(
-  table_heat_map,
-  "inst/scripts/analysis-val-di-sole-25/elite-women/table_heat_map.png",
-  zoom = 10
-)
+# gtsave(
+#   table_heat_map,
+#   "inst/scripts/analysis-val-di-sole-25/elite-women/table_heat_map.png",
+#   zoom = 10
+# )
 
 # ------------------------------------------------------------------------------
 # Fastest run comparison
@@ -619,7 +619,7 @@ table_combined_run <- fastest_combined_run |>
     locations = cells_body(columns = "name")
   ) |>
   tab_header(
-    title = md("## Simulated Combined Fastest Race Run"),
+    title = md("## Elite Women: Simulated Combined Fastest Race Run"),
     subtitle = md(
       "### Combining the fastest section times achieved by any rider to create the ultimate run"
     )
@@ -637,11 +637,11 @@ table_combined_run <- fastest_combined_run |>
     locations = cells_grand_summary(columns = "time")
   )
 
-gtsave(
-  table_combined_run,
-  "inst/scripts/analysis-val-di-sole-25/elite-women/table_combined_run.png",
-  zoom = 10
-)
+# gtsave(
+#   table_combined_run,
+#   "inst/scripts/analysis-val-di-sole-25/elite-women/table_combined_run.png",
+#   zoom = 10
+# )
 
 # ------------------------------------------------------------------------------
 # Which section was won by the biggest margin, relative to its length?
@@ -674,22 +674,22 @@ plot_ridges <- final_section_times_from_leader |>
   theme_ridges() +
   scale_fill_viridis_d(option = "C", begin = .3, end = .8, guide = "none") +
   labs(
-    title = "Distribution of Time Gaps from Leader Across Sections in Finals",
+    title = "Elite Women: Distribution of Time Gaps from Leader Across \nSections in Finals",
     subtitle = "Outlier time gaps > 8s (e.g., due to crashes) removed for clarity.",
     y = "Race Section",
     x = "Time from leader (s)"
   )
 
-ggsave(
-  "inst/scripts/analysis-val-di-sole-25/elite-women/plot_ridges.png",
-  plot = plot_ridges,
-  width = 2200,
-  height = 1800,
-  units = "px",
-  bg = "white",
-  limitsize = FALSE,
-  dpi = 330
-)
+# ggsave(
+#   "inst/scripts/analysis-val-di-sole-25/elite-women/plot_ridges.png",
+#   plot = plot_ridges,
+#   width = 2200,
+#   height = 1800,
+#   units = "px",
+#   bg = "white",
+#   limitsize = FALSE,
+#   dpi = 330
+# )
 
 final_section_times_from_leader |>
   select(name, section, time_from_leader) |>
@@ -746,13 +746,13 @@ plot_ramp_up <- speed_index |>
   ) +
   theme_ridges()
 
-ggsave(
-  "inst/scripts/analysis-val-di-sole-25/elite-women/plot_ramp_up.png",
-  plot = plot_ramp_up,
-  width = 3500,
-  height = 2000,
-  units = "px",
-  bg = "white",
-  limitsize = FALSE,
-  dpi = 330
-)
+# ggsave(
+#   "inst/scripts/analysis-val-di-sole-25/elite-women/plot_ramp_up.png",
+#   plot = plot_ramp_up,
+#   width = 3500,
+#   height = 2000,
+#   units = "px",
+#   bg = "white",
+#   limitsize = FALSE,
+#   dpi = 330
+# )

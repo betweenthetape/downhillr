@@ -754,8 +754,63 @@ plot_ramp_up <- speed_index |>
   theme_ridges()
 
 # ggsave(
-#   "inst/scripts/analysis-val-di-sole-25/elite-women/plot_ramp_up.png",
+#   "inst/scripts/analysis-val-di-sole-25/elite-men/plot_ramp_up.png",
 #   plot = plot_ramp_up,
+#   width = 3500,
+#   height = 2000,
+#   units = "px",
+#   bg = "white",
+#   limitsize = FALSE,
+#   dpi = 330
+# )
+
+# Does the fastest run of timed training predict performance?
+plot_training_qualifying <- speed_index |>
+  left_join(image_data) |>
+  filter(training < 250) |>
+  filter(finals < 250) |>
+  ggplot(aes(x = training, y = qualifying)) +
+  geom_image(aes(image = path), size = .10) +
+  geom_point() +
+  geom_smooth(span = 1, linetype = "dashed") +
+  theme_ridges() +
+  labs(
+    title = "There is a loose linear relationship between Elite Men's fastest timed training run and fastest \nqualifying time",
+    subtitle = "Runs longer > 250s omitted",
+    x = "Fastest timed training run (s)",
+    y = "Fastest qualifying time (s)"
+  )
+
+# ggsave(
+#   "inst/scripts/analysis-val-di-sole-25/elite-men/plot_training_qualifying.png",
+#   plot = plot_training_qualifying,
+#   width = 3500,
+#   height = 2000,
+#   units = "px",
+#   bg = "white",
+#   limitsize = FALSE,
+#   dpi = 330
+# )
+
+plot_training_finals <- speed_index |>
+  left_join(image_data) |>
+  filter(training < 250) |>
+  filter(finals < 250) |>
+  ggplot(aes(x = training, y = finals)) +
+  geom_image(aes(image = path), size = .10) +
+  geom_point() +
+  geom_smooth(span = 1, linetype = "dashed") +
+  theme_ridges() +
+  labs(
+    title = "No relationship is observed between Elite Men's fastest timed training run and fastest \nqualifying time",
+    subtitle = "Runs longer > 250s omitted",
+    x = "Fastest timed training run (s)",
+    y = "Fastest qualifying time (s)"
+  )
+
+# ggsave(
+#   "inst/scripts/analysis-val-di-sole-25/elite-men/plot_training_finals.png",
+#   plot = plot_training_finals,
 #   width = 3500,
 #   height = 2000,
 #   units = "px",

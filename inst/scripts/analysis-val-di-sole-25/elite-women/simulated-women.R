@@ -84,6 +84,8 @@ image_data <- image_data |>
 # Fastest actual times
 # ------------------------------------------------------------------------------
 fastest_times_weekend <- results |>
+  select(name, starts_with("split"), time, event_name, round_type) |>
+  bind_rows(timed_training) |>
   summarise(
     fastest_time_weekend = min(time, na.rm = TRUE),
     .by = c(name, event_name)

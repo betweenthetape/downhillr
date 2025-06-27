@@ -318,7 +318,7 @@ table_time_left <- fastest_times_all |>
   ) |>
   tab_header(
     title = md(
-      "**The top 10 riders with the most time left on the track**"
+      "**The top 10 Elite Men with the most time left on the track**"
     ),
     subtitle = md(
       "The time left on the track was calculated as the difference between their Finals time and their simulated fastest time"
@@ -354,8 +354,8 @@ bump_data <- actual |>
   mutate(
     type = if_else(
       type == "rank_actual",
-      "Actual \noverall rank",
-      "Simulated \noverall rank"
+      "Actual \nrank",
+      "Simulated \nrank"
     )
   ) |>
   mutate(
@@ -402,7 +402,7 @@ plot_bump <- ggplot() +
     axis.title = element_blank()
   ) +
   geom_richtext(
-    data = filter(bump_data, type == "Actual \noverall rank"),
+    data = filter(bump_data, type == "Actual \nrank"),
     hjust = 1,
     nudge_x = -0.1,
     mapping = aes(
@@ -415,7 +415,7 @@ plot_bump <- ggplot() +
     )
   ) +
   geom_richtext(
-    data = filter(bump_data, type == "Simulated \noverall rank"),
+    data = filter(bump_data, type == "Simulated \nrank"),
     nudge_x = 0.1,
     hjust = 0,
     mapping = aes(
@@ -428,7 +428,7 @@ plot_bump <- ggplot() +
     )
   ) +
   labs(
-    title = "<span>**What Could Have Been**</span>",
+    title = "<span>**Elite Men: What Could Have Been**</span>",
     subtitle = "<span> Each riders fastest splits from across the Val di Sole
     race weekend were combined to simulate their fastest hypothetical runs.
     These runs were then ranked to create a new simulated leaderboard. Even in

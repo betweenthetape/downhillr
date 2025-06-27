@@ -753,13 +753,13 @@ plot_ramp_up <- speed_index |>
   ) +
   theme_ridges()
 
-ggsave(
-  "inst/scripts/analysis-val-di-sole-25/elite-women/plot_ramp_up.png",
-  plot = plot_ramp_up,
-  width = 3500,
-  height = 2000,
-  units = "px",
-  bg = "white",
-  limitsize = FALSE,
-  dpi = 330
-)
+# ggsave(
+#   "inst/scripts/analysis-val-di-sole-25/elite-women/plot_ramp_up.png",
+#   plot = plot_ramp_up,
+#   width = 3500,
+#   height = 2000,
+#   units = "px",
+#   bg = "white",
+#   limitsize = FALSE,
+#   dpi = 330
+# )

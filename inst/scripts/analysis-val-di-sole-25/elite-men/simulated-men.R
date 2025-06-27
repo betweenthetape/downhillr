@@ -283,7 +283,7 @@ table_possible_faster <- fastest_times_all |>
   fmt_percent(columns = percentage_riders, decimals = 1) |>
   tab_header(
     title = md(
-      "**The count & percentage of riders with faster simulation times than actual times**"
+      "**The count & percentage of Elite Men with faster simulation times than actual times**"
     ),
     subtitle = md(
       "Actual times determined as each riders fastest time from each event"
@@ -709,7 +709,6 @@ speed_index_raw <- results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
   bind_rows(timed_training) |>
   select(name, time, round_type)
-
 
 # Keep only riders who appeared in Finals and find best time for each of these
 # riders across training, qualies, and finals

@@ -436,7 +436,8 @@ plot_bump <- ggplot() +
     reigns king with unmatched speed. Another key story is that of <span
     style='color:#f98e09;'>**Antoine Pierron.**</span> He was on a heater in
     his Finals run until a flat finished his day. His simulated time shows he
-    was in form in Val di Sole.</span>"
+    was in form in Val di Sole.</span>",
+    caption = "The missing simulated ranks 21 & 22 correspond to Andreas Kolb(DNF) & Henri Kiefer (did not qualify)."
   )
 
 # ggsave(

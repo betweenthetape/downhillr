@@ -439,7 +439,7 @@ plot_bump <- ggplot() +
     These runs were then ranked to create a new simulated leaderboard.
     Even in the simulated world, the results would have been the same for the 
     podium spots. The mains differences would have been a shuffle at the bottom of the
-    table. between <span style='color:#57106e;'>**Tahnee Seagrave**</span> dropped
+    table. <span style='color:#57106e;'>**Tahnee Seagrave**</span> dropped
     the most below her potential due to an unfortunate mistake in Finals.
     </span>"
   )

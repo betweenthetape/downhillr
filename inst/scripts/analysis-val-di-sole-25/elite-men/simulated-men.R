@@ -803,10 +803,10 @@ plot_training_finals <- speed_index |>
   geom_smooth(span = 1, linetype = "dashed") +
   theme_ridges() +
   labs(
-    title = "No relationship is observed between Elite Men's fastest timed training run and fastest \nqualifying time",
+    title = "No relationship is observed between Elite Men's fastest timed training run and fastest \nFinal time",
     subtitle = "Runs longer > 250s omitted",
     x = "Fastest timed training run (s)",
-    y = "Fastest qualifying time (s)"
+    y = "Final time (s)"
   )
 
 # ggsave(

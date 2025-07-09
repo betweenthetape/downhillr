@@ -64,6 +64,22 @@ spec <- tribble(
     event_year = "2025",
     round_type = "Timed Training",
     round_category = "Men Elite"
+  ),
+  "inst/extdata/20250704-thui_dhi_me_results_tt.pdf",
+  1:5,
+  list(
+    c(140.7113, 19.7825, 737.6445, 576.2859),
+    c(139.9186, 19.7825, 736.8517, 574.7004),
+    c(140.7113, 19.7825, 738.4372, 576.2859),
+    c(139.9186, 18.9897, 737.6445, 575.4931),
+    c(140.7113, 19.7825, 738.4372, 576.2859)
+  ),
+  list(
+    event_name = "La Thiule",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Timed Training",
+    round_category = "Men Elite"
   )
 )
 

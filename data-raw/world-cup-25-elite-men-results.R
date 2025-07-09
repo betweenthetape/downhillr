@@ -165,6 +165,58 @@ spec <- tribble(
     metadata_temp_deg_c = 24,
     metadata_distance_km = 2.240,
     metadata_average_speed_kmh = 36.162
+  ),
+  # ---- La Thiule ----
+  "inst/extdata/20250704-thui_dhi_me_results_f.pdf",
+  NULL,
+  list(c(133.5767, 20.5752, 617.9407, 574.7004)),
+  list(
+    event_name = "La Thiule",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Men Elite",
+    metadata_weather = "Light Rain",
+    metadata_temp_deg_c = 20,
+    metadata_distance_km = 2.300,
+    metadata_average_speed_kmh = 39.974
+  ),
+  "inst/extdata/20250704-thui_dhi_me_results_q1.pdf",
+  1:4,
+  list(
+    c(133.5767, 19.7825, 743.1937, 575.4931),
+    c(132.7839, 18.9897, 742.4009, 574.7004),
+    c(132.7839, 18.9897, 742.4009, 575.4931),
+    c(132.7839, 18.9897, 165.2863, 576.2859)
+  ),
+  list(
+    event_name = "La Thiule",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Men Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 22,
+    metadata_distance_km = 2.300,
+    metadata_average_speed_kmh = 38.743
+  ),
+  "inst/extdata/20250704-thui_dhi_me_results_q2.pdf",
+  1:3,
+  list(
+    c(132.7839, 19.7825, 743.1937, 576.2859),
+    c(132.7839, 18.9897, 743.9864, 577.0786),
+    c(132.7839, 18.9897, 258.0368, 575.4931)
+  ),
+  list(
+    event_name = "La Thiule",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Men Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 22,
+    metadata_distance_km = 2.300,
+    metadata_average_speed_kmh = 38.385
   )
 )
 

@@ -102,6 +102,49 @@ spec <- tribble(
     metadata_temp_deg_c = 24,
     metadata_distance_km = 2.240,
     metadata_average_speed_kmh = 30.777
+  ),
+  # ---- La Thiule ----
+  "inst/extdata/20250704-thui_dhi_we_results_f.pdf",
+  1,
+  list(c(132.7839, 19.7825, 382.497, 576.2859)),
+  list(
+    event_name = "La Thiule",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Women Elite",
+    metadata_weather = "Mostly Cloudy",
+    metadata_temp_deg_c = 20,
+    metadata_distance_km = 2.300,
+    metadata_average_speed_kmh = 34.800
+  ),
+  "inst/extdata/20250704-thui_dhi_we_results_q1.pdf",
+  1,
+  list(c(133.5767, 19.7825, 649.6503, 577.0786)),
+  list(
+    event_name = "La Thiule",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Women Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 22,
+    metadata_distance_km = 2.300,
+    metadata_average_speed_kmh = 33.805
+  ),
+  "inst/extdata/20250704-thui_dhi_we_results_q2.pdf",
+  1,
+  list(c(132.7839, 18.9897, 349.9947, 576.2859)),
+  list(
+    event_name = "La Thiule",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Women Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 22,
+    metadata_distance_km = 2.300,
+    metadata_average_speed_kmh = 32.524
   )
 )
 

@@ -28,6 +28,8 @@ To date, the package includes the following data sets:
 - `world_cup_24_elite_men_simulated`: This dataset takes the fastest section times available (from timed training, qualifying, semi-finals, and finals) for each rider across at each event and combines them together to simulate what could have been their fastest race run. These fastest runs are then ranked to determine a new simulated set of race results.
 - `world_cup_25_elite_men_results`: Elite Men's results from the each round of the 2025 UCI Mountain Bike World Cup
 - `world_cup_25_elite_men_timed_training`: Elite Men's timed training results from each round of the 2025 Mountain Bike World Cup
+- `world_cup_25_elite_women_results`: Elite Women's results from the each round of the 2025 UCI Mountain Bike World Cup
+- `world_cup_25_elite_women_timed_training`: Elite Women's timed training results from each round of the 2025 Mountain Bike World Cup
 
 ```r
 > downhillr::world_cup_24_elite_men_results

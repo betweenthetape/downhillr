@@ -222,7 +222,7 @@ spec <- tribble(
   NULL,
   list(c(133.5767, 20.5752, 617.9407, 574.7004)),
   list(
-    event_name = "La Thiule",
+    event_name = "La Thuile",
     event_type = "World Cup",
     event_year = "2025",
     round_type = "Final",
@@ -241,7 +241,7 @@ spec <- tribble(
     c(132.7839, 18.9897, 165.2863, 576.2859)
   ),
   list(
-    event_name = "La Thiule",
+    event_name = "La Thuile",
     event_type = "World Cup",
     event_year = "2025",
     round_type = "Qualifying Round 1",
@@ -259,7 +259,7 @@ spec <- tribble(
     c(132.7839, 18.9897, 258.0368, 575.4931)
   ),
   list(
-    event_name = "La Thiule",
+    event_name = "La Thuile",
     event_type = "World Cup",
     event_year = "2025",
     round_type = "Qualifying Round 2",

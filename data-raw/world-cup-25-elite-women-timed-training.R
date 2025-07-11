@@ -50,7 +50,7 @@ spec <- tribble(
     c(140.7113, 19.7825, 311.9431, 576.2859)
   ),
   list(
-    event_name = "La Thiule",
+    event_name = "La Thuile",
     event_type = "World Cup",
     event_year = "2025",
     round_type = "Timed Training",

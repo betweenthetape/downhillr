@@ -242,6 +242,11 @@ table_andreas_kolb <- results |>
 #   zoom = 10
 # )
 
+# Simualted time
+fastest_possible_times |>
+  filter(name == "Andreas Kolb") |>
+  pull(fastest_time_possible)
+
 # ------------------------------------------------------------------------------
 # Table showing % riders with fastest simulated results
 # ------------------------------------------------------------------------------

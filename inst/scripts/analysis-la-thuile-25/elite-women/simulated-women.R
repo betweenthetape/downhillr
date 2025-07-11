@@ -271,11 +271,12 @@ bump_data <- actual |>
       "Simulated \nrank"
     )
   ) |>
+  mutate(color = "#E7E7E7") |>
   left_join(image_data)
 
 plot_bump <- ggplot() +
   geom_bump(
-    aes(type, rank, group = name),
+    aes(type, rank, group = name, color = I(color)),
     data = bump_data,
     linewidth = 1.5
   ) +

@@ -5,7 +5,7 @@
 \alias{world_cup_25_elite_men_results}
 \title{Elite Men World Cup 2025 Results}
 \format{
-A data frame with 829 rows and 27 variables:
+A data frame with 1,053 rows and 27 variables:
 \describe{
 \item{rank}{The finishing rank of the rider.}
 \item{nr}{Rider's race number.}

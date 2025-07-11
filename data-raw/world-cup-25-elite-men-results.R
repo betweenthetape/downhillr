@@ -116,6 +116,57 @@ spec <- tribble(
     metadata_distance_km = 2.530,
     metadata_average_speed_kmh = 46.160
   ),
+  # ---- Leogang ----
+  "inst/extdata/20250605-leog_dhi_me_results_f.pdf",
+  NULL,
+  list(c(133.0079, 19.4016, 618.0472, 576.7559)),
+  list(
+    event_name = "Leogang",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Men Elite",
+    metadata_weather = "Cloudy",
+    metadata_temp_deg_c = 20,
+    metadata_distance_km = 2.115,
+    metadata_average_speed_kmh = 42.961
+  ),
+  "inst/extdata/20250605-leog_dhi_me_results_q1.pdf",
+  1:3,
+  list(
+    c(132.126, 19.4016, 744.1575, 575.874),
+    c(133.0079, 19.4016, 743.2756, 577.6378),
+    c(133.0079, 19.4016, 680.6614, 577.6378)
+  ),
+  list(
+    event_name = "Leogang",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Men Elite",
+    metadata_weather = "Cloudy",
+    metadata_temp_deg_c = 15,
+    metadata_distance_km = 2.115,
+    metadata_average_speed_kmh = 41.725
+  ),
+  "inst/extdata/20250605-leog_dhi_me_results_q2.pdf",
+  1:3,
+  list(
+    c(133.0079, 19.4016, 743.2756, 576.7559),
+    c(133.0079, 19.4016, 743.2756, 575.874),
+    c(133.0079, 19.4016, 272.3465, 576.7559)
+  ),
+  list(
+    event_name = "Leogang",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Men Elite",
+    metadata_weather = "Mostly Sunny",
+    metadata_temp_deg_c = 25,
+    metadata_distance_km = 2.115,
+    metadata_average_speed_kmh = 42.023
+  ),
   # ---- Val di Sole ----
   "inst/extdata/20250619-vdso_dhi_me_results_f.pdf",
   NULL,

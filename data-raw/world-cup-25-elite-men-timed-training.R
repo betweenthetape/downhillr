@@ -49,6 +49,22 @@ spec <- tribble(
     round_type = "Timed Training",
     round_category = "Men Elite"
   ),
+  "inst/extdata/20250605-leog_dhi_me_results_tt.pdf",
+  1:5,
+  list(
+    c(140.063, 19.4016, 737.9842, 576.7559),
+    c(140.063, 19.4016, 739.748, 576.7559),
+    c(140.063, 19.4016, 737.9842, 576.7559),
+    c(140.063, 19.4016, 738.8661, 577.6378),
+    c(140.063, 19.4016, 657.7323, 574.9921)
+  ),
+  list(
+    event_name = "Leogang",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Timed Training",
+    round_category = "Men Elite"
+  ),
   "inst/extdata/20250619-vdso_dhi_me_results_tt.pdf",
   1:5,
   list(

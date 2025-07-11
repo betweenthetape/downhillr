@@ -429,7 +429,7 @@ plot_bump <- ggplot() +
   ) +
   labs(
     title = "<span>**Elite Men: Simulated Leader Board**</span>",
-    subtitle = "<span> Each riders fastest splits from across the Val di Sole
+    subtitle = "<span> Each riders fastest splits from across the La Thiule
     race weekend were combined to simulate their fastest hypothetical runs.
     These runs were then ranked to create a new simulated leaderboard. Even in
     this simulated world, <span style='color:#57106e;'>**Jackson Goldstone**</span>

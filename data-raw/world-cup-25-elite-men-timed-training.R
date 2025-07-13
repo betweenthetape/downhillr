@@ -96,6 +96,22 @@ spec <- tribble(
     event_year = "2025",
     round_type = "Timed Training",
     round_category = "Men Elite"
+  ),
+  "inst/extdata/20250711-valn_dhi_me_results_tt.pdf",
+  1:5,
+  list(
+    c(139.9186, 18.9897, 737.6445, 576.2859),
+    c(139.9186, 18.9897, 738.4372, 577.8713),
+    c(139.9186, 18.9897, 739.23, 577.0786),
+    c(139.9186, 18.9897, 739.23, 576.2859),
+    c(139.9186, 18.9897, 232.6692, 578.6641)
+  ),
+  list(
+    event_name = "Pal Arinsal",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Timed Training",
+    round_category = "Men Elite"
   )
 )
 

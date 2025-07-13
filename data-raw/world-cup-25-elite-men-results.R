@@ -268,6 +268,56 @@ spec <- tribble(
     metadata_temp_deg_c = 22,
     metadata_distance_km = 2.300,
     metadata_average_speed_kmh = 38.385
+  ),
+  # ---- Pal Arinsal ----
+  "inst/extdata/20250711-valn_dhi_me_results_f.pdf",
+  NULL,
+  list(c(132.7839, 18.9897, 617.148, 575.4931)),
+  list(
+    event_name = "Pal Arinsal",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Men Elite",
+    metadata_weather = "Cloudy",
+    metadata_temp_deg_c = 17,
+    metadata_distance_km = 1.900,
+    metadata_average_speed_kmh = 44.310
+  ),
+  "inst/extdata/20250711-valn_dhi_me_results_q1.pdf",
+  1:3,
+  list(
+    c(132.7839, 19.7825, 743.9864, 576.2859),
+    c(132.7839, 18.9897, 744.7791, 578.6641),
+    c(132.7839, 18.9897, 461.771, 577.8713)
+  ),
+  list(
+    event_name = "Pal Arinsal",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Men Elite",
+    metadata_weather = "Cloudy",
+    metadata_temp_deg_c = 16,
+    metadata_distance_km = 1.900,
+    metadata_average_speed_kmh = 42.677
+  ),
+  "inst/extdata/20250711-valn_dhi_me_results_q2.pdf",
+  1:2,
+  list(
+    c(132.7839, 19.7825, 743.1937, 577.0786),
+    c(132.7839, 18.9897, 635.381, 575.4931)
+  ),
+  list(
+    event_name = "Pal Arinsal",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Men Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 22,
+    metadata_distance_km = 1.900,
+    metadata_average_speed_kmh = 42.513
   )
 )
 

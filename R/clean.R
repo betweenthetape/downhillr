@@ -262,7 +262,7 @@ clean_timed_training_24 <- function(data) {
 clean_timed_training_25 <- function(data) {
   # There are data entry errors for Christian Hauser and Oisin O'Callaghanin
   # Loudenvielle where their Nr is inputted as 10 on their first rows, and 1 and
-  # 0 on their respective second rowa, rather than 101 and 100 on their
+  # 0 on their respective second rows, rather than 101 and 100 on their
   # respective first rows. Use a combination of columns as a unique
   # indentifiers:
   data <- data |>
@@ -288,6 +288,64 @@ clean_timed_training_25 <- function(data) {
           Nr == "0" &
           `Time...14` == "+4.224" ~
           NA_character_,
+        .default = Nr
+      )
+    )
+
+  # There are data entry errors for many riders in Pal Arinsal where their Nr is
+  # inputted as 10 on their first rows, and 1 and 0 on their respective second
+  # rows, rather than 101 and 100 on their respective first rows. Use a
+  # combination of columns as a unique indentifiers:
+  data <- data |>
+    mutate(
+      Nr = case_when(
+        Rank == "13" &
+          `Name / UCI MTB Team` == "O CALLAGHAN Oisin * (IRL)" &
+          Nr == "10" &
+          `Time...14` == "2:44.174" ~
+          "100",
+        Rank == "54" &
+          `Name / UCI MTB Team` == "CRUZ Lucas (CAN)" &
+          Nr == "10" &
+          `Time...14` == "2:50.755" ~
+          "108",
+        Rank == "62" &
+          `Name / UCI MTB Team` == "WILLIAMSON Greg (GBR)" &
+          Nr == "11" &
+          `Time...14` == "2:52.745" ~
+          "111",
+        Rank == "70" &
+          `Name / UCI MTB Team` == "JORBA Ferran (ESP)" &
+          Nr == "10" &
+          `Time...14` == "2:57.654" ~
+          "101",
+        Rank == "73" &
+          `Name / UCI MTB Team` == "FERGUSON Angus * (NZL)" &
+          Nr == "10" &
+          `Time...14` == "2:59.169" ~
+          "102",
+        Rank == "74" &
+          `Name / UCI MTB Team` == "MICHELLOD Loris (SUI)" &
+          Nr == "10" &
+          `Time...14` == "3:01.164" ~
+          "105",
+        Rank == "78" &
+          `Name / UCI MTB Team` == "VELLUTINO MALAGA Lucio * (PER)" &
+          Nr == "10" &
+          `Time...14` == "3:04.726" ~
+          "109",
+        Rank == "79" &
+          `Name / UCI MTB Team` == "QUINTEIRO LORENZO Hector * (ESP)" &
+          Nr == "10" &
+          `Time...14` == "3:08.352" ~
+          "103",
+        Rank == "88" &
+          `Name / UCI MTB Team` == "LUCIANO Castelli * (ARG)" &
+          Nr == "10" &
+          `Time...14` == "5:04.444" ~
+          "107",
+        # Remove rows below errors so fill() call below works with corrections
+        (row_number() - 2) %% 4 == 0 ~ NA_character_,
         .default = Nr
       )
     )

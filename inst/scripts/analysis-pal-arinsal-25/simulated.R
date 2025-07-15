@@ -94,7 +94,8 @@ fastest_times_weekend <- results |>
     fastest_time_weekend = min(time, na.rm = TRUE),
     .by = c(name, event_name)
   ) |>
-  filter(!is.infinite(fastest_time_weekend))
+  filter(!is.infinite(fastest_time_weekend)) |>
+  suppressWarnings()
 
 fastest_times_final <- results |>
   filter(round_type == "Final") |>
@@ -102,7 +103,8 @@ fastest_times_final <- results |>
     fastest_time_finals = min(time, na.rm = TRUE),
     .by = c(name, event_name)
   ) |>
-  filter(!is.infinite(fastest_time_finals))
+  filter(!is.infinite(fastest_time_finals)) |>
+  suppressWarnings()
 
 # ------------------------------------------------------------------------------
 # Fastest Possible times
@@ -127,7 +129,8 @@ fastest_possible_sections <- results |>
     ),
     .by = c(name, event_name)
   ) |>
-  filter(if_all(starts_with("section_"), ~ !is.infinite(.x)))
+  filter(if_all(starts_with("section_"), ~ !is.infinite(.x))) |>
+  suppressWarnings()
 
 fastest_possible_times <- fastest_possible_sections |>
   rowwise(name, event_name) |>
@@ -151,16 +154,28 @@ fastest_possible_run <- fastest_possible_sections |>
 # Table showing origin of fastest splits
 # ------------------------------------------------------------------------------
 # Find the riders with the largest variation across round types:
-fastest_possible_sections |>
+max_round_type_variations <- fastest_possible_sections |>
   select(-ends_with("_time"), -event_name) |>
   pivot_longer(cols = ends_with("_round"), names_to = "round_type") |>
   summarise(distinct_sections = n_distinct(value), .by = name) |>
   arrange(desc(distinct_sections))
 
-table_andreas_kolb <- results |>
+max_variation_rider_name <- max_round_type_variations |>
+  slice(1) |>
+  pull(name)
+
+# Show where fastest splits are for rider
+fastest_split_locations <- fastest_possible_sections |>
+  select(-ends_with("_time"), -event_name) |>
+  pivot_longer(cols = ends_with("_round"), names_to = "round_type") |>
+  filter(name == max_variation_rider_name) |>
+  select(-name) |>
+  deframe()
+
+table_fastest_splits <- results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
   bind_rows(timed_training) |>
-  filter(name == "Andreas Kolb") |>
+  filter(name == max_variation_rider_name) |>
   mutate(
     `1` = split_1,
     `2` = split_2 - split_1,
@@ -199,7 +214,11 @@ table_andreas_kolb <- results |>
   ) |>
   tab_header(
     md(
-      "**Andreas Kolb's fastest sections were spread across the event**"
+      paste0(
+        "**",
+        max_variation_rider_name,
+        "'s fastest sections were spread across the event**"
+      )
     ),
     md("Fastest sections (in seconds) are highlighted in green")
   ) |>
@@ -212,39 +231,39 @@ table_andreas_kolb <- results |>
   ) |>
   data_color(
     columns = `1`,
-    rows = round_type == "Qualifying Round 2",
+    rows = round_type == fastest_split_locations[["section_1_round"]],
     palette = "#4daf4a"
   ) |>
   data_color(
     columns = `2`,
-    rows = round_type == "Qualifying Round 2",
+    rows = round_type == fastest_split_locations[["section_2_round"]],
     palette = "#4daf4a"
   ) |>
   data_color(
     columns = `3`,
-    rows = round_type == "Qualifying Round 1",
+    rows = round_type == fastest_split_locations[["section_3_round"]],
     palette = "#4daf4a"
   ) |>
   data_color(
     columns = `4`,
-    rows = round_type == "Timed Training 2",
+    rows = round_type == fastest_split_locations[["section_4_round"]],
     palette = "#4daf4a"
   ) |>
   data_color(
     columns = `5`,
-    rows = round_type == "Timed Training 1",
+    rows = round_type == fastest_split_locations[["section_5_round"]],
     palette = "#4daf4a"
   )
 
 # gtsave(
-#   table_andreas_kolb,
-#   "inst/scripts/analysis-pal-arinsal-25/elite-men/table_andreas_kolb.png",
+#   table_fastest_splits,
+#   "inst/scripts/analysis-pal-arinsal-25/table_fastest_splits.png",
 #   zoom = 10
 # )
 
 # Simualted time
 fastest_possible_times |>
-  filter(name == "Andreas Kolb") |>
+  filter(name == max_variation_rider_name) |>
   pull(fastest_time_possible)
 
 # ------------------------------------------------------------------------------
@@ -297,7 +316,7 @@ table_possible_faster <- fastest_times_all |>
 
 # gtsave(
 #   table_possible_faster,
-#   "inst/scripts/analysis-pal-arinsal-25/elite-men/table_possible_faster.png",
+#   "inst/scripts/analysis-pal-arinsal-25/table_possible_faster.png",
 #   zoom = 10
 # )
 
@@ -332,7 +351,7 @@ table_time_left <- fastest_times_all |>
 
 # gtsave(
 #   table_time_left,
-#   "inst/scripts/analysis-pal-arinsal-25/elite-men/table_time_left.png",
+#   "inst/scripts/analysis-pal-arinsal-25/table_time_left.png",
 #   zoom = 10
 # )
 
@@ -351,6 +370,7 @@ simulated <- fastest_possible_times |>
 
 bump_data <- actual |>
   left_join(simulated) |>
+  filter(rank_simulated <= 30) |>
   pivot_longer(
     starts_with("rank_"),
     names_to = "type",
@@ -365,8 +385,8 @@ bump_data <- actual |>
   ) |>
   mutate(
     color = case_when(
-      name == "Jackson Goldstone" ~ "#57106e",
-      name == "Thibaut Daprela" ~ "#f98e09",
+      name == "Loic Bruni" ~ "#57106e",
+      name == "Amaury Pierron" ~ "#f98e09",
       TRUE ~ "#E7E7E7"
     )
   ) |>
@@ -436,16 +456,18 @@ plot_bump <- ggplot() +
     title = "<span>**Elite Men: Simulated Leader Board**</span>",
     subtitle = "<span> Each riders fastest splits from across the Pal Arinsal
     race weekend were combined to simulate their fastest hypothetical runs.
-    These runs were then ranked to create a new simulated leaderboard. Even in
-    this simulated world, <span style='color:#57106e;'>**Jackson Goldstone**</span>
-    reigns king with unmatched speed. <span
-    style='color:#f98e09;'>**Thibaut Daprela**</span> was on for a top 10 had he
-    not blown out a corner near the bottom.</span>",
-    caption = "The missing simulated ranks 5, 28, & 30 correspond to Ronan Dunne(DNF), Andreas Kolb (did not qualify), & Christian Hauser (DNF)."
+    These runs were then ranked to create a new simulated leaderboard.
+    <span style='color:#57106e;'>**Loic Bruni**</span> demonstrates why he is the
+    king of Andorra: even if Jackson could have put in his best run, these
+    simulations hint that Loic may have still been unbeatable here.
+    <span style='color:#f98e09;'>**Amaury Pierron**</span> was showing
+    blistering pace, especially for a man recovering from surgery! A small
+    mistake ruined his chance at a top 10 finish..</span>",
+    caption = "Missing ranks are due to riders for did not finish, qualify, or are far down in the simulated ranks and omitted for clarity."
   )
 
 # ggsave(
-#   "inst/scripts/analysis-pal-arinsal-25/elite-men/plot_bump.png",
+#   "inst/scripts/analysis-pal-arinsal-25/plot_bump.png",
 #   plot = plot_bump,
 #   width = 2300,
 #   height = 3200,
@@ -568,7 +590,7 @@ table_heat_map <- fastest_possible_splits_ranked |>
 
 # gtsave(
 #   table_heat_map,
-#   "inst/scripts/analysis-pal-arinsal-25/elite-men/table_heat_map.png",
+#   "inst/scripts/analysis-pal-arinsal-25/table_heat_map.png",
 #   zoom = 10
 # )
 
@@ -639,7 +661,7 @@ table_combined_run <- fastest_combined_run |>
 
 # gtsave(
 #   table_combined_run,
-#   "inst/scripts/analysis-pal-arinsal-25/elite-men/table_combined_run.png",
+#   "inst/scripts/analysis-pal-arinsal-25/table_combined_run.png",
 #   zoom = 10
 # )
 
@@ -691,7 +713,7 @@ plot_ridges <- final_section_times_from_leader |>
   )
 
 # ggsave(
-#   "inst/scripts/analysis-pal-arinsal-25/elite-men/plot_ridges.png",
+#   "inst/scripts/analysis-pal-arinsal-25/plot_ridges.png",
 #   plot = plot_ridges,
 #   width = 2200,
 #   height = 1800,
@@ -706,95 +728,14 @@ final_section_times_from_leader |>
   slice_min(time_from_leader, n = 2, by = section)
 
 # ---- Additional Questions ----------------------------------------------------
-# Most DNF's of the season?
-plot_dnfs <- world_cup_25_elite_men_results |>
-  count(dnf, event_name) |>
-  filter(dnf == TRUE) |>
-  mutate(event_name = fct_reorder(event_name, n)) |>
-  ggplot(aes(x = n, y = event_name)) +
-  geom_col(fill = "steelblue3", color = "black", alpha = .7) +
-  theme_ridges() +
-  labs(
-    title = "Pal Arinsal did not have the most DNF's, despite its reputation",
-    x = "No. of DNF's",
-    y = NULL
-  )
+# Could Davide Palazzari have won if we didn't crash?
+# Can we measure his average percentage increase on each split in his finals
+# run from his previous best split times to guess the expected increase in the
+# final split?
+# So do two scenarios:
+# 1. Actual finals split times from 1-4 + simulated 5th
+# 2. Actual finals split times from 1-4 + simulated 5th + expected % increase
+# The % increase could come from Q1 -> Finals for 1-4? Or from best -> Finals for 1-4?
 
-# ggsave(
-#   "inst/scripts/analysis-pal-arinsal-25/elite-men/plot_dnfs.png",
-#   plot = plot_dnfs,
-#   width = 2500,
-#   height = 2000,
-#   units = "px",
-#   bg = "white",
-#   limitsize = FALSE,
-#   dpi = 330
-# )
-
-# Most crashes?
-plot_ridges_by_event <- world_cup_25_elite_men_results |>
-  filter(round_type == "Final") |>
-  select(name, time_from_leader, event_name) |>
-  filter(!is.na(time_from_leader)) |>
-  # filter(time_from_leader < 50) |>
-  mutate(
-    event_name = factor(
-      event_name,
-      levels = c(
-        "Pal Arinsal",
-        "Val di Sole",
-        "Leogang",
-        "Loudenvielle",
-        "Bielsko-Biala"
-      )
-    )
-  ) |>
-  ggplot(aes(x = time_from_leader, y = event_name, fill = event_name)) +
-  geom_density_ridges(scale = 2, alpha = .5) +
-  scale_y_discrete(expand = c(0, 0)) +
-  coord_cartesian(clip = "off") +
-  theme_ridges() +
-  scale_fill_viridis_d(option = "C", begin = .3, end = .8, guide = "none") +
-  labs(
-    title = "Elite Men: Distribution of time gaps from leader across races",
-    subtitle = "DNF's removed from results.",
-    y = NULL,
-    x = "Time from leader (s)"
-  )
-
-# ggsave(
-#   "inst/scripts/analysis-pal-arinsal-25/elite-men/plot_ridges_by_event.png",
-#   plot = plot_ridges_by_event,
-#   width = 2500,
-#   height = 1800,
-#   units = "px",
-#   bg = "white",
-#   limitsize = FALSE,
-#   dpi = 330
-# )
-
-# Is ronan really a wild man? Show his consistency across the past two years and
-# prove everyone wrong!
-plot_ronan_dunne <- world_cup_24_elite_men_results |>
-  bind_rows(world_cup_25_elite_men_results) |>
-  filter(name == "DUNNE Ronan") |>
-  filter(round_type == "Final") |>
-  ggplot(aes(rank)) +
-  geom_density(fill = "steelblue3", alpha = .7) +
-  theme_ridges() +
-  labs(
-    title = "Ronan Dunne has demonstrated impressive consistency in 2024 & 2025",
-    subtitle = "He qualified for every final, with the bulk of his results in the top 10",
-    x = "Final position"
-  )
-
-# ggsave(
-#   "inst/scripts/analysis-pal-arinsal-25/elite-men/plot_ronan_dunne.png",
-#   plot = plot_ronan_dunne,
-#   width = 2600,
-#   height = 1800,
-#   units = "px",
-#   bg = "white",
-#   limitsize = FALSE,
-#   dpi = 330
-# )
+# Did Andorra have the tightest winning margins this year?
+# What about the previous two years?

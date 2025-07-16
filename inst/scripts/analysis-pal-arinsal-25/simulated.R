@@ -10,7 +10,7 @@ library(ggtext)
 library(glue)
 library(gt)
 library(ggridges)
-
+library(ggforce)
 # ------------------------------------------------------------------------------
 # Prepare data set
 # ------------------------------------------------------------------------------
@@ -462,7 +462,7 @@ plot_bump <- ggplot() +
     simulations hint that Loic may have still been unbeatable here.
     <span style='color:#f98e09;'>**Amaury Pierron**</span> was showing
     blistering pace, especially for a man recovering from surgery! A small
-    mistake ruined his chance at a top 10 finish..</span>",
+    mistake ruined his chance for what looked set to be a top 5 finish.</span>",
     caption = "Missing ranks due to DNS, DNQ, DNF, or omitted low-ranking riders."
   )
 
@@ -729,13 +729,326 @@ final_section_times_from_leader |>
 
 # ---- Additional Questions ----------------------------------------------------
 # Could Davide Palazzari have won if we didn't crash?
-# Can we measure his average percentage increase on each split in his finals
-# run from his previous best split times to guess the expected increase in the
-# final split?
-# So do two scenarios:
-# 1. Actual finals split times from 1-4 + simulated 5th
-# 2. Actual finals split times from 1-4 + simulated 5th + expected % increase
-# The % increase could come from Q1 -> Finals for 1-4? Or from best -> Finals for 1-4?
+bruni_final_time <- fastest_times_final |>
+  slice(1) |>
+  pull(fastest_time_finals)
+
+palazzari_splits_1_4 <- c(37.319, 82.524, 112.061, 138.703)
+
+bruni_palazzari_splits_ranked <- fastest_possible_sections |>
+  select(-ends_with("_round")) |>
+  rename_with(\(x) str_remove_all(x, "_time"), starts_with("section_")) |>
+  filter(name == "Loic Bruni") |>
+  rowwise() |>
+  mutate(
+    section_2 = section_1 + section_2,
+    section_3 = section_2 + section_3,
+    section_4 = section_3 + section_4,
+    section_5 = section_4 + section_5
+  ) |>
+  ungroup() |>
+  add_row(
+    name = "Davide Palazzari",
+    event_name = "Pal Arinsal",
+    section_1 = 37.319,
+    section_2 = 82.524,
+    section_3 = 112.061,
+    section_4 = 138.703,
+    section_5 = NA,
+  ) |>
+  mutate(
+    across(
+      starts_with("section_"),
+      ~ rank(.x, ties.method = "min"),
+      .names = "{.col}_rank"
+    )
+  ) |>
+  mutate(
+    across(
+      starts_with("section_") & !ends_with("_rank"),
+      ~ .x - min(.x),
+      .names = "{.col}_gap"
+    )
+  )
+
+table_bruni_palazzari <- bruni_palazzari_splits_ranked |>
+  left_join(image_data) |>
+  select(path, name, ends_with("_gap"), ends_with("_rank")) |>
+  gt() |>
+  text_transform(
+    locations = cells_body(columns = path),
+    fn = function(path) {
+      local_image(
+        filename = path,
+        height = 60
+      )
+    }
+  ) |>
+  cols_label(
+    path = "",
+    name = "",
+    section_1_gap = "Split 1",
+    section_2_gap = "Split 2",
+    section_3_gap = "Split 3",
+    section_4_gap = "Split 4",
+    section_5_gap = "Finish"
+  ) |>
+  text_transform(
+    fn = \(x) if_else(x == "0.000", paste0(x), paste("+", x)),
+    locations = cells_body(columns = ends_with("_gap"))
+  ) |>
+  merge_section_columns() |>
+  tab_style(
+    style = cell_borders(sides = "all", style = "solid", color = "#e9e9e9"),
+    locations = cells_body(
+      columns = ends_with("_gap")
+    )
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) |>
+  opt_row_striping() |>
+  tab_options(
+    table.font.size = px(12),
+    column_labels.font.weight = "bold"
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = !name)
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = "name")
+  ) |>
+  tab_header(
+    title = md("## Could Palazzari have beaten Bruni?"),
+    subtitle = md(
+      "### The gap (with rank in brackets) is shown for each section in Finals until split 4"
+    )
+  ) |>
+  data_color(
+    columns = section_1_gap,
+    rows = name == 'Loic Bruni',
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = section_2_gap,
+    rows = name == 'Loic Bruni',
+    palette = "#e41a1c"
+  ) |>
+  data_color(
+    columns = section_3_gap,
+    rows = name == 'Loic Bruni',
+    palette = "#e41a1c"
+  ) |>
+  data_color(
+    columns = section_4_gap,
+    rows = name == 'Loic Bruni',
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = section_1_gap,
+    rows = name == 'Davide Palazzari',
+    palette = "#e41a1c"
+  ) |>
+  data_color(
+    columns = section_2_gap,
+    rows = name == 'Davide Palazzari',
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = section_3_gap,
+    rows = name == 'Davide Palazzari',
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = section_4_gap,
+    rows = name == 'Davide Palazzari',
+    palette = "#e41a1c"
+  ) |>
+  text_transform(
+    locations = cells_body(
+      columns = section_5_gap,
+      rows = name == "Loic Bruni"
+    ),
+    fn = function(x) "?"
+  ) |>
+  text_transform(
+    locations = cells_body(
+      columns = section_5_gap,
+      rows = name == "Davide Palazzari"
+    ),
+    fn = function(x) "?"
+  )
+
+# gtsave(
+#   table_bruni_palazzari,
+#   "inst/scripts/analysis-pal-arinsal-25/table_bruni_palazzari.png",
+#   zoom = 10
+# )
+
+palazzari_fastest_split_5 <- fastest_possible_sections |>
+  filter(name == "Davide Palazzari") |>
+  pull(section_5_time)
+
+palazzari_mean_decrease <- fastest_possible_sections |>
+  filter(name == "Davide Palazzari") |>
+  select(ends_with("_time")) |>
+  mutate(id = "fastest_splits", .before = section_1_time) |>
+  add_row(
+    id = "final_splits",
+    section_1_time = palazzari_splits_1_4[1],
+    section_2_time = palazzari_splits_1_4[2] - palazzari_splits_1_4[1],
+    section_3_time = palazzari_splits_1_4[3] - palazzari_splits_1_4[2],
+    section_4_time = palazzari_splits_1_4[4] - palazzari_splits_1_4[3],
+    section_5_time = NA
+  ) |>
+  select(-section_5_time) |>
+  pivot_longer(!id) |>
+  pivot_wider(names_from = id, values_from = value) |>
+  mutate(
+    percentage_difference = (fastest_splits - final_splits) /
+      fastest_splits
+  ) |>
+  summarise(mean_difference = mean(percentage_difference)) |>
+  pull()
+
+# Scenario 1: Actual finals split times from 1-4 + simulated 5th
+palazzari_simulated_finish <- palazzari_splits_1_4[4] +
+  palazzari_fastest_split_5
+
+print(bruni_final_time)
+print(palazzari_simulated_finish)
+
+# Scenario 2: Actual finals split times from 1-4 + simulated 5th * expected % increase
+palazzari_simulated_finish_decreased <- palazzari_splits_1_4[4] +
+  (palazzari_fastest_split_5 * (1 - palazzari_mean_decrease))
+
+print(bruni_final_time)
+print(palazzari_simulated_finish_decreased)
+print(bruni_final_time - palazzari_simulated_finish_decreased)
 
 # Did Andorra have the tightest winning margins this year?
 # What about the previous two years?
+gaps <- world_cup_25_elite_men_results |>
+  select(rank, round_type, event_name, time_from_leader) |>
+  filter(round_type == "Final") |>
+  filter(rank == 5 | rank == 10 | rank == 20) |>
+  mutate(
+    race_group = case_when(
+      rank == 5 ~ "Top 5",
+      rank == 10 ~ "Top 10",
+      rank == 20 ~ "Top 20",
+    ),
+    .by = event_name
+  )
+
+table_race_gaps <- gaps |>
+  select(race_group, Event = event_name, gap = time_from_leader) |>
+  mutate(
+    race_group = factor(
+      race_group,
+      levels = c("Top 5", "Top 10", "Top 20")
+    )
+  ) |>
+  arrange(race_group, gap) |>
+  pivot_wider(names_from = Event, values_from = gap) |>
+  gt() |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) |>
+  opt_row_striping() |>
+  tab_options(
+    table.font.size = px(12),
+    column_labels.font.weight = "bold"
+  ) |>
+  cols_label(race_group = "") |>
+  data_color(
+    columns = Leogang,
+    rows = race_group == 'Top 5',
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = Leogang,
+    rows = race_group == 'Top 10',
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = Leogang,
+    rows = race_group == 'Top 20',
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = `Val di Sole`,
+    rows = race_group == 'Top 5',
+    palette = "#e41a1c"
+  ) |>
+  data_color(
+    columns = `Val di Sole`,
+    rows = race_group == 'Top 10',
+    palette = "#e41a1c"
+  ) |>
+  data_color(
+    columns = `La Thuile`,
+    rows = race_group == 'Top 20',
+    palette = "#e41a1c"
+  ) |>
+  tab_header(
+    title = md(
+      "**Leogang is so far the tighest race in 2025 (green) with La Thuile and Val di Sole being the least (red)**"
+    ),
+    subtitle = md("Values in cells show the gap from the leader in seconds")
+  )
+
+# gtsave(
+#   table_race_gaps,
+#   "inst/scripts/analysis-pal-arinsal-25/table_race_gaps.png",
+#   zoom = 10
+# )
+
+plot_race_gaps <- world_cup_25_elite_men_results |>
+  select(rank, round_type, event_name, time_from_leader) |>
+  filter(round_type == "Final") |>
+  filter(!is.na(time_from_leader)) |>
+  filter(time_from_leader <= 50) |>
+  mutate(
+    event_name = factor(
+      event_name,
+      levels = c(
+        "Bielsko-Biala",
+        "Loudenvielle",
+        "Leogang",
+        "Val di Sole",
+        "La Thuile",
+        "Pal Arinsal"
+      )
+    )
+  ) |>
+  ggplot(aes(x = event_name, y = time_from_leader)) +
+  geom_violin(alpha = 0.01, linewidth = 0.1) +
+  geom_sina(alpha = 0.7, size = 2, color = "steelblue") +
+  labs(
+    title = "Spread of Final times in Elite Men",
+    subtitle = "Gaps more than 50s (e.g., due to crashes) have been omitted",
+    x = NULL,
+    y = "Time from Leader (s)"
+  ) +
+  theme_ridges() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 14, face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+
+# ggsave(
+#   "inst/scripts/analysis-pal-arinsal-25/plot_race_gaps.png",
+#   plot = plot_race_gaps,
+#   width = 2200,
+#   height = 1800,
+#   units = "px",
+#   bg = "white",
+#   limitsize = FALSE,
+#   dpi = 330
+# )

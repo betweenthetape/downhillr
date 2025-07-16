@@ -463,7 +463,7 @@ plot_bump <- ggplot() +
     <span style='color:#f98e09;'>**Amaury Pierron**</span> was showing
     blistering pace, especially for a man recovering from surgery! A small
     mistake ruined his chance at a top 10 finish..</span>",
-    caption = "Missing ranks are due to riders for did not finish, qualify, or are far down in the simulated ranks and omitted for clarity."
+    caption = "Missing ranks due to DNS, DNQ, DNF, or omitted low-ranking riders."
   )
 
 # ggsave(

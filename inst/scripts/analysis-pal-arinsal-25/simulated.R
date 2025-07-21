@@ -665,6 +665,11 @@ table_combined_run <- fastest_combined_run |>
 #   zoom = 10
 # )
 
+# Fastest run in Finals
+fastest_times_final |>
+  slice(1) |>
+  pull()
+
 # ------------------------------------------------------------------------------
 # Which section was won by the biggest margin, relative to its length?
 # ------------------------------------------------------------------------------
@@ -723,9 +728,19 @@ plot_ridges <- final_section_times_from_leader |>
 #   dpi = 330
 # )
 
+# Compare first and second
+first_second <- fastest_times_final |>
+  slice(1:2) |>
+  pull(name)
+
 final_section_times_from_leader |>
   select(name, section, time_from_leader) |>
-  slice_min(time_from_leader, n = 2, by = section)
+  filter(name %in% first_second)
+
+final_section_times_from_leader |>
+  select(name, section, time_from_leader) |>
+  filter(section == "1") |>
+  arrange(time_from_leader)
 
 # ---- Additional Questions ----------------------------------------------------
 # Could Davide Palazzari have won if we didn't crash?

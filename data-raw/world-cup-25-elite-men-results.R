@@ -318,6 +318,58 @@ spec <- tribble(
     metadata_temp_deg_c = 22,
     metadata_distance_km = 1.900,
     metadata_average_speed_kmh = 42.513
+  ),
+  # ---- Les Gets ----
+  "inst/extdata/20250829-gets_dhi_me_results_f.pdf",
+  NULL,
+  list(c(132.6648, 19.4335, 618.5427, 578.0811)),
+  list(
+    event_name = "Les Gets",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Men Elite",
+    metadata_weather = "Cloudy",
+    metadata_temp_deg_c = 13,
+    metadata_distance_km = 2.380,
+    metadata_average_speed_kmh = 36.215
+  ),
+  "inst/extdata/20250829-gets_dhi_me_results_q1.pdf",
+  1:4,
+  list(
+    c(132.6648, 19.4335, 743.9305, 578.0811),
+    c(132.6648, 19.4335, 743.9305, 576.9616),
+    c(132.6648, 18.314, 745.0501, 578.0811),
+    c(132.6648, 18.314, 164.0118, 575.8421)
+  ),
+  list(
+    event_name = "Les Gets",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Men Elite",
+    metadata_weather = "Mostly Sunny",
+    metadata_temp_deg_c = 18,
+    metadata_distance_km = 2.380,
+    metadata_average_speed_kmh = 35.975
+  ),
+  "inst/extdata/20250829-gets_dhi_me_results_q2.pdf",
+  1:3,
+  list(
+    c(132.6648, 19.4335, 743.9305, 575.8421),
+    c(132.6648, 19.4335, 745.0501, 578.0811),
+    c(131.5453, 19.4335, 385.6796, 576.9616)
+  ),
+  list(
+    event_name = "Les Gets",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Men Elite",
+    metadata_weather = "Cloudy",
+    metadata_temp_deg_c = 18,
+    metadata_distance_km = 2.380,
+    metadata_average_speed_kmh = 37.350
   )
 )
 

@@ -112,6 +112,22 @@ spec <- tribble(
     event_year = "2025",
     round_type = "Timed Training",
     round_category = "Men Elite"
+  ),
+  "inst/extdata/20250829-gets_dhi_me_results_tt.pdf",
+  1:5,
+  list(
+    c(140.315, 19.919, 740.0013, 576.5211),
+    c(139.1505, 18.7545, 740.0013, 576.5211),
+    c(139.1505, 18.7545, 741.1658, 577.6855),
+    c(140.315, 19.919, 740.0013, 577.6855),
+    c(139.1505, 18.7545, 632.8729, 576.5211)
+  ),
+  list(
+    event_name = "Les Gets",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Timed Training",
+    round_category = "Men Elite"
   )
 )
 

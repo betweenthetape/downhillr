@@ -362,36 +362,40 @@ table_time_left <- fastest_times_all |>
 actual <- fastest_times_final |>
   arrange(fastest_time_finals) |>
   mutate(rank_actual = row_number()) |>
-  select(name, rank_actual)
+  select(name, rank_actual, time_actual = fastest_time_finals)
 
 simulated <- fastest_possible_times |>
   arrange(fastest_time_possible) |>
   mutate(rank_simulated = row_number()) |>
-  select(name, rank_simulated)
+  select(name, rank_simulated, time_simulated = fastest_time_possible)
 
 bump_data <- actual |>
   left_join(simulated) |>
   filter(rank_simulated <= 30) |>
   pivot_longer(
-    starts_with("rank_"),
-    names_to = "type",
-    values_to = "rank"
+    cols = -name,
+    names_to = c(".value", "type"),
+    names_pattern = "(.+)_(.+)"
   ) |>
+  mutate(time = convert_to_minutes(time)) |>
   mutate(
     type = if_else(
-      type == "rank_actual",
-      "Actual \nrank",
-      "Simulated \nrank"
+      type == "actual",
+      "Actual \ntime",
+      "Simulated \ntime"
     )
   ) |>
   mutate(
     color = case_when(
-      name == "Loic Bruni" ~ "#57106e",
-      name == "Jackson Goldstone" ~ "#f98e09",
+      name == "L.Bruni" ~ "#57106e",
+      name == "J.Goldstone" ~ "#f98e09",
       TRUE ~ "#E7E7E7"
     )
   ) |>
-  left_join(image_data)
+  left_join(image_data) |>
+  mutate(
+    name = str_replace(name, "^(\\w)\\w+\\s+", "\\1.")
+  )
 
 plot_bump <- ggplot() +
   geom_bump(
@@ -428,7 +432,7 @@ plot_bump <- ggplot() +
     axis.title = element_blank()
   ) +
   geom_richtext(
-    data = filter(bump_data, type == "Actual \nrank"),
+    data = filter(bump_data, type == "Actual \ntime"),
     hjust = 1,
     nudge_x = -0.1,
     mapping = aes(
@@ -436,12 +440,12 @@ plot_bump <- ggplot() +
       y = rank,
       label.size = NA,
       label = glue(
-        "<span style='font-size:14px;'>{name}<span style='color:white;'>...</span><span style='font-size:16px;'>**{rank}**</span></span>"
+        "<span style='font-size:14px;'>{name}<span style='color:white;'>...</span><span style='font-size:16px;'>**{time}**</span></span>"
       )
     )
   ) +
   geom_richtext(
-    data = filter(bump_data, type == "Simulated \nrank"),
+    data = filter(bump_data, type == "Simulated \ntime"),
     nudge_x = 0.1,
     hjust = 0,
     mapping = aes(
@@ -449,7 +453,7 @@ plot_bump <- ggplot() +
       y = rank,
       label.size = NA,
       label = glue(
-        "<span style='font-size:14px;'><span style='font-size:16px;'>**{rank}**</span><span style='color:white;'>...</span>{name}</span>"
+        "<span style='font-size:14px;'><span style='font-size:16px;'>**{time}**</span><span style='color:white;'>...</span>{name}</span>"
       )
     )
   ) +
@@ -459,12 +463,12 @@ plot_bump <- ggplot() +
     race weekend were combined to simulate their fastest hypothetical runs.
     These runs were then ranked to create a new simulated leaderboard.
     Les Gets proved to be an important race for the overall leaderboard.
-    Despite a lower simulated rank than
+    Despite a lower simulated time than
     <span style='color:#f98e09;'>**Jackson Goldstone**</span>,
     <span style='color:#57106e;'>**Loic Bruni**</span> played it smart this
     weekend, shrinking the gap in the overall leaderpoint and applying pressure
     to the number one jersey.</span>",
-    caption = "Missing ranks due to DNS, DNQ, DNF, or omitted low-ranking riders."
+    caption = "Missing times due to DNS, DNQ, DNF, or omitted low-ranking riders."
   )
 
 # ggsave(

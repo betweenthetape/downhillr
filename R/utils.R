@@ -27,6 +27,21 @@ convert_to_seconds <- function(x) {
   )
 }
 
+#' @noRd
+#' @examples
+#' convert_to_minutes(c(236.586, 244.275))
+convert_to_minutes <- function(x) {
+  map_chr(
+    x,
+    .f = \(x) {
+      minutes <- floor(x / 60)
+      seconds <- round(x %% 60, 2)
+      sprintf("%d:%05.2f", minutes, seconds)
+    }
+  )
+}
+
+
 #' Extract table areas from a PDF
 #'
 #' Run this function to interactively extract table areas from a PDF and print

@@ -699,11 +699,12 @@ final_section_times <- all_section_times |>
   ) |>
   mutate(section = str_extract(section, "\\d+"))
 
+# - Absolute -
 final_section_times_from_leader <- final_section_times |>
   mutate(fastest_section_time = min(time), .by = section) |>
   mutate(time_from_leader = time - fastest_section_time)
 
-plot_ridges <- final_section_times_from_leader |>
+plot_ridges_time <- final_section_times_from_leader |>
   filter(time_from_leader < 7) |>
   ggplot(aes(x = time_from_leader, y = section, fill = section)) +
   geom_density_ridges(scale = 2, alpha = .5) +
@@ -722,9 +723,47 @@ plot_ridges <- final_section_times_from_leader |>
     x = "Time from leader (s)"
   )
 
+# - Relative -
+final_section_percentages_from_leader <- final_section_times_from_leader |>
+  mutate(
+    percentage_from_leader = (time - fastest_section_time) /
+      fastest_section_time *
+      100
+  )
+
+plot_ridges_percentage <- final_section_percentages_from_leader |>
+  filter(time_from_leader < 7) |>
+  ggplot(aes(x = percentage_from_leader, y = section, fill = section)) +
+  geom_density_ridges(scale = 2, alpha = .5) +
+  scale_y_discrete(expand = c(0, 0)) +
+  # scale_x_continuous(
+  #   expand = c(0, 0),
+  #   breaks = seq(0, 7, by = 1)
+  # ) +
+  coord_cartesian(clip = "off") +
+  theme_ridges() +
+  scale_fill_viridis_d(option = "C", begin = .3, end = .8, guide = "none") +
+  labs(
+    title = "Elite Men: Distribution of % Difference in Time Gaps from Leader Across Sections \nin Finals",
+    subtitle = "Outlier time gaps > 7s (e.g., due to crashes) removed for clarity.",
+    y = "Race Section",
+    x = "Difference from leader (%)"
+  )
+
 # ggsave(
-#   "inst/scripts/analysis-les-gets-25/plot_ridges.png",
-#   plot = plot_ridges,
+#   "inst/scripts/analysis-les-gets-25/plot_ridges_time.png",
+#   plot = plot_ridges_time,
+#   width = 2200,
+#   height = 1800,
+#   units = "px",
+#   bg = "white",
+#   limitsize = FALSE,
+#   dpi = 330
+# )
+
+# ggsave(
+#   "inst/scripts/analysis-les-gets-25/plot_ridges_percentage.png",
+#   plot = plot_ridges_percentage,
 #   width = 2200,
 #   height = 1800,
 #   units = "px",

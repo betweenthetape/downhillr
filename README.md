@@ -30,6 +30,7 @@ To date, the package includes the following data sets:
 - `world_cup_25_elite_men_timed_training`: Elite Men's timed training results from each round of the 2025 Mountain Bike World Cup
 - `world_cup_25_elite_women_results`: Elite Women's results from the each round of the 2025 UCI Mountain Bike World Cup
 - `world_cup_25_elite_women_timed_training`: Elite Women's timed training results from each round of the 2025 Mountain Bike World Cup
+- `world_championships_25`: Results from all categories from the 2025 Mountain Bike World Championships
 
 ```r
 > downhillr::world_cup_24_elite_men_results

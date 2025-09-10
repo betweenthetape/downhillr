@@ -1,8 +1,7 @@
 # ------------------------------------------------------------------------------
 # README:
 # To run this script, you first need to manually download the results PDF's
-# from https://www.valais2025.ch/results#result matching the file names to those
-# below.
+# from https://www.valais2025.ch/results matching the file names to those below.
 # ------------------------------------------------------------------------------
 
 # ---- Load ----

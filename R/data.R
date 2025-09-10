@@ -312,3 +312,42 @@
 #'
 #' @source <https://prod.chronorace.be/angular/results.html#/uci/event/20240503_mtb/DHI/CG1>
 "world_cup_25_elite_women_timed_training"
+
+#' 2025 World Championships Results
+#'
+#' This dataset contains the results from the 2025 UCI Mountain Bike World
+#' Championships held in Champéry. It includes detailed information about each
+#' rider's performance across Men Elite, Women Elite, and Junior Men categories,
+#' including team affiliation, nationality, splits, and other metadata.
+#'
+#' @format A data frame with 200 rows and 25 variables:
+#' \describe{
+#'   \item{rank}{The finishing rank of the rider.}
+#'   \item{nr}{Rider's race number.}
+#'   \item{name}{Rider's name (e.g., "A'HERN Kye").}
+#'   \item{nat}{Rider's nationality code (e.g., "ARG" for Argentina).}
+#'   \item{yob}{Rider's year of birth.}
+#'   \item{uci_id}{Rider's unique UCI ID.}
+#'   \item{speed}{Rider's average speed in km/h.}
+#'   \item{split_1}{Rider's time at the first split (in seconds).}
+#'   \item{split_2}{Rider's time at the second split (in seconds).}
+#'   \item{split_3}{Rider's time at the third split (in seconds).}
+#'   \item{split_4}{Rider's time at the fourth split (in seconds).}
+#'   \item{time}{Rider's total time to complete the course (in seconds).}
+#'   \item{time_from_leader}{Time difference from the race leader (in seconds).}
+#'   \item{dnf}{Whether the rider did not finish (TRUE or FALSE).}
+#'   \item{dsq}{Whether the rider was disqualified (TRUE or FALSE).}
+#'   \item{dns}{Whether the rider did not start (TRUE or FALSE).}
+#'   \item{event_name}{Name of the event (e.g., "Champéry").}
+#'   \item{event_type}{Type of the event (e.g., "World Championships").}
+#'   \item{event_year}{Year of the event (e.g., "2025").}
+#'   \item{round_type}{Round type (e.g., "Final").}
+#'   \item{round_category}{Category of the round (e.g., "Men Elite", "Women Elite", "Junior Men").}
+#'   \item{metadata_weather}{Weather conditions during the event (e.g., "Sunny").}
+#'   \item{metadata_temp_deg_c}{Temperature during the event (in degrees Celsius).}
+#'   \item{metadata_distance_km}{Total race distance (in kilometers).}
+#'   \item{metadata_average_speed_kmh}{Average speed across all riders (in km/h).}
+#' }
+#'
+#' @source <https://www.valais2025.ch/results>
+"world_championships_25"

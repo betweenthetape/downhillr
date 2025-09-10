@@ -220,10 +220,10 @@ women_ultimate_run |>
   pull(time)
 
 # ------------------------------------------------------------------------------
-# Was Kiefer alone in section two?
+# Distribution: points
 # ------------------------------------------------------------------------------
 # - Elite men -
-results |>
+men_time_from_leader <- results |>
   filter(round_category == "Men Elite") |>
   slice(1:30) |>
   select(name, starts_with("section_")) |>
@@ -238,27 +238,225 @@ results |>
     names_to = "section",
     values_to = "time_from_leader"
   ) |>
-  mutate(section = str_extract(section, "\\d+")) |>
+  mutate(section = str_extract(section, "\\d+"))
+
+men_plot_violin <- men_time_from_leader |>
   ggplot(aes(x = section, y = time_from_leader)) +
-  geom_violin(alpha = 0.01, linewidth = 0.1) +
-  geom_sina(alpha = 0.7, size = 2, color = "steelblue") +
+  geom_violin(
+    alpha = 0.3,
+    linewidth = 0,
+    fill = "grey"
+  ) +
+  geom_sina(alpha = 0.7, size = 3, color = "steelblue") +
   labs(
-    title = "Spread of Time Gaps in Top 30 Elite Men",
-    subtitle = "Gaps more than 50s (e.g., due to crashes) have been omitted",
-    x = NULL,
+    title = "Jackson secured the race in section three",
+    subtitle = "Spread of Time Gaps in Top 30 Elite Men",
+    x = "Section",
     y = "Time from Leader (s)"
   ) +
   theme_ridges()
 
-# TODO:
-# Add images to points
-# Annotate outputs with excalidraw?
+ggsave(
+  "inst/scripts/analysis-world-champs-25/men_plot_violin.png",
+  plot = men_plot_violin,
+  width = 2200,
+  height = 1800,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)
+
+# Examine gaps
+men_time_from_leader |>
+  group_by(section) |>
+  arrange(time_from_leader, .by_group = TRUE) |>
+  slice(1:2)
+
+# - Elite Women -
+women_time_from_leader <- results |>
+  filter(round_category == "Women Elite") |>
+  slice(1:30) |>
+  select(name, starts_with("section_")) |>
+  mutate(
+    across(
+      .cols = starts_with("section_"),
+      .fns = ~ .x - min(.x, na.rm = TRUE)
+    )
+  ) |>
+  pivot_longer(
+    !name,
+    names_to = "section",
+    values_to = "time_from_leader"
+  ) |>
+  mutate(section = str_extract(section, "\\d+"))
+
+women_plot_violin <- women_time_from_leader |>
+  ggplot(aes(x = section, y = time_from_leader)) +
+  geom_violin(
+    alpha = 0.3,
+    linewidth = 0,
+    fill = "grey"
+  ) +
+  geom_sina(alpha = 0.7, size = 3, color = "steelblue") +
+  labs(
+    title = "Valetina secured the race in section two",
+    subtitle = "Spread of Time Gaps in Top 30 Elite Women",
+    x = "Section",
+    y = "Time from Leader (s)"
+  ) +
+  theme_ridges()
+
+ggsave(
+  "inst/scripts/analysis-world-champs-25/women_plot_violin.png",
+  plot = women_plot_violin,
+  width = 2200,
+  height = 1800,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)
+
+# Examine gaps
+women_time_from_leader |>
+  group_by(section) |>
+  arrange(time_from_leader, .by_group = TRUE) |>
+  slice(1:2)
 
 # ------------------------------------------------------------------------------
 # Story of the race: ridgeline plot telling different story of points.
 # ------------------------------------------------------------------------------
-# Another way to visualise the spread of time gaps is....
+#- Elite men -
+men_plot_ridges <- men_time_from_leader |>
+  # filter(time_from_leader < 7) |>
+  ggplot(aes(x = time_from_leader, y = section, fill = section)) +
+  geom_density_ridges(scale = 2, alpha = .5) +
+  scale_y_discrete(expand = c(0, 0)) +
+  scale_x_continuous(
+    expand = c(0, 0),
+    breaks = seq(0, 7, by = 1)
+  ) +
+  coord_cartesian(clip = "off") +
+  theme_ridges() +
+  scale_fill_viridis_d(option = "C", begin = .3, end = .8, guide = "none") +
+  labs(
+    title = "Elite Men: Distribution of Time Gaps from Leader Across Sections \nin Finals",
+    y = "Race Section",
+    x = "Time from leader (s)"
+  )
+
+ggsave(
+  "inst/scripts/analysis-world-champs-25/men_plot_ridges.png",
+  plot = men_plot_ridges,
+  width = 2200,
+  height = 1800,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)
+
+# - Elite women -
+women_plot_ridges <- women_time_from_leader |>
+  # filter(time_from_leader < 7) |>
+  ggplot(aes(x = time_from_leader, y = section, fill = section)) +
+  geom_density_ridges(scale = 2, alpha = .5) +
+  scale_y_discrete(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  coord_cartesian(clip = "off") +
+  theme_ridges() +
+  scale_fill_viridis_d(option = "C", begin = .3, end = .8, guide = "none") +
+  labs(
+    title = "Elite Women: Distribution of Time Gaps from Leader Across Sections \nin Finals",
+    y = "Race Section",
+    x = "Time from leader (s)"
+  )
+
+ggsave(
+  "inst/scripts/analysis-world-champs-25/women_plot_ridges.png",
+  plot = women_plot_ridges,
+  width = 2200,
+  height = 1800,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)
 
 # ------------------------------------------------------------------------------
 # Young podium: did age predict performance?
 # ------------------------------------------------------------------------------
+results_w_age <- results |>
+  mutate(
+    age = as.numeric(event_year) - as.numeric(yob),
+    .after = yob
+  ) |>
+  left_join(image_data)
+
+# - Elite Men -
+men_plot_age_time <- results_w_age |>
+  filter(round_category == "Men Elite") |>
+  slice(1:30) |>
+  ggplot(aes(x = age, y = time)) +
+  geom_image(
+    size = .1,
+    aes(image = path),
+    alpha = .7
+  ) +
+  theme_ridges() +
+  labs(
+    title = "Age does not appear to correlate with performance in the top 30 Elite Men",
+    x = "Age",
+    y = "Time (s)"
+  )
+
+ggsave(
+  "inst/scripts/analysis-world-champs-25/men_plot_age_time.png",
+  plot = men_plot_age_time,
+  width = 2200,
+  height = 1800,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)
+
+# While the model's coefficient for time was 0.4269, suggesting a slight
+# positive trend where a longer race time was associated with older riders, this
+# finding was not statistically significant (p=0.226). Therefore, based on this
+# specific dataset, we cannot conclude that age is a reliable predictor of
+# performance.
+results_w_age |>
+  filter(round_category == "Men Elite") |>
+  slice(1:30) |>
+  lm(age ~ time, data = _) |>
+  summary()
+
+# - Elite Women -
+women_plot_age_time <- results_w_age |>
+  filter(round_category == "Women Elite") |>
+  slice(1:30) |>
+  ggplot(aes(x = age, y = time)) +
+  geom_image(
+    size = .1,
+    aes(image = path),
+    alpha = .7
+  ) +
+  theme_ridges() +
+  labs(
+    title = "Age does not appear to correlate with performance in the top 30 Elite Women",
+    x = "Age",
+    y = "Time (s)"
+  )
+
+ggsave(
+  "inst/scripts/analysis-world-champs-25/women_plot_age_time.png",
+  plot = women_plot_age_time,
+  width = 2200,
+  height = 1800,
+  units = "px",
+  bg = "white",
+  limitsize = FALSE,
+  dpi = 330
+)

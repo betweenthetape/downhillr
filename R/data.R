@@ -265,7 +265,7 @@
 #' about each rider's performance across multiple runs, as well as event
 #' metadata.
 #'
-#' @format A data frame with 96 rows and 41 variables:
+#' @format A data frame with 127 rows and 41 variables:
 #' \describe{
 #'   \item{rank}{The finishing rank of the rider based on their best time.}
 #'   \item{nr}{Rider's race number.}

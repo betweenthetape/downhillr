@@ -55,6 +55,19 @@ spec <- tribble(
     event_year = "2025",
     round_type = "Timed Training",
     round_category = "Women Elite"
+  ),
+  "inst/extdata/20250918-lenz_dhi_we_results_tt.pdf",
+  1:2,
+  list(
+    c(140.5866, 18.9095, 738.7929, 576.3661),
+    c(139.7716, 18.0945, 392.4201, 577.1811)
+  ),
+  list(
+    event_name = "Lenzerheide",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Timed Training",
+    round_category = "Women Elite"
   )
 )
 

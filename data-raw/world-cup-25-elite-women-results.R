@@ -145,6 +145,49 @@ spec <- tribble(
     metadata_temp_deg_c = 22,
     metadata_distance_km = 2.300,
     metadata_average_speed_kmh = 32.524
+  ),
+  # ---- Lenzerheide ----
+  "inst/extdata/20250918-lenz_dhi_we_results_f.pdf",
+  1,
+  list(c(132.4367, 18.0945, 385.0851, 577.1811)),
+  list(
+    event_name = "Lenzerheide",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Women Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 25,
+    metadata_distance_km = 1.840,
+    metadata_average_speed_kmh = 34.576
+  ),
+  "inst/extdata/20250918-lenz_dhi_we_results_q1.pdf",
+  1,
+  list(c(133.2517, 18.9095, 680.9283, 576.3661)),
+  list(
+    event_name = "Lenzerheide",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Women Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 20,
+    metadata_distance_km = 1.840,
+    metadata_average_speed_kmh = 33.691
+  ),
+  "inst/extdata/20250918-lenz_dhi_we_results_q2.pdf",
+  1,
+  list(c(133.2517, 19.7245, 478.8095, 576.3661)),
+  list(
+    event_name = "Lenzerheide",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Women Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 22,
+    metadata_distance_km = 1.840,
+    metadata_average_speed_kmh = 33.058
   )
 )
 

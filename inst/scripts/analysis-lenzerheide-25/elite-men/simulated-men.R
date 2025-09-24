@@ -837,3 +837,84 @@ table_pierron_pinkerton <- pierron_pinkerton_times |>
 #   "inst/scripts/analysis-lenzerheide-25/elite-men/table_pierron_pinkerton.png",
 #   zoom = 10
 # )
+
+# Pinkerton fastest simulated times outside of finals
+pinkerton_fastest_simulated_outside_finals <- results |>
+  filter(round_type != "Final") |>
+  select(name, starts_with("split"), time, event_name, round_type) |>
+  bind_rows(timed_training) |>
+  filter(name == "Ryan Pinkerton") |>
+  mutate(
+    section_1 = split_1,
+    section_2 = split_2 - split_1,
+    section_3 = split_3 - split_2,
+    section_4 = split_4 - split_3,
+    section_5 = time - split_4
+  ) |>
+  summarise(
+    across(
+      starts_with("section_"),
+      list(
+        time = ~ min(.x, na.rm = TRUE),
+        round = ~ round_type[which.min(.x)]
+      )
+    )
+  ) |>
+  select(ends_with("_time")) |>
+  pivot_longer(
+    everything(),
+    names_to = "section",
+    values_to = "simulated_time"
+  ) |>
+  mutate(section = str_remove(section, "_time$"))
+
+pinkerton_final_times <- pierron_pinkerton_times |>
+  filter(name == "Ryan Pinkerton") |>
+  select(starts_with("section_")) |>
+  pivot_longer(everything(), names_to = "section", values_to = "final_time")
+
+# Q: How much faster was Pinkerton in Finals compared to his fastest simulated
+# times?
+# A: 1.6%
+mean_dif <- pinkerton_fastest_simulated_outside_finals |>
+  left_join(pinkerton_final_times) |>
+  mutate(
+    percentage_dif = (simulated_time - final_time) / simulated_time
+  ) |>
+  slice(-1) |>
+  summarise(mean_diff = mean(percentage_dif)) |>
+  pull()
+
+# Predicted sector 1 final time w/o crash
+final_sector1 <- pinkerton_fastest_simulated_outside_finals |>
+  slice(1) |>
+  pull(2)
+
+# Predcited sector 1 time: 46.39673
+final_sector1_predicted <- final_sector1 - (mean_dif * final_sector1)
+
+# Predicted final time: 166.1467
+# Still wouldn't have beaten Aumary's time of 164.699
+# It would have slotted him in 5th ahead of Loic Bruni with his best result so
+# far this year:
+pinkerton_final_times |>
+  mutate(
+    final_time = if_else(
+      section == "section_1",
+      final_sector1_predicted,
+      final_time
+    )
+  ) |>
+  summarise(total = sum(final_time)) |>
+  pull()
+
+# Ryan's best result to date is a 6th at Loudenvielle:
+world_cup_25_elite_men_results |>
+  mutate(name = str_to_title(name)) |>
+  mutate(
+    name = map_chr(str_split(name, " "), ~ str_c(rev(.x), collapse = " "))
+  ) |>
+  mutate(across(everything(), ~ if_else(is.infinite(.x), NA, .x))) |>
+  filter(round_type == "Final") |>
+  filter(name == "Ryan Pinkerton") |>
+  select(rank, event_name)

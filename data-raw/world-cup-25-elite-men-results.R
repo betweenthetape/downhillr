@@ -370,6 +370,56 @@ spec <- tribble(
     metadata_temp_deg_c = 18,
     metadata_distance_km = 2.380,
     metadata_average_speed_kmh = 37.350
+  ),
+  # ---- Lenzerheide ----
+  "inst/extdata/20250918-lenz_dhi_me_results_f.pdf",
+  NULL,
+  list(c(132.4367, 18.0945, 618.9887, 575.5511)),
+  list(
+    event_name = "Lenzerheide",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Men Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 25,
+    metadata_distance_km = 1.840,
+    metadata_average_speed_kmh = 40.219
+  ),
+  "inst/extdata/20250918-lenz_dhi_me_results_q1.pdf",
+  1:3,
+  list(
+    c(133.2517, 19.7245, 743.6829, 574.7361),
+    c(131.6217, 18.0945, 741.2379, 576.3661),
+    c(132.4367, 18.9095, 416.8699, 576.3661)
+  ),
+  list(
+    event_name = "Lenzerheide",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Men Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 22,
+    metadata_distance_km = 1.840,
+    metadata_average_speed_kmh = 39.510
+  ),
+  "inst/extdata/20250918-lenz_dhi_me_results_q2.pdf",
+  1:2,
+  list(
+    c(132.4367, 19.7245, 744.4979, 575.5511),
+    c(132.4367, 18.9095, 574.1639, 576.3661)
+  ),
+  list(
+    event_name = "Lenzerheide",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Men Elite",
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 18,
+    metadata_distance_km = 1.840,
+    metadata_average_speed_kmh = 39.429
   )
 )
 

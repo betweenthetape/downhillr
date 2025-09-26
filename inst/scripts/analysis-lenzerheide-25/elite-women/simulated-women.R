@@ -592,6 +592,19 @@ plot_ridges <- final_section_times_from_leader |>
 #   dpi = 330
 # )
 
+# # A tibble: 10 × 3
+#    name             section time_from_leader
+#    <chr>            <chr>              <dbl>
+#  1 Tahnee Seagrave  1                 0
+#  2 Valentina Höll   1                 1.12
+#  3 Valentina Höll   2                 0
+#  4 Nina Hoffmann    2                 0.279
+#  5 Nina Hoffmann    3                 0
+#  6 Valentina Höll   3                 0.528
+#  7 Nina Hoffmann    4                 0
+#  8 Tahnee Seagrave  4                 0.0630
+#  9 Camille Balanche 5                 0
+# 10 Gracey Hemstreet 5                 0.293
 final_section_times_from_leader |>
   select(name, section, time_from_leader) |>
   slice_min(time_from_leader, n = 2, by = section)

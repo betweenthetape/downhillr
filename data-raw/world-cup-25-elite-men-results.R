@@ -420,6 +420,49 @@ spec <- tribble(
     metadata_temp_deg_c = 18,
     metadata_distance_km = 1.840,
     metadata_average_speed_kmh = 39.429
+  ),
+  # ---- Mount-Sainte-Anne ----
+  NULL,
+  NULL,
+  list(),
+  list(
+    event_name = "Mount-Sainte-Anne",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Final",
+    round_category = "Men Elite",
+    metadata_weather = NULL,
+    metadata_temp_deg_c = NULL,
+    metadata_distance_km = NULL,
+    metadata_average_speed_kmh = NULL
+  ),
+  NULL,
+  NULL,
+  list(),
+  list(
+    event_name = "Mont-Sainte-Anne",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 1",
+    round_category = "Men Elite",
+    metadata_weather = NULL,
+    metadata_temp_deg_c = NULL,
+    metadata_distance_km = NULL,
+    metadata_average_speed_kmh = NULL
+  ),
+  NULL,
+  NULL,
+  list(),
+  list(
+    event_name = "Mont-Sainte-Anne",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Qualifying Round 2",
+    round_category = "Men Elite",
+    metadata_weather = NULL,
+    metadata_temp_deg_c = NULL,
+    metadata_distance_km = NULL,
+    metadata_average_speed_kmh = NULL
   )
 )
 

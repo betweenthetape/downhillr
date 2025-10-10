@@ -144,6 +144,16 @@ spec <- tribble(
     event_year = "2025",
     round_type = "Timed Training",
     round_category = "Men Elite"
+  ),
+  NULL,
+  NULL,
+  list(),
+  list(
+    event_name = "Mont-Sainte-Anne",
+    event_type = "World Cup",
+    event_year = "2025",
+    round_type = "Timed Training",
+    round_category = "Men Elite"
   )
 )
 

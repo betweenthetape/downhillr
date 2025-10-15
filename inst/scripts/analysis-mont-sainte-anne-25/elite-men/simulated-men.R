@@ -622,7 +622,7 @@ table_combined_run <- fastest_combined_run |>
   tab_header(
     title = md("## Simulated Combined Fastest Race Run"),
     subtitle = md(
-      "### Combining the fastest section times achieved by any rider to create the ultimate run"
+      "### Combining the fastest section times achieved across the entire weekend by any rider to create the ultimate run"
     )
   ) |>
   fmt_number(time, decimals = 2) |>

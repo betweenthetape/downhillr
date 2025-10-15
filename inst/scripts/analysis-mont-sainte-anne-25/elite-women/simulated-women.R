@@ -271,7 +271,13 @@ bump_data <- actual |>
       "Simulated \nrank"
     )
   ) |>
-  mutate(color = "#E7E7E7") |>
+  mutate(
+    color = case_when(
+      name == "Valentina Höll" ~ "#57106e",
+      name == "Camille Balanche" ~ "#f98e09",
+      TRUE ~ "#E7E7E7"
+    )
+  ) |>
   left_join(image_data)
 
 plot_bump <- ggplot() +
@@ -339,10 +345,11 @@ plot_bump <- ggplot() +
     subtitle = "<span> Each riders fastest splits from across the Mont-Sainte-Anne
     race weekend were combined to simulate their fastest hypothetical runs.
     These runs were then ranked to create a new simulated leaderboard.
-    Even in the simulated world, the results would have been the same for the 
-    podium spots. The mains differences would have been a shuffle at the bottom of the
-    table.",
-    caption = "Missing simulated rank 12 corresponds to Myriam Nicole (Q2 DNS)"
+    Both
+    <span style='color:#57106e;'>**Valentina Höll**</span>
+    and <span style='color:#f98e09;'>**Camille Balanche**</span> were looking
+    promising all weekend but got bitten in finals.</span>",
+    caption = "Missing simulated rank 7 corresponds to Gracey Hemstreet (DNF)"
   )
 
 # ggsave(
@@ -522,7 +529,7 @@ table_combined_run <- fastest_combined_run |>
   tab_header(
     title = md("## Elite Women: Simulated Combined Fastest Race Run"),
     subtitle = md(
-      "### Combining the fastest section times achieved by any rider to create the ultimate run"
+      "### Combining the fastest section times from across the entire weekend achieved by any rider to create the ultimate run"
     )
   ) |>
   fmt_number(time, decimals = 2) |>
@@ -595,16 +602,16 @@ plot_ridges <- final_section_times_from_leader |>
 # # A tibble: 10 × 3
 #    name             section time_from_leader
 #    <chr>            <chr>              <dbl>
-#  1 Tahnee Seagrave  1                 0
-#  2 Valentina Höll   1                 1.12
+#  1 Valentina Höll   1                 0
+#  2 Camille Balanche 1                 1.12
 #  3 Valentina Höll   2                 0
-#  4 Nina Hoffmann    2                 0.279
-#  5 Nina Hoffmann    3                 0
-#  6 Valentina Höll   3                 0.528
-#  7 Nina Hoffmann    4                 0
-#  8 Tahnee Seagrave  4                 0.0630
-#  9 Camille Balanche 5                 0
-# 10 Gracey Hemstreet 5                 0.293
+#  4 Nina Hoffmann    2                 1.02
+#  5 Marine Cabirou   3                 0
+#  6 Nina Hoffmann    3                 0.0570
+#  7 Marine Cabirou   4                 0
+#  8 Nina Hoffmann    4                 0.320
+#  9 Sacha Earnest    5                 0
+# 10 Marine Cabirou   5                 0.465
 final_section_times_from_leader |>
   select(name, section, time_from_leader) |>
   slice_min(time_from_leader, n = 2, by = section)

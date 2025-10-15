@@ -157,10 +157,10 @@ fastest_possible_sections |>
   summarise(distinct_sections = n_distinct(value), .by = name) |>
   arrange(desc(distinct_sections))
 
-table_davide_palazzari <- results |>
+table_lucas_cruz <- results |>
   select(name, starts_with("split"), time, event_name, round_type) |>
   bind_rows(timed_training) |>
-  filter(name == "Davide Palazzari") |>
+  filter(name == "Lucas Cruz") |>
   mutate(
     `1` = split_1,
     `2` = split_2 - split_1,
@@ -199,13 +199,13 @@ table_davide_palazzari <- results |>
   ) |>
   tab_header(
     md(
-      "**Davide Palazzari's fastest sections were spread across the event**"
+      "**Luca Cruz's fastest sections were spread across the event**"
     ),
     md("Fastest sections (in seconds) are highlighted in green")
   ) |>
   tab_source_note(
     md(
-      "_Finals & Timed Training runs 4 and 5 were not performed with a DNF in Q2_"
+      "_Finals & Timed Training runs 4 and 5 were not performed_"
     )
   ) |>
   tab_style(
@@ -219,34 +219,34 @@ table_davide_palazzari <- results |>
   ) |>
   data_color(
     columns = `2`,
-    rows = round_type == "Qualifying Round 1",
+    rows = round_type == "Qualifying Round 2",
     palette = "#4daf4a"
   ) |>
   data_color(
     columns = `3`,
-    rows = round_type == "Timed Training 3",
-    palette = "#4daf4a"
-  ) |>
-  data_color(
-    columns = `4`,
     rows = round_type == "Timed Training 2",
     palette = "#4daf4a"
   ) |>
   data_color(
+    columns = `4`,
+    rows = round_type == "Qualifying Round 2",
+    palette = "#4daf4a"
+  ) |>
+  data_color(
     columns = `5`,
-    rows = round_type == "Timed Training 1",
+    rows = round_type == "Qualifying Round 2",
     palette = "#4daf4a"
   )
 
 # gtsave(
-#   table_davide_palazzari,
+#   table_lucas_cruz,
 #   "inst/scripts/analysis-mont-sainte-anne-25/elite-men/table_andreas_kolb.png",
 #   zoom = 10
 # )
 
 # Simualted time: 173.091
 fastest_possible_times |>
-  filter(name == "Davide Palazzari") |>
+  filter(name == "Lucas Cruz") |>
   pull(fastest_time_possible)
 
 # ------------------------------------------------------------------------------
@@ -367,8 +367,8 @@ bump_data <- actual |>
   ) |>
   mutate(
     color = case_when(
-      name == "Jackson Goldstone" ~ "#57106e",
-      name == "Luca Shaw" ~ "#f98e09",
+      name == "Ronan Dunne" ~ "#57106e",
+      name == "Lachlan Stevens-Mcnab" ~ "#f98e09",
       TRUE ~ "#E7E7E7"
     )
   ) |>
@@ -439,10 +439,10 @@ plot_bump <- ggplot() +
     subtitle = "<span> Each riders fastest splits from across the Mont-Sainte-Anne
     race weekend were combined to simulate their fastest hypothetical runs.
     These runs were then ranked to create a new simulated leaderboard. Both
-    <span style='color:#57106e;'>**Jackson Goldstone**</span>
-    and <span style='color:#f98e09;'>**Luca Shaw**</span> were looking promising
-    all weekend but got bitten in finals.</span>",
-    caption = "Missing simulated rank 25 corresponds to Laurie Greenland (DNF)."
+    <span style='color:#57106e;'>**Ronan Dunne**</span>
+    and <span style='color:#f98e09;'>**Lachlan Stevens-Mcnab**</span> were looking
+    promising all weekend but got bitten in finals.</span>",
+    caption = "Missing simulated ranks 9, 16, 30, and 31 corresponds to Loic Bruni (DNS), Thibaut Daprela (DNF), Dane Jewett (DNQ) & Ethan Craik (DNQ)."
   )
 
 # ggsave(
@@ -705,16 +705,16 @@ plot_ridges <- final_section_times_from_leader |>
 # # A tibble: 10 × 3
 #    name              section time_from_leader
 #    <chr>             <chr>              <dbl>
-#  1 Jackson Goldstone 1                0
-#  2 Ronan Dunne       1                0.00400
-#  3 Luca Shaw         2                0
-#  4 Andreas Kolb      2                0.123
-#  5 Rémi Thirion      3                0
-#  6 Ronan Dunne       3                0.261
-#  7 Henri Kiefer      4                0
-#  8 Ryan Pinkerton    4                0.165
-#  9 Jackson Goldstone 5                0
-# 10 Amaury Pierron    5                0.149
+#  1 Ronan Dunne       1                 0
+#  2 Andreas Kolb      1                 0.130
+#  3 Andreas Kolb      2                 0
+#  4 Jackson Goldstone 2                 0.0280
+#  5 Ronan Dunne       3                 0
+#  6 Dakotah Norton    3                 0.0810
+#  7 Jackson Goldstone 4                 0
+#  8 Troy Brosnan      4                 1.25
+#  9 Luke Meier-Smith  5                 0
+# 10 Amaury Pierron    5                 0.0590
 final_section_times_from_leader |>
   select(name, section, time_from_leader) |>
   slice_min(time_from_leader, n = 2, by = section)

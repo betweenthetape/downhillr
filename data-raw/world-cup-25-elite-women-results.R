@@ -194,7 +194,7 @@ spec <- tribble(
   1,
   list(c(131.689, 18.158, 384.716, 575.9675)),
   list(
-    event_name = "Mount-Sainte-Anne",
+    event_name = "Mont-Sainte-Anne",
     event_type = "World Cup",
     event_year = "2025",
     round_type = "Final",

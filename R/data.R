@@ -224,7 +224,7 @@
 #' rider's performance, team affiliation, nationality, splits, and other
 #' metadata.
 #'
-#' @format A data frame with 279 rows and 27 variables:
+#' @format A data frame with 334 rows and 27 variables:
 #' \describe{
 #'   \item{rank}{The finishing rank of the rider.}
 #'   \item{nr}{Rider's race number.}

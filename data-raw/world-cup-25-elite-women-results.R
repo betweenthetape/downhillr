@@ -190,47 +190,47 @@ spec <- tribble(
     metadata_average_speed_kmh = 33.058
   ),
   # ---- Mount-Sainte-Anne ----
-  NULL,
-  NULL,
-  list(),
+  "inst/extdata/20251009-mtsa_dhi_we_results_f.pdf",
+  1,
+  list(c(131.689, 18.158, 384.716, 575.9675)),
   list(
     event_name = "Mount-Sainte-Anne",
     event_type = "World Cup",
     event_year = "2025",
     round_type = "Final",
     round_category = "Women Elite",
-    metadata_weather = NULL,
-    metadata_temp_deg_c = NULL,
-    metadata_distance_km = NULL,
-    metadata_average_speed_kmh = NULL
+    metadata_weather = "Sunny",
+    metadata_temp_deg_c = 12,
+    metadata_distance_km = 2.400,
+    metadata_average_speed_kmh = 35.759
   ),
-  NULL,
-  NULL,
-  list(),
+  "inst/extdata/20251009-mtsa_dhi_we_results_q1.pdf",
+  1,
+  list(c(132.8392, 18.158, 554.9342, 575.9675)),
   list(
     event_name = "Mont-Sainte-Anne",
     event_type = "World Cup",
     event_year = "2025",
     round_type = "Qualifying Round 1",
     round_category = "Women Elite",
-    metadata_weather = NULL,
-    metadata_temp_deg_c = NULL,
-    metadata_distance_km = NULL,
-    metadata_average_speed_kmh = NULL
+    metadata_weather = "Partly Cloudy",
+    metadata_temp_deg_c = 11,
+    metadata_distance_km = 2.400,
+    metadata_average_speed_kmh = 34.296
   ),
-  NULL,
-  NULL,
-  list(),
+  "inst/extdata/20251009-mtsa_dhi_we_results_q2.pdf",
+  1,
+  list(c(132.8392, 18.158, 366.3141, 575.9675)),
   list(
     event_name = "Mont-Sainte-Anne",
     event_type = "World Cup",
     event_year = "2025",
     round_type = "Qualifying Round 2",
     round_category = "Women Elite",
-    metadata_weather = NULL,
-    metadata_temp_deg_c = NULL,
-    metadata_distance_km = NULL,
-    metadata_average_speed_kmh = NULL
+    metadata_weather = "Mostly Sunny",
+    metadata_temp_deg_c = 10,
+    metadata_distance_km = 2.400,
+    metadata_average_speed_kmh = 33.821
   )
 )
 

@@ -718,3 +718,239 @@ plot_ridges <- final_section_times_from_leader |>
 final_section_times_from_leader |>
   select(name, section, time_from_leader) |>
   slice_min(time_from_leader, n = 2, by = section)
+
+# ------------------------------------------------------------------------------
+# Ronan Dunne - what could have been?
+# ------------------------------------------------------------------------------
+goldstone_final_time <- fastest_times_final |>
+  slice(1) |>
+  pull(fastest_time_finals)
+
+dunne_splits_1_3 <- c(38.680, 93.353, 137.004)
+
+goldstone_dunne_splits_ranked <- results |>
+  filter(name == "Jackson Goldstone") |>
+  filter(round_type == "Final") |>
+  select(
+    name,
+    event_name,
+    section_1 = split_1,
+    section_2 = split_2,
+    section_3 = split_3,
+    section_4 = split_4,
+    section_5 = time
+  ) |>
+  add_row(
+    name = "Ronan Dunne",
+    event_name = "Mont-Sainte-Anne",
+    section_1 = dunne_splits_1_3[[1]],
+    section_2 = dunne_splits_1_3[[2]],
+    section_3 = dunne_splits_1_3[[3]],
+    section_4 = NA,
+    section_5 = NA,
+  ) |>
+  mutate(
+    across(
+      starts_with("section_"),
+      ~ rank(.x, ties.method = "min"),
+      .names = "{.col}_rank"
+    )
+  ) |>
+  mutate(
+    across(
+      starts_with("section_") & !ends_with("_rank"),
+      ~ .x - min(.x),
+      .names = "{.col}_gap"
+    )
+  )
+
+table_goldstone_dunne <- goldstone_dunne_splits_ranked |>
+  left_join(image_data) |>
+  select(path, name, ends_with("_gap"), ends_with("_rank")) |>
+  gt() |>
+  text_transform(
+    locations = cells_body(columns = path),
+    fn = function(path) {
+      local_image(
+        filename = path,
+        height = 60
+      )
+    }
+  ) |>
+  cols_label(
+    path = "",
+    name = "",
+    section_1_gap = "Split 1",
+    section_2_gap = "Split 2",
+    section_3_gap = "Split 3",
+    section_4_gap = "Split 4",
+    section_5_gap = "Finish"
+  ) |>
+  text_transform(
+    fn = \(x) if_else(x == "0.000", paste0(x), paste("+", x)),
+    locations = cells_body(columns = ends_with("_gap"))
+  ) |>
+  merge_section_columns() |>
+  tab_style(
+    style = cell_borders(sides = "all", style = "solid", color = "#e9e9e9"),
+    locations = cells_body(
+      columns = ends_with("_gap")
+    )
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  ) |>
+  opt_row_striping() |>
+  tab_options(
+    table.font.size = px(12),
+    column_labels.font.weight = "bold"
+  ) |>
+  tab_style(
+    style = cell_text(align = "center"),
+    locations = cells_body(columns = !name)
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = "name")
+  ) |>
+  tab_header(
+    title = md("## Could Dunne have beaten Goldstone?"),
+    subtitle = md(
+      "### The gap (with rank in brackets) is shown for each section in Finals until split 3"
+    )
+  ) |>
+  data_color(
+    columns = section_1_gap,
+    rows = name == 'Jackson Goldstone',
+    palette = "#e41a1c"
+  ) |>
+  data_color(
+    columns = section_2_gap,
+    rows = name == 'Jackson Goldstone',
+    palette = "#e41a1c"
+  ) |>
+  data_color(
+    columns = section_3_gap,
+    rows = name == 'Jackson Goldstone',
+    palette = "#e41a1c"
+  ) |>
+  data_color(
+    columns = section_1_gap,
+    rows = name == 'Ronan Dunne',
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = section_2_gap,
+    rows = name == 'Ronan Dunne',
+    palette = "#4daf4a"
+  ) |>
+  data_color(
+    columns = section_3_gap,
+    rows = name == 'Ronan Dunne',
+    palette = "#4daf4a"
+  ) |>
+  text_transform(
+    locations = cells_body(
+      columns = section_4_gap,
+      rows = name == "Jackson Goldstone"
+    ),
+    fn = function(x) "?"
+  ) |>
+  text_transform(
+    locations = cells_body(
+      columns = section_5_gap,
+      rows = name == "Jackson Goldstone"
+    ),
+    fn = function(x) "?"
+  ) |>
+  text_transform(
+    locations = cells_body(
+      columns = section_4_gap,
+      rows = name == "Ronan Dunne"
+    ),
+    fn = function(x) "?"
+  ) |>
+  text_transform(
+    locations = cells_body(
+      columns = section_5_gap,
+      rows = name == "Ronan Dunne"
+    ),
+    fn = function(x) "?"
+  )
+
+# gtsave(
+#   table_goldstone_dunne,
+#   "inst/scripts/analysis-mont-sainte-anne-25/table_goldstone_dunne.png",
+#   zoom = 10
+# )
+
+dunne_fastest_split_4 <- fastest_possible_sections |>
+  filter(name == "Ronan Dunne") |>
+  pull(section_4_time)
+
+dunne_fastest_split_5 <- fastest_possible_sections |>
+  filter(name == "Ronan Dunne") |>
+  pull(section_5_time)
+
+# Calculate Dunnes fastest splits times outside finals, then calculate mean
+# % decrease in finals (i.e., how much faster did he go in finals?)
+# Then take his fastest 4/5 splits over the weekend and increase them by this
+# amount to work out his likely overall time.
+dunne_fastest_non_final_splits <- results |>
+  select(name, starts_with("split"), time, event_name, round_type) |>
+  bind_rows(timed_training) |>
+  filter(name == "Ronan Dunne") |>
+  filter(round_type != "Final") |>
+  mutate(
+    section_1 = split_1,
+    section_2 = split_2 - split_1,
+    section_3 = split_3 - split_2,
+    section_4 = split_4 - split_3,
+    section_5 = time - split_4
+  ) |>
+  summarise(
+    across(
+      starts_with("section_"),
+      list(
+        time = ~ min(.x, na.rm = TRUE),
+        round = ~ round_type[which.min(.x)]
+      )
+    ),
+    .by = c(name, event_name)
+  )
+
+dunne_mean_decrease <- dunne_fastest_non_final_splits |>
+  filter(name == "Ronan Dunne") |>
+  select(ends_with("_time")) |>
+  mutate(id = "fastest_splits", .before = section_1_time) |>
+  add_row(
+    id = "final_splits",
+    section_1_time = dunne_splits_1_3[1],
+    section_2_time = dunne_splits_1_3[2] - dunne_splits_1_3[1],
+    section_3_time = dunne_splits_1_3[3] - dunne_splits_1_3[2],
+    section_4_time = NA,
+    section_5_time = NA
+  ) |>
+  select(-section_4_time, -section_5_time) |>
+  pivot_longer(!id) |>
+  pivot_wider(names_from = id, values_from = value) |>
+  mutate(
+    percentage_difference = (fastest_splits - final_splits) /
+      fastest_splits
+  ) |>
+  summarise(mean_difference = mean(percentage_difference)) |>
+  pull()
+
+# Ronan was 5.3 % faster in Finals than his fastest splits until that point
+dunne_mean_decrease * 100
+
+# Actual finals split times from 1-3 + simulated 4th and 5th * expected % increase
+dunne_simulated_finish <- dunne_splits_1_3[3] +
+  (dunne_fastest_non_final_splits[["section_4_time"]] *
+    (1 - dunne_mean_decrease)) +
+  (dunne_fastest_non_final_splits[["section_5_time"]] *
+    (1 - dunne_mean_decrease))
+
+# Dunne would have beaten Jackson by -1.750799
+print(dunne_simulated_finish - jackson_final_time)

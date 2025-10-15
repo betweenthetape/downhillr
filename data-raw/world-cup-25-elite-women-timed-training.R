@@ -69,9 +69,12 @@ spec <- tribble(
     round_type = "Timed Training",
     round_category = "Women Elite"
   ),
-  NULL,
-  NULL,
-  list(),
+  "inst/extdata/20251009-mtsa_dhi_we_results_tt.pdf",
+  1:2,
+  list(
+    c(140.1274, 18.5086, 738.9046, 576.767),
+    c(139.0019, 17.383, 204.2821, 576.767)
+  ),
   list(
     event_name = "Mont-Sainte-Anne",
     event_type = "World Cup",

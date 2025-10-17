@@ -953,4 +953,4 @@ dunne_simulated_finish <- dunne_splits_1_3[3] +
     (1 - dunne_mean_decrease))
 
 # Dunne would have beaten Jackson by -1.750799
-print(dunne_simulated_finish - jackson_final_time)
+print(dunne_simulated_finish - goldstone_final_time)

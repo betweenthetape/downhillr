@@ -244,7 +244,7 @@ table_lucas_cruz <- results |>
 #   zoom = 10
 # )
 
-# Simualted time: 173.091
+# Simualted time: 224.907
 fastest_possible_times |>
   filter(name == "Lucas Cruz") |>
   pull(fastest_time_possible)

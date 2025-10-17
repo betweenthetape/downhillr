@@ -129,7 +129,7 @@
 #' rider's performance, team affiliation, nationality, splits, and other
 #' metadata.
 #'
-#' @format A data frame with 1,672 rows and 27 variables:
+#' @format A data frame with 1,844 rows and 27 variables:
 #' \describe{
 #'   \item{rank}{The finishing rank of the rider.}
 #'   \item{nr}{Rider's race number.}
@@ -169,7 +169,7 @@
 #' of the 2025 Mountain Bike World Cup. It includes detailed information about
 #' each rider's performance across multiple runs, as well as event metadata.
 #'
-#' @format A data frame with 786 rows and 41 variables:
+#' @format A data frame with 866 rows and 41 variables:
 #' \describe{
 #'   \item{rank}{The finishing rank of the rider based on their best time.}
 #'   \item{nr}{Rider's race number.}
@@ -224,7 +224,7 @@
 #' rider's performance, team affiliation, nationality, splits, and other
 #' metadata.
 #'
-#' @format A data frame with 279 rows and 27 variables:
+#' @format A data frame with 334 rows and 27 variables:
 #' \describe{
 #'   \item{rank}{The finishing rank of the rider.}
 #'   \item{nr}{Rider's race number.}
@@ -265,7 +265,7 @@
 #' about each rider's performance across multiple runs, as well as event
 #' metadata.
 #'
-#' @format A data frame with 127 rows and 41 variables:
+#' @format A data frame with 151 rows and 41 variables:
 #' \describe{
 #'   \item{rank}{The finishing rank of the rider based on their best time.}
 #'   \item{nr}{Rider's race number.}

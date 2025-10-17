@@ -474,6 +474,24 @@ clean_timed_training_25 <- function(data) {
       )
     )
 
+  # There are data entry errors for many riders in Lenzerheide where their Nr is
+  # inputted as 10 on their first rows, and 1 and 0 on their respective second
+  # rows, rather than 101 and 100 on their respective first rows. Use a
+  # combination of columns as a unique indentifiers:
+  data <- data |>
+    mutate(
+      Nr = case_when(
+        Rank == "66" &
+          `Name / UCI MTB Team` == "O CALLAGHAN Oisin * (IRL)" &
+          Nr == "10" &
+          `Time...14` == "5:34.929" ~
+          "100",
+        # Remove rows below errors so fill() call below works with corrections
+        (row_number() - 2) %% 4 == 0 ~ NA_character_,
+        .default = Nr
+      )
+    )
+
   data <- data |>
     fill(Nr)
 

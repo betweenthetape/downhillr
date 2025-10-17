@@ -240,7 +240,7 @@ table_lucas_cruz <- results |>
 
 # gtsave(
 #   table_lucas_cruz,
-#   "inst/scripts/analysis-mont-sainte-anne-25/elite-men/table_andreas_kolb.png",
+#   "inst/scripts/analysis-mont-sainte-anne-25/elite-men/table_lucas_cruz.png",
 #   zoom = 10
 # )
 

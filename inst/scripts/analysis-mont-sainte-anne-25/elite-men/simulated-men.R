@@ -881,7 +881,7 @@ table_goldstone_dunne <- goldstone_dunne_splits_ranked |>
 
 # gtsave(
 #   table_goldstone_dunne,
-#   "inst/scripts/analysis-mont-sainte-anne-25/table_goldstone_dunne.png",
+#   "inst/scripts/analysis-mont-sainte-anne-25/elite-men/table_goldstone_dunne.png",
 #   zoom = 10
 # )
 

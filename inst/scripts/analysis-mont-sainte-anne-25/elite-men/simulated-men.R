@@ -954,3 +954,22 @@ dunne_simulated_finish <- dunne_splits_1_3[3] +
 
 # Dunne would have beaten Jackson by -1.750799
 print(dunne_simulated_finish - goldstone_final_time)
+
+# ------------------------------------------------------------------------------
+# Loic Bruni - what could have been?
+# ------------------------------------------------------------------------------
+bruni_andorra_time <- world_cup_25_elite_men_results |>
+  filter(str_detect(name, "^BRUNI")) |>
+  filter(event_name == "Pal Arinsal") |>
+  pull(time)
+
+bruni_andorra_percent_dif <- (bruni_andorra_time[2] - bruni_andorra_time[1]) /
+  bruni_andorra_time[2]
+
+bruni_msa_q1 <- results |>
+  filter(name == "Loic Bruni") |>
+  filter(round_type == "Qualifying Round 1") |>
+  pull(time)
+
+# Predicted Bruni MSA time = 205.2798 = 3:25.28
+bruni_msa_q1 - (bruni_msa_q1 * bruni_andorra_percent_dif)
